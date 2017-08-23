@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--+
+    | Data import file for the module web2print.
+    |
+    | Date:    $LastChangedDate: 2012-08-20 16:47:17 +0200 (Mo, 20 Aug 2012) $ 
+    | Version: $LastChangedRevision: 13495 $
+    +-->
+<import revision="$LastChangedRevision: 13495 $" xmlns:xi="http://www.w3.org/2001/XInclude">
+
+    <xi:include href="includes/web2print-examples-data-simple.xml" xpointer="element(/1)"/>
+<!-- SCHEMA NAMES AT THE END -->
+    <xi:include href="includes/web2print-schema_names-data-simple.xml" xpointer="element(/1)"/>
+
+    <xi:include href="includes/web2print-hierarchies-data-simple.xml" xpointer="element(/1)"/>
+    <xi:include href="includes/web2print-display_types-after-data-simple.xml" xpointer="element(/1)"/>
+    <!--
+    <xi:include href="includes/web2print-uniques-data-simple.xml" xpointer="element(/1)"/>
+    -->
+
+    <!-- TODO ADD IN CUSTOM AFTER USER INTERFFACE TODO TODO -->
+    <xi:include href="includes/web2print-application_masks-data-simple.xml" xpointer="element(/1)"/>
+
+
+    <xi:include href="web2print-custom-data-simple.xml" xpointer="element(/1)">
+        <xi:fallback><message type="info">No custom file: web2print-custom-data-simple.xml.</message></xi:fallback> 
+    </xi:include>      
+</import>

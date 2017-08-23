@@ -1,0 +1,32 @@
+{
+    "code": "W2P",
+    "initial": {
+        "template": "default-postgre-1.0"
+    },
+    "scripting": {
+        "srcDirs": [
+            "src/srv"
+        ]
+    },
+    "server" : {
+		"devel" : true,
+		"debugger" : true,
+		"javaDebugPort" : 8999,		
+		"ports" : 
+		{
+			"http" : 8585
+		}
+    },    
+     "modules": [
+		"mobile"
+    ],
+    "project": {
+        "files": [
+            ".gitignore",
+            "visionr.json",
+            "src",
+            "share",
+            "etc"
+        ]
+    }
+}

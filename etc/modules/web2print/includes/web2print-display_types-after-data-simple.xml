@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<import revision="$LastChangedRevision: 10979 $" xmlns:xi="http://www.w3.org/2001/XInclude">
+    <objects>
+
+        <!-- DISPLAY TYPES -->
+        <object cond="module.code='web2print' AND code='print_template'" mode="update" module="core" objectdef="objectdef">
+            <display_type>
+                <value>
+                    <object code="objectdef.web2print.print_template" module="core" objectdef="display_type_objectdef">
+                        <hierarchies>
+                            <value>
+                                <object mode="lookup" module="core" objectdef="hierarchy_mixed">
+                                    <code>
+                                        <value>web2print.print_template:category.templates:filtered</value>
+                                    </code>
+                                </object>
+                            </value>
+                            <value>
+                                <object mode="lookup" module="core" objectdef="hierarchy_mixed">
+                                    <code>
+                                        <value>web2print.print_template:category.templates</value>
+                                    </code>
+                                </object>
+                            </value>
+                        </hierarchies>
+                    </object>
+                </value>
+            </display_type>
+        </object>
+        
+        <object cond="module.code='web2print' AND code='print_category'" mode="update" module="core" objectdef="objectdef">
+            <display_type>
+                <value>
+                    <object code="objectdef.web2print.print_category" module="core" objectdef="display_type_objectdef">
+                        <hierarchies>
+                            <value>
+                                <object mode="lookup" module="core" objectdef="hierarchy_property_relation">
+                                    <code>
+                                        <value>web2print.print_category:children</value>
+                                    </code>
+                                </object>
+                            </value>                                                  
+                        </hierarchies>                    
+                    </object>
+                </value>
+            </display_type>
+        </object>
+        
+
+    </objects>
+</import>

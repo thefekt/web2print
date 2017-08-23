@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><license>
+<company>Web2Print</company>
+<version>6</version>
+<expires>2099-01-01</expires>
+<date>2013-01-01</date>
+<admin_count>100</admin_count>
+<modules>
+	<!-- TODO -->
+</modules>
+<Signature xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><DigestValue>s3QyX0z0Ab/aOSyZJ6qoESfWY2Q=</DigestValue></Reference></SignedInfo><SignatureValue>V+GTHP6BvdeSCMDh56Dv/uJMx5UAyuUK84mXYRaRs5fnNuiBHVZ55MQv3Xx87AJnN+l499cPRKqI
+6bIQQLkc0iInNaxBoeeuivUvHbnF6ib5GwIJ2PWswPt3mCDOsArorWW0xgIR9hb1nAvTR0oPl2ey
+cc70G5w/O8KmHrsKdqI=</SignatureValue></Signature></license>

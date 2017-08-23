@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<import revision="$LastChangedRevision: 12404 $">
+
+<objects>
+<!-- MODULE names -->
+	<object code="web2print" module="core" objectdef="module" mode="update">
+		<name>
+			<value><en-US>Web2Print</en-US></value>
+		</name>		
+	</object>
+	
+     <object cond="module.code='web2print' AND code='print_template'"
+            module="core" 
+            objectdef="objectdef" 
+            mode="update">
+        <name>
+            <value><en-US>Print template</en-US></value>
+            <value><de-DE>Druckvorlage</de-DE></value>
+            <value><bg-BG>Шаблон разпечатка</bg-BG></value>
+        </name>     
+    </object>
+
+
+     <object cond="module.code='web2print' AND code='print_category'"
+            module="core" 
+            objectdef="objectdef" 
+            mode="update">
+        <name>
+            <value><en-US>Category (Print)</en-US></value>
+            <value><de-DE>Kategorie (Druck)</de-DE></value>
+            <value><bg-BG>Категория (Печат)</bg-BG></value>
+        </name>     
+    </object>
+
+
+
+
+
+<!-- OBJECTDEF names -->
+<!-- HISTORY 
+    <object cond="module.code='web2print' AND code='history'"
+            module="core" 
+            objectdef="objectdef" 
+            mode="update">
+        <name>
+            <value><en-US>Change protocol (web2print)</en-US></value>
+            <value><de-DE>Änderungsprotokoll (Web2Print)</de-DE></value>
+        </name>     
+    </object>
+    <object cond="module.code='web2print' AND code='history_integer'"
+            module="core" 
+            objectdef="objectdef" 
+            mode="update">
+        <name>
+            <value><en-US>Integer</en-US></value>
+            <value><de-DE>Zahl</de-DE></value>
+        </name>     
+    </object>
+    <object cond="module.code='web2print' AND code='history_double'"
+            module="core" 
+            objectdef="objectdef" 
+            mode="update">
+        <name>
+            <value><en-US>Double</en-US></value>
+            <value><de-DE>Nachkommazahl</de-DE></value>
+        </name>     
+    </object>
+    <object cond="module.code='web2print' AND code='history_varchar'"
+            module="core" 
+            objectdef="objectdef" 
+            mode="update">
+        <name>
+            <value><en-US>Varchar</en-US></value>
+            <value><de-DE>Text</de-DE></value>
+        </name>     
+    </object>
+    <object cond="module.code='web2print' AND code='history_text'"
+            module="core" 
+            objectdef="objectdef" 
+            mode="update">
+        <name>
+            <value><en-US>Text</en-US></value>
+            <value><de-DE>Langtext</de-DE></value>
+        </name>     
+    </object>
+    <object cond="module.code='web2print' AND code='history_datetime'"
+            module="core" 
+            objectdef="objectdef" 
+            mode="update">
+        <name>
+            <value><en-US>Datetime</en-US></value>
+            <value><de-DE>Datum/Uhrzeit</de-DE></value>
+        </name>     
+    </object>
+    <object cond="module.code='web2print' AND code='history_option'"
+            module="core" 
+            objectdef="objectdef" 
+            mode="update">
+        <name>
+            <value><en-US>Option</en-US></value>
+            <value><de-DE>Option</de-DE></value>
+        </name>     
+    </object>
+    <object cond="module.code='web2print' AND code='history_relation'"
+            module="core" 
+            objectdef="objectdef" 
+            mode="update">
+        <name>
+            <value><en-US>Relation</en-US></value>
+            <value><de-DE>Referenz</de-DE></value>
+        </name>     
+    </object>	
+-->	
+</objects>
+</import>

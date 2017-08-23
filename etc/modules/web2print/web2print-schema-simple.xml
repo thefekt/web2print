@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--+
+    | Main import file for the module .
+    |
+    | Date:    $LastChangedDate: 2013-06-04 19:15:46 +0200 (Di, 04 Jun 2013) $ 
+    | Version: $LastChangedRevision: 15296 $
+    +-->
+
+<import revision="$LastChangedRevision: 15296 $" xmlns:xi="http://www.w3.org/2001/XInclude">
+ 
+<xi:include href="includes/web2print-options-data-simple.xml" xpointer="element(/1)">
+    <xi:fallback><message type="error">No options in this module.</message></xi:fallback>
+</xi:include>
+<xi:include href="includes/web2print-symbols-data-simple.xml" xpointer="element(/1)">
+    <xi:fallback><message type="error">No symbols in this module.</message></xi:fallback>
+</xi:include>
+<xi:include href="includes/web2print-display_types-data-simple.xml" xpointer="element(/1)">
+    <xi:fallback><message type="error">No display types in this module.</message></xi:fallback>
+</xi:include>
+<xi:include href="includes/web2print-user_groups-data-simple.xml" xpointer="element(/1)">
+    <xi:fallback><message type="error">No user groups in this module.</message></xi:fallback>
+</xi:include>
+<xi:include href="includes/web2print-property_categories-data-simple.xml" xpointer="element(/1)">
+    <xi:fallback><message type="error">No property categories in this module.</message></xi:fallback>
+</xi:include>
+
+
+<!-- Main include file -->
+<xi:include href="includes/web2print-objectdefs-schema-simple.xml" xpointer="element(/1)" />
+
+
+<xi:include href="web2print-custom-schema-simple.xml" xpointer="element(/1)">
+    <xi:fallback><message type="info">No custom file: test-custom-schema-simple.xml.</message></xi:fallback> 
+</xi:include>
+
+<xi:include href="../../core/schema/includes/core-module-sort_ids-data-simple.xml" xpointer="element(/1)">
+    <xi:fallback><message type="error">Unable to import missing file: core-module-sort_ids-data-simple.xml.</message></xi:fallback>
+</xi:include>
+
+</import>

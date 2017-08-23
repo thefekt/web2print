@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--+
+    | Main import file for the module test.
+    |
+    | Date:    $LastChangedDate: 2012-02-22 11:49:00 +0100 (Mi, 22 Feb 2012) $ 
+    | Version: $LastChangedRevision: 12142 $
+    +-->
+
+<import revision="$LastChangedRevision: 12142 $" xmlns:xi="http://www.w3.org/2001/XInclude">
+<objectdefs>
+
+	<web2print module_alias="wp" use_prefix="true">
+
+		<print_template tbl="prnt_tmpl" copy_from="core.template_normal_transaction">
+            <category>
+                <sort_id>2000</sort_id>
+                <category>main.basic</category>
+                <data_source>relation</data_source>
+                <related_objectdef>web2print.print_category</related_objectdef>
+                <is_inmaintbl>true</is_inmaintbl>
+                <name>
+                    <en-US>Category</en-US>
+                </name>
+                <name>
+                    <de-DE>Kategorie</de-DE>
+                </name>
+                <name>
+                    <bg-BG>Категория</bg-BG>
+                </name>
+            </category>
+            <document>
+                <sort_id>2001</sort_id>
+                <category>main.basic</category>
+                <data_source>relation</data_source>
+                <related_objectdef>documents.document</related_objectdef>
+                <is_inmaintbl>true</is_inmaintbl>
+                <is_obligatory>true</is_obligatory>
+            </document>
+		</print_template>
+
+        <print_category tbl="prnt_cat" copy_from="core.template_normal_transaction">
+            <templates>
+                <sort_id>2000</sort_id>
+                <category>main.basic</category>
+                <data_source>relation</data_source>
+                <relation_parent>web2print.print_template.category</relation_parent>
+                <name>
+                    <en-US>Templates</en-US>
+                </name>
+                <name>
+                    <de-DE>Vorlagen</de-DE>
+                </name>
+                <name>
+                    <bg-BG>Шаблони</bg-BG>
+                </name>
+            </templates>
+
+            <!-- main.settings -->
+            <parent>
+                <category>main.settings</category>
+                <sort_id>3001</sort_id>
+                <is_inmaintbl>true</is_inmaintbl>
+                <data_source>relation</data_source>
+                <related_objectdef>web2print.print_category</related_objectdef>
+                <is_selfreference>true</is_selfreference>
+                <name>
+                    <en-US>Parent</en-US>
+                </name>
+                <name>
+                    <de-DE>Gehört zu</de-DE>
+                </name>
+                <name>
+                    <bg-BG>Съдържа се в</bg-BG>
+                </name>
+                <index_code>par</index_code>
+            </parent>
+            
+            <children>
+                <category>main.settings</category>
+                <sort_id>3002</sort_id>
+                <data_source>relation</data_source>
+                <relation_parent>web2print.print_category.parent</relation_parent>
+                <name>
+                    <en-US>Children</en-US>
+                </name>
+                <name>
+                    <de-DE>Enthält</de-DE>
+                </name>
+                <name>
+                    <bg-BG>Съдържа</bg-BG>
+                </name>
+                <is_hidden>false</is_hidden>
+            </children>
+		</print_category>
+
+	</web2print>
+</objectdefs>
+</import>
