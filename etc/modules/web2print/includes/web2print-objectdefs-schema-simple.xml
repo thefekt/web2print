@@ -11,6 +11,106 @@
 
 	<web2print module_alias="wp" use_prefix="true">
 
+        <abstract_content tbl="acnt" copy_from="core.template_normal_transaction" is_abstract="true">
+            <print_template>
+                <sort_id>2000</sort_id>
+                <category>main.basic</category>
+                <data_source>relation</data_source>
+                <related_objectdef>web2print.print_template</related_objectdef>
+                <is_inmaintbl>true</is_inmaintbl>
+                <is_obligatory>true</is_obligatory>
+                <name>
+                    <en-US>Template</en-US>
+                </name>
+                <name>
+                    <de-DE>Vorlage</de-DE>
+                </name>
+                <name>
+                    <bg-BG>Шаблон</bg-BG>
+                </name>            
+            </print_template>
+        </abstract_content>
+
+        <varchar_content parent_objectdef="web2print.abstract_content">            
+            <initial_value col="ival_vc">
+                <sort_id>2001</sort_id>
+                <category>main.basic</category>
+                <data_source>input</data_source>
+                <data_type>varchar</data_type>
+                <is_inmaintbl>true</is_inmaintbl>
+                <is_obligatory>true</is_obligatory>
+            </initial_value>
+        </varchar_content>
+
+        <text_content parent_objectdef="web2print.abstract_content">            
+            <initial_value col="ival_vt">
+                <sort_id>2001</sort_id>
+                <category>main.basic</category>
+                <data_source>input</data_source>
+                <data_type>text</data_type>
+                <is_inmaintbl>true</is_inmaintbl>
+                <is_obligatory>true</is_obligatory>
+            </initial_value>
+        </text_content>
+
+        <date_content parent_objectdef="web2print.abstract_content">            
+            <initial_value col="ival_vd">
+                <sort_id>2001</sort_id>
+                <category>main.basic</category>
+                <data_source>input</data_source>
+                <data_type>datetime</data_type>
+                <output_format>default_output_format_date</output_format>
+                <is_inmaintbl>true</is_inmaintbl>
+                <is_obligatory>true</is_obligatory>
+            </initial_value>
+        </date_content>
+
+        <datetime_content parent_objectdef="web2print.abstract_content">            
+            <initial_value col="ival_vd">
+                <sort_id>2001</sort_id>
+                <category>main.basic</category>
+                <data_source>input</data_source>
+                <data_type>datetime</data_type>
+                <output_format>default_output_format_datetime</output_format>
+                <is_inmaintbl>true</is_inmaintbl>
+                <is_obligatory>true</is_obligatory>
+            </initial_value>
+        </datetime_content>
+
+        <time_content parent_objectdef="web2print.abstract_content">            
+            <initial_value col="ival_vd">
+                <sort_id>2001</sort_id>
+                <category>main.basic</category>
+                <data_source>input</data_source>
+                <data_type>datetime</data_type>
+                <output_format>default_output_format_time</output_format>
+                <is_inmaintbl>true</is_inmaintbl>
+                <is_obligatory>true</is_obligatory>
+            </initial_value>
+        </time_content>
+
+        <image_content parent_objectdef="web2print.abstract_content">       
+            <initial_value col="ival_vi">
+                <sort_id>2001</sort_id>
+                <category>main.basic</category>
+                <data_source>relation</data_source>
+                <related_objectdef>documents.document</related_objectdef>
+                <is_inmaintbl>true</is_inmaintbl>
+                <is_obligatory>true</is_obligatory>
+            </initial_value>
+        </image_content>
+
+        <qrcode_content parent_objectdef="web2print.abstract_content">
+            <initial_value col="ival_vc">
+                <sort_id>2001</sort_id>
+                <category>main.basic</category>
+                <data_source>input</data_source>
+                <data_type>varchar</data_type>
+                <is_inmaintbl>true</is_inmaintbl>
+                <is_obligatory>true</is_obligatory>
+            </initial_value>
+        </qrcode_content>
+
 		<print_template tbl="prnt_tmpl" copy_from="core.template_normal_transaction">
             <category>
                 <sort_id>2000</sort_id>
@@ -36,6 +136,25 @@
                 <is_inmaintbl>true</is_inmaintbl>
                 <is_obligatory>true</is_obligatory>
             </document>
+
+            <contents>
+                <sort_id>3000</sort_id>
+                <category>main.basic</category>
+                <data_source>relation</data_source>
+                <relation_parent>web2print.abstract_content.print_template</relation_parent>
+                <display_type>property.relation.multiple.add.new</display_type>
+                <relation_filter>core_property_default_relation_filter_simple_bidirectional_relation</relation_filter>
+                <name>
+                    <en-US>Contents</en-US>
+                </name>
+                <name>
+                    <de-DE>Inhalte</de-DE>
+                </name>
+                <name>
+                    <bg-BG>Съдържания</bg-BG>
+                </name>
+            </contents>
+
 		</print_template>
 
         <print_category tbl="prnt_cat" copy_from="core.template_normal_transaction">
@@ -44,6 +163,8 @@
                 <category>main.basic</category>
                 <data_source>relation</data_source>
                 <relation_parent>web2print.print_template.category</relation_parent>
+                <display_type>property.relation.multiple.add.new</display_type>
+                <relation_filter>core_property_default_relation_filter_simple_bidirectional_relation</relation_filter>
                 <name>
                     <en-US>Templates</en-US>
                 </name>
@@ -90,6 +211,8 @@
                     <bg-BG>Съдържа</bg-BG>
                 </name>
                 <is_hidden>false</is_hidden>
+                <display_type>property.relation.multiple.add.new</display_type>
+                <relation_filter>core_property_default_relation_filter_simple_bidirectional_relation</relation_filter>
             </children>
 		</print_category>
 

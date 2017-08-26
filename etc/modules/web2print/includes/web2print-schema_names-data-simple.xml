@@ -33,7 +33,93 @@
     </object>
 
 
+    <object cond="module.code='web2print' AND code='abstract_content'"
+            module="core" 
+            objectdef="objectdef" 
+            mode="update">
+        <name>
+            <value><en-US>Content (Abstract)</en-US></value>
+            <value><de-DE>Inhalt (Abstrakt)</de-DE></value>
+            <value><bg-BG>Съдържание (Абстрактно)</bg-BG></value>
+        </name>     
+    </object>
 
+    <object cond="module.code='web2print' AND code='varchar_content'"
+            module="core" 
+            objectdef="objectdef" 
+            mode="update">
+        <name>
+            <value><en-US>Single-line content</en-US></value>
+            <value><de-DE>Einzeiliger Inhalt</de-DE></value>
+            <value><bg-BG>Едноредово съдържание</bg-BG></value>
+        </name>     
+    </object>
+
+    <object cond="module.code='web2print' AND code='text_content'"
+            module="core" 
+            objectdef="objectdef" 
+            mode="update">
+        <name>
+            <value><en-US>Multiline content</en-US></value>
+            <value><de-DE>Mehrzeiliger Inhalt</de-DE></value>
+            <value><bg-BG>Многоредово съдържание</bg-BG></value>
+        </name>     
+    </object>
+
+    <object cond="module.code='web2print' AND code='date_content'"
+            module="core" 
+            objectdef="objectdef" 
+            mode="update">
+        <name>
+            <value><en-US>Date (content)</en-US></value>
+            <value><de-DE>Datum (Inhalt)</de-DE></value>
+            <value><bg-BG>Дата (Съдържание)</bg-BG></value>
+        </name>     
+    </object>
+
+    <object cond="module.code='web2print' AND code='datetime_content'"
+            module="core" 
+            objectdef="objectdef" 
+            mode="update">
+        <name>
+            <value><en-US>Datetime (content)</en-US></value>
+            <value><de-DE>Datum und Zeit (Inhalt)</de-DE></value>
+            <value><bg-BG>Дата и време (Съдържание)</bg-BG></value>
+        </name>     
+    </object>
+
+    <object cond="module.code='web2print' AND code='time_content'"
+            module="core" 
+            objectdef="objectdef" 
+            mode="update">
+        <name>
+            <value><en-US>Time (content)</en-US></value>
+            <value><de-DE>Zeit (Inhalt)</de-DE></value>
+            <value><bg-BG>Време (Съдържание)</bg-BG></value>
+        </name>     
+    </object>
+
+    <object cond="module.code='web2print' AND code='image_content'"
+            module="core" 
+            objectdef="objectdef" 
+            mode="update">
+        <name>
+            <value><en-US>Image (content)</en-US></value>
+            <value><de-DE>Bild (Inhalt)</de-DE></value>
+            <value><bg-BG>Изображение (Съдържание)</bg-BG></value>
+        </name>     
+    </object>
+
+    <object cond="module.code='web2print' AND code='qrcode_content'"
+            module="core" 
+            objectdef="objectdef" 
+            mode="update">
+        <name>
+            <value><en-US>QR Code (content)</en-US></value>
+            <value><de-DE>QR-Code (Inhalt)</de-DE></value>
+            <value><bg-BG>QR код (Съдържание)</bg-BG></value>
+        </name>     
+    </object>
 
 
 <!-- OBJECTDEF names -->

@@ -3,10 +3,8 @@
     "initial": {
         "template": "default-postgre-1.0"
     },
-    "scripting": {
-        "srcDirs": [
-            "src/srv"
-        ]
+    "files" : {
+        "loader" : "src/srv/loader.js" 
     },
     "server" : {
 		"devel" : true,
