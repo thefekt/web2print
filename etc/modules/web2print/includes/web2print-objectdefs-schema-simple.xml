@@ -137,6 +137,15 @@
                 <is_obligatory>true</is_obligatory>
             </document>
 
+            <document>
+                <sort_id>2001</sort_id>
+                <category>main.basic</category>
+                <data_source>relation</data_source>
+                <related_objectdef>documents.document</related_objectdef>
+                <is_inmaintbl>true</is_inmaintbl>
+                <is_obligatory>true</is_obligatory>
+            </document>
+
             <contents>
                 <sort_id>3000</sort_id>
                 <category>main.basic</category>
@@ -194,6 +203,7 @@
                     <bg-BG>Съдържа се в</bg-BG>
                 </name>
                 <index_code>par</index_code>
+                <is_selfreference>true</is_selfreference>
             </parent>
             
             <children>
@@ -213,6 +223,7 @@
                 <is_hidden>false</is_hidden>
                 <display_type>property.relation.multiple.add.new</display_type>
                 <relation_filter>core_property_default_relation_filter_simple_bidirectional_relation</relation_filter>
+                <is_selfreference>true</is_selfreference>
             </children>
 		</print_category>
 

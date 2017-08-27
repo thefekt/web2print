@@ -21,17 +21,7 @@
             <selection_group_code>
                 <value>web2print.print_category</value>
             </selection_group_code>
-            <root_label>
-                <value>
-                    <en-US>All</en-US>
-                </value>
-                <value>
-                    <de-DE>Alle</de-DE>
-                </value>
-                <value>
-                    <bg-BG>Всички</bg-BG>
-                </value>
-            </root_label>
+            <root_label mode="delete"/>
             <property_code>
                 <value>children</value>
             </property_code>
@@ -87,7 +77,7 @@
                 <value>true</value>
             </is_sort>
             <is_show_leafs>
-                <value>true</value>
+                <value>false</value>
             </is_show_leafs>
             <is_remove_no_read_access_elements>
                 <value>true</value>
@@ -116,7 +106,7 @@ return element.parent;
 
             <set_parent>
                 <value>
-                    <object code="web2print.template:print_category.templates.clones:set_parent" module="core" objectdef="jscript">
+                    <object code="web2print.template:print_category.templates:set_parent" module="core" objectdef="jscript">
                         <params>
                             <value>
                                 <object code="object" module="core" objectdef="script_param"></object>
@@ -139,20 +129,11 @@ for (var k=0;k<paths.length;k++)
     {
         if (path[i] instanceof db.web2print.print_category)  
         { 
-            if (object instanceof db.web2print.print_template) {
+            if (object instanceof db.web2print.print_category) {
 	            object.parent=path[i];
 	            return;
             } else if (object instanceof db.web2print.print_template) {
                 object.category=path[i];
-                return;
-            }      
-        } else if (path[i] instanceof db.web2print.print_template) {
-            if (object instanceof db.web2print.print_template) {
-	            object.parent=path[i].category;
-	            return;
-            } else if (object instanceof db.web2print.print_template) {
-		        object.template=path[i];
-                object.category=path[i].category;
                 return;
             }      
         }            
@@ -201,13 +182,13 @@ for (var k=0;k<paths.length;k++)
                 <value>true</value>
             </is_sort>
             <is_show_leafs>
-                <value>true</value>
+                <value>false</value>
             </is_show_leafs>
             <is_remove_no_read_access_elements>
                 <value>true</value>
             </is_remove_no_read_access_elements>
             <expand_inital_depth>
-                <value>1</value>
+                <value>2</value>
             </expand_inital_depth>
             <get_parent>
                 <value>
@@ -216,7 +197,7 @@ for (var k=0;k<paths.length;k++)
             </get_parent>
             <set_parent>
                 <value>
-                    <object code="web2print.template:print_category.templates.clones:set_parent" module="core" objectdef="jscript"></object>
+                    <object code="web2print.template:print_category.templates:set_parent" module="core" objectdef="jscript"></object>
                 </value>
             </set_parent>
         </object>

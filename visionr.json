@@ -26,5 +26,9 @@
             "share",
             "etc"
         ]
-    }
+    },
+    "additional" : 
+	{
+		"web.scribus.path" : "C:/Program Files/Scribus 1.5.3/scribus.exe"
+	}  
 }
