@@ -24,7 +24,75 @@
                                 </object>
                             </value>
                         </hierarchies>
-                    </object>
+                        <get_object_icon_url>
+                            <value>
+                                 <!-- JAVASCRIPT -->
+                                 <object code="core.display_type_objectdef:web2print.print_template:get_object_icon_url" module="core" objectdef="jscript">
+                                    <params>
+                                        <value>
+                                            <object code="object" module="core" objectdef="script_param" proj="all"></object>
+                                        </value>
+                                        <value>
+                                            <object code="width" module="core" objectdef="script_param" proj="all"></object>
+                                        </value>
+                                        <value>
+                                            <object code="height" module="core" objectdef="script_param" proj="all"></object>
+                                        </value>
+                                        <value>
+                                            <object code="renderer" module="core" objectdef="script_param" proj="all"></object>
+                                        </value>
+                                    </params>
+                                    <script_code>
+                                        <value><![CDATA[
+        if (!object || !object.document)
+            return;
+        if (width >= 32 && height >= 32)  {
+            require("src/srv/renderer").checkPreview(object);
+            if (object.preview_document && !object.preview_document.DELETED)
+                return require("server/misc").IMG(object.preview_document,width,height);
+        }
+                                    ]]></value>
+                                    </script_code>
+                                </object>
+                            </value>
+                        </get_object_icon_url>
+                        <get_object_documents>
+                            <value>
+                                 <!-- JAVASCRIPT -->
+                                 <object code="core.display_type_objectdef:web2print.print_template:get_object_documents" module="core" objectdef="jscript">
+                                    <params>
+                                        <value>
+                                            <object code="object" module="core" objectdef="script_param" proj="all"></object>
+                                        </value>                                      
+                                    </params>
+                                    <script_code>
+                                        <value><![CDATA[
+        if (!object)
+            return;
+        var res=[];
+        if (object.preview_document && !object.preview_document.DELETED) 
+            res.push(object.preview_document);
+        var cnts = object.contents;        
+        if (cnts) 
+        {
+            for (var i=0;i<cnts.length;i++) 
+            {
+               var obj = cnts[i];
+               log.error("OBJ INSTANCE : "+(obj instanceof db.web2print.image_content));
+               log.error("DOC INSTANCE : "+(obj.initial_value instanceof db.documents.document));
+               if (obj instanceof db.web2print.image_content && obj.initial_value instanceof db.documents.document) 
+                    res.push(obj.initial_value);
+            }
+        }      
+        if (!res.length)
+            return;  
+        return res;
+                                    ]]></value>
+                                    </script_code>
+                                </object>
+                            </value>
+                        </get_object_documents>
+                    </object>                    
                 </value>
             </display_type>
         </object>

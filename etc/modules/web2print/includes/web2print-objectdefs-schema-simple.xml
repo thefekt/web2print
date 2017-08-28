@@ -28,7 +28,7 @@
                 <name>
                     <bg-BG>Шаблон</bg-BG>
                 </name>            
-            </print_template>
+            </print_template>           
         </abstract_content>
 
         <varchar_content parent_objectdef="web2print.abstract_content">            
@@ -39,6 +39,15 @@
                 <data_type>varchar</data_type>
                 <is_inmaintbl>true</is_inmaintbl>
                 <is_obligatory>true</is_obligatory>
+                <name>
+                    <en-US>Initial value</en-US>
+                </name>
+                <name>
+                    <de-DE>Anfangswert</de-DE>
+                </name>
+                <name>
+                    <bg-BG>Начална стойност</bg-BG>
+                </name>
             </initial_value>
         </varchar_content>
 
@@ -50,6 +59,15 @@
                 <data_type>text</data_type>
                 <is_inmaintbl>true</is_inmaintbl>
                 <is_obligatory>true</is_obligatory>
+                <name>
+                    <en-US>Initial value</en-US>
+                </name>
+                <name>
+                    <de-DE>Anfangswert</de-DE>
+                </name>
+                <name>
+                    <bg-BG>Начална стойност</bg-BG>
+                </name>
             </initial_value>
         </text_content>
 
@@ -62,6 +80,15 @@
                 <output_format>default_output_format_date</output_format>
                 <is_inmaintbl>true</is_inmaintbl>
                 <is_obligatory>true</is_obligatory>
+                <name>
+                    <en-US>Initial value</en-US>
+                </name>
+                <name>
+                    <de-DE>Anfangswert</de-DE>
+                </name>
+                <name>
+                    <bg-BG>Начална стойност</bg-BG>
+                </name>
             </initial_value>
         </date_content>
 
@@ -74,6 +101,15 @@
                 <output_format>default_output_format_datetime</output_format>
                 <is_inmaintbl>true</is_inmaintbl>
                 <is_obligatory>true</is_obligatory>
+                <name>
+                    <en-US>Initial value</en-US>
+                </name>
+                <name>
+                    <de-DE>Anfangswert</de-DE>
+                </name>
+                <name>
+                    <bg-BG>Начална стойност</bg-BG>
+                </name>
             </initial_value>
         </datetime_content>
 
@@ -86,6 +122,15 @@
                 <output_format>default_output_format_time</output_format>
                 <is_inmaintbl>true</is_inmaintbl>
                 <is_obligatory>true</is_obligatory>
+                <name>
+                    <en-US>Initial value</en-US>
+                </name>
+                <name>
+                    <de-DE>Anfangswert</de-DE>
+                </name>
+                <name>
+                    <bg-BG>Начална стойност</bg-BG>
+                </name>
             </initial_value>
         </time_content>
 
@@ -97,6 +142,15 @@
                 <related_objectdef>documents.document</related_objectdef>
                 <is_inmaintbl>true</is_inmaintbl>
                 <is_obligatory>true</is_obligatory>
+                <name>
+                    <en-US>Initial value</en-US>
+                </name>
+                <name>
+                    <de-DE>Anfangswert</de-DE>
+                </name>
+                <name>
+                    <bg-BG>Начална стойност</bg-BG>
+                </name>
             </initial_value>
         </image_content>
 
@@ -108,10 +162,20 @@
                 <data_type>varchar</data_type>
                 <is_inmaintbl>true</is_inmaintbl>
                 <is_obligatory>true</is_obligatory>
+                <name>
+                    <en-US>Initial value</en-US>
+                </name>
+                <name>
+                    <de-DE>Anfangswert</de-DE>
+                </name>
+                <name>
+                    <bg-BG>Начална стойност</bg-BG>
+                </name>
             </initial_value>
         </qrcode_content>
 
 		<print_template tbl="prnt_tmpl" copy_from="core.template_normal_transaction">
+            
             <category>
                 <sort_id>2000</sort_id>
                 <category>main.basic</category>
@@ -128,14 +192,6 @@
                     <bg-BG>Категория</bg-BG>
                 </name>
             </category>
-            <document>
-                <sort_id>2001</sort_id>
-                <category>main.basic</category>
-                <data_source>relation</data_source>
-                <related_objectdef>documents.document</related_objectdef>
-                <is_inmaintbl>true</is_inmaintbl>
-                <is_obligatory>true</is_obligatory>
-            </document>
 
             <document>
                 <sort_id>2001</sort_id>
@@ -144,6 +200,15 @@
                 <related_objectdef>documents.document</related_objectdef>
                 <is_inmaintbl>true</is_inmaintbl>
                 <is_obligatory>true</is_obligatory>
+                <name>
+                    <en-US>Template (Document)</en-US>
+                </name>
+                <name>
+                    <de-DE>Vorlage (Dokument)</de-DE>
+                </name>
+                <name>
+                    <bg-BG>Шаблон (Документ)</bg-BG>
+                </name>
             </document>
 
             <contents>
@@ -162,7 +227,66 @@
                 <name>
                     <bg-BG>Съдържания</bg-BG>
                 </name>
+                <on_update_value>
+                    <!-- JAVASCRIPT -->
+                    <object code="web2print.print_template.contents:on_change" module="core" objectdef="jscript">
+                        <script_code>
+                            <value><![CDATA[
+if (!this.document)
+    return;
+require("src/srv/renderer").checkPreview(this);
+                        ]]></value>
+                        </script_code>
+                    </object>
+                </on_update_value>
+                <on_insert_value>
+                        <object code="web2print.print_template.contents:on_change" module="core" objectdef="jscript"/>
+                </on_insert_value>
+                <on_delete_value>
+                        <object code="web2print.print_template.contents:on_change" module="core" objectdef="jscript"/>
+                </on_delete_value>
+                <on_update_related>
+                        <object code="web2print.print_template.contents:on_change" module="core" objectdef="jscript"/>
+                </on_update_related>
             </contents>
+
+            <preview_document>
+                <sort_id>2301</sort_id>
+                <category>main.basic</category>
+                <data_source>relation</data_source>
+                <related_objectdef>documents.document</related_objectdef>
+                <is_inmaintbl>true</is_inmaintbl>
+                <is_readonly>true</is_readonly>
+                <is_hidden>false</is_hidden>
+                <name>
+                    <en-US>Preview (Document)</en-US>
+                </name>
+                <name>
+                    <de-DE>Vorschau (Dokument)</de-DE>
+                </name>
+                <name>
+                    <bg-BG>Преглед (Документ)</bg-BG>
+                </name>
+            </preview_document>
+
+            <preview_key>
+                <sort_id>2302</sort_id>
+                <category>main.basic</category>
+                <data_source>input</data_source>
+                <data_type>text</data_type>
+                <is_inmaintbl>true</is_inmaintbl>
+                <is_readonly>true</is_readonly>
+                <is_hidden>false</is_hidden>
+                <name>
+                    <en-US>Preview (Key)</en-US>
+                </name>
+                <name>
+                    <de-DE>Vorschau (Schlüßel)</de-DE>
+                </name>
+                <name>
+                    <bg-BG>Преглед (Ключ)</bg-BG>
+                </name>
+            </preview_key>
 
 		</print_template>
 
