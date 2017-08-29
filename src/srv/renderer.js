@@ -194,3 +194,20 @@ exports.getRootCategoriesWithDetails = function(id)
     }
     return res;
 }
+
+exports.getTemplateDetails = function (id) {
+    var tpl = db.web2print.print_template.byId(id);
+    if (!tpl) return {path:[],NAME: 'error'};
+    var res = [];
+    var c = tpl.category;
+    while (c) {
+        res.unshift({
+                id : c.id,
+                SCHEMA : c.SCHEMA.module.code+"."+c.SCHEMA.code,
+                code : c.code,
+                NAME : misc.OBJSTR(c)
+        } );
+        c = c.parent;
+    }
+    return {path: res, object: {NAME:misc.OBJSTR(tpl)} };
+}
