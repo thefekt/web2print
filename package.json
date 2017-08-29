@@ -10,5 +10,8 @@
     "dependencies": {
         "visionr-enterprise": "file:../visionr-enterprise",
         "visionr-dev": "file:../visionr-dev"
-  },
+    },
+    "bin": {
+        "reset-print": "./src/bin/reset-print.js"
+    }
 }

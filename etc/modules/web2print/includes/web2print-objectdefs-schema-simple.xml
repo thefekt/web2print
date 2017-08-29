@@ -176,6 +176,40 @@
 
 		<print_template tbl="prnt_tmpl" copy_from="core.template_normal_transaction">
             
+            <width_mm>
+                <sort_id>3000</sort_id>
+                <category>main.settings</category>
+                <data_source>input</data_source>
+                <data_type>double</data_type>
+                <is_readonly>true</is_readonly>
+                <name>
+                    <en-US>Width (mm)</en-US>
+                </name>
+                <name>
+                    <de-DE>Breite (mm)</de-DE>
+                </name>
+                <name>
+                    <bg-BG>Широчина (mm)</bg-BG>
+                </name>
+            </width_mm>
+
+            <height_mm>
+                <sort_id>3001</sort_id>
+                <category>main.settings</category>
+                <data_source>input</data_source>
+                <data_type>double</data_type>
+                <is_readonly>true</is_readonly>
+                <name>
+                    <en-US>Height (mm)</en-US>
+                </name>
+                <name>
+                    <de-DE>Höhe (mm)</de-DE>
+                </name>
+                <name>
+                    <bg-BG>Височина (mm)</bg-BG>
+                </name>
+            </height_mm>
+
             <category>
                 <sort_id>2000</sort_id>
                 <category>main.basic</category>

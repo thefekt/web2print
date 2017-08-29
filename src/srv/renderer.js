@@ -1,4 +1,5 @@
 var lastUpdateTimes = {};
+var misc = require("server/misc");
 
 exports.renderTemplate = function(tmpl,data) 
 {
@@ -100,6 +101,11 @@ exports.checkPreview = function(tmpl) {
     if (tmpl.preview_document && !tmpl.preview_document.DELETED && key == tmpl.preview_key) 
         return;
     tmpl.preview_key=key;
+    var oldPd = tmpl.preview_document;
+    if (oldPd) {
+        tmpl.preview_document=null;
+        oldPd.delete();
+    }
     tmpl.preview_document=exports.renderTemplate(tmpl,{});
     if (tmpl.preview_document == null)
         return;
@@ -113,6 +119,78 @@ exports.checkPreview = function(tmpl) {
     parent=rparent; 
     //-------------------------------------------
     tmpl.preview_document.parent=parent;
-    console.warn(key);
+    try {
+        var dim =__vr.Exec.callVSC("java.util.getPDFDimensions",tmpl.preview_document.uuid,0);
+        var width = dim[0]*297/847;
+        var height = dim[1]*297/847;
+        tmpl.width_mm=width;
+        tmpl.height_mm=height;
+    } catch (e) {
+        console.error(e);
+    }
+
     console.warn(" >> PREVIEW UPDATED : "+tmpl+" | "+key+" | "+tmpl.preview_document);
+}
+
+exports.getRootCategoriesWithDetails = function(id) 
+{
+    function rec(e,level) 
+    {
+        var r;
+        if (e instanceof db.web2print.print_category) 
+        {
+            r = 
+            {
+                id : e.id,
+                SCHEMA : e.SCHEMA.module.code+"."+e.SCHEMA.code,
+                code : e.code,
+                NAME : misc.OBJSTR(e),
+                ICON : misc.OIMG(e,240,240),
+                children : [],
+                templates : [],
+                width : 240,
+                height : 240,
+            };
+            if (e.parent) 
+            {
+                r.parent={
+                    id : e.parent.id,
+                    SCHEMA : e.parent.SCHEMA.module.code+"."+e.parent.SCHEMA.code
+                };
+            }
+            if (level < 2) {
+                for (var x of e.templates)
+                    r.templates.push(rec(x,level+1));
+                for (var x of e.children)
+                    r.children.push(rec(x,level+1));
+            }
+        } else if (e instanceof db.web2print.print_template) {
+            var width = 240;
+            var height = 240;
+            if (e.width_mm && e.height_mm)
+                width=Math.floor(240*e.width_mm/e.height_mm);
+            r = 
+            {
+                id : e.id,
+                SCHEMA : e.SCHEMA.module.code+"."+e.SCHEMA.code,
+                code : e.code,
+                NAME : misc.OBJSTR(e),
+                ICON : misc.OIMG(e,width,height),
+                width : width,
+                height : height
+            };
+        } 
+        return r;
+    }
+    var res=[];
+    if (id) {
+        var cat = db.web2print.print_category.byId(id);
+        if (cat) 
+            for (var e of (cat.children || []))
+                res.push(rec(e,0));
+    } else {
+        for (var cat of db.web2print.print_category.SELECT("parent is null"))
+            res.push(rec(cat,0));
+    }
+    return res;
 }
