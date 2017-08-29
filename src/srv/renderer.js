@@ -21,6 +21,14 @@ exports.renderTemplate = function(tmpl,data)
         }
         var toReplace = exports.getTemplateJSON(tmpl,data,false);
         result = com.planvision.visionr.server6.mod.web.ScribusService.convert(key,tmpl+"",encodeURIComponent(JSON.stringify(toReplace)));
+        if (!result) {
+            // TODO TODO TODO 
+            // BUG stelf? first convert error ? command not recognised?
+            log.warn("STELF? TODO ? Scribus generator returned FIRST EMPTY result : "+tmpl.code);
+            result = com.planvision.visionr.server6.mod.web.ScribusService.convert(key,tmpl+"",encodeURIComponent(JSON.stringify(toReplace)));
+            if (!result)
+                log.error("!!!! Scribus generator returned EMPTY result : "+tmpl.code);
+        }
     });
     return result;
 }
@@ -93,8 +101,9 @@ exports.checkPreview = function(tmpl) {
         return;
     tmpl.preview_key=key;
     tmpl.preview_document=exports.renderTemplate(tmpl,{});
-
-    var parent = db.documents.folder.INSTANCES["/"];
+    if (tmpl.preview_document == null)
+        return;
+    var parent = db.documents.folder.byCode("/");
     var rparent = parent.children["print_cache"];
     if (rparent == null) {
         rparent = new db.documents.folder();

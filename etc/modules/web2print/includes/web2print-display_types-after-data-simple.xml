@@ -78,8 +78,6 @@
             for (var i=0;i<cnts.length;i++) 
             {
                var obj = cnts[i];
-               log.error("OBJ INSTANCE : "+(obj instanceof db.web2print.image_content));
-               log.error("DOC INSTANCE : "+(obj.initial_value instanceof db.documents.document));
                if (obj instanceof db.web2print.image_content && obj.initial_value instanceof db.documents.document) 
                     res.push(obj.initial_value);
             }
