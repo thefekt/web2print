@@ -243,6 +243,19 @@
                 <name>
                     <bg-BG>Шаблон (Документ)</bg-BG>
                 </name>
+                <on_update_value>
+                    <!-- JAVASCRIPT -->
+                    <object code="web2print.print_template.contents:on_change" module="core" objectdef="jscript"/>
+                </on_update_value>
+                <on_insert_value>
+                    <object code="web2print.print_template.contents:on_change" module="core" objectdef="jscript"/>
+                </on_insert_value>
+                <on_delete_value>
+                    <object code="web2print.print_template.contents:on_change" module="core" objectdef="jscript"/>
+                </on_delete_value>
+                <on_update_related>
+                    <object code="web2print.print_template.contents:on_change" module="core" objectdef="jscript"/>
+                </on_update_related>
             </document>
 
             <contents>
@@ -266,8 +279,13 @@
                     <object code="web2print.print_template.contents:on_change" module="core" objectdef="jscript">
                         <script_code>
                             <value><![CDATA[
-if (!this.document)
+if (!this.document) {
+    if (this.preview_key)
+        this.preview_key=null;
+    if (this.preview_document)
+        this.preview_document=null;
     return;
+}
 require("src/srv/renderer").checkPreview(this);
                         ]]></value>
                         </script_code>

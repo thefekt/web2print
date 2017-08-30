@@ -98,7 +98,7 @@ exports.getTemplateJSON = function(tmpl,data,doNotRender) {
 exports.checkPreview = function(tmpl) {
     var data = exports.getTemplateJSON(tmpl,{},true);
     var key = JSON.stringify(data);
-    if (tmpl.preview_document && !tmpl.preview_document.DELETED && key == tmpl.preview_key) 
+    if (tmpl.preview_document && !tmpl.preview_document.DELETED && key == tmpl.preview_key)
         return;
     tmpl.preview_key=key;
     var oldPd = tmpl.preview_document;
@@ -206,8 +206,67 @@ exports.getTemplateDetails = function (id) {
                 SCHEMA : c.SCHEMA.module.code+"."+c.SCHEMA.code,
                 code : c.code,
                 NAME : misc.OBJSTR(c)
-        } );
+        });
         c = c.parent;
     }
-    return {path: res, object: {NAME:misc.OBJSTR(tpl)} };
+    return {
+        path: res, 
+        object : 
+        {
+            NAME : misc.OBJSTR(tpl)+" ("+misc.formatDouble(tpl.width_mm)+"x"+misc.formatDouble(tpl.height_mm)+" mm)",
+            width : tpl.width_mm,
+            height : tpl.height_mm,
+            id : tpl.id,
+            SCHEMA : tpl.SCHEMA.module.code+"."+tpl.SCHEMA.code,
+            preview_document : tpl.preview_document,
+            contents : exports.getContentsData(tpl)
+        }
+    };
+}
+
+exports.getContentsData = function(tpl) {
+    if (typeof tpl == "number")
+        tpl=db.web2print.print_template.byId(tpl);
+    if (!tpl || !tpl.contents)
+        return [];
+    var res=[];
+    for (var e of tpl.contents) {
+        if (e instanceof db.web2print.varchar_content) {
+            res.push({
+                type : 'varchar',
+                placeholder : e.initial_value
+            }); 
+        } else if (e instanceof db.web2print.text_content) {
+            res.push({
+                type : 'text',
+                placeholder : e.initial_value
+            }); 
+        } else if (e instanceof db.web2print.date_content) {
+            res.push({
+                type : 'date',
+                placeholder : e.initial_value
+            }); 
+        } else if (e instanceof db.web2print.time_content) {
+            res.push({
+                type : 'time',
+                placeholder : e.initial_value
+            }); 
+        } else if (e instanceof db.web2print.datetime_content) {
+            res.push({
+                type : 'datetime',
+                placeholder : e.initial_value
+            }); 
+        } else if (e instanceof db.web2print.image_content) {
+            res.push({
+                type : 'image',
+                placeholder : e.initial_value
+            }); 
+        } else if (e instanceof db.web2print.qrcode_content) {
+            res.push({
+                type : 'qrcode',
+                placeholder : e.initial_value
+            }); 
+        } 
+    }
+    return res;
 }
