@@ -168,18 +168,31 @@
                 <variable #timer></variable>
                 <variable #generatedPreview path="{{tpl.value}}" persist></variable>
                 <variable #custom path="{{tpl.value}}" persist></variable>
-    
-                <execution #update [params]="{root:root,custom:custom,timer:timer,generatedPreview:generatedPreview,templateObject:templateObject}"><![CDATA[		
-                    if (timer.value)
+                <variable #paused></variable>
+                <variable #reupdate></variable>
+                
+                <execution #update [params]="{update:update,root:root,paused:paused,reupdate:reupdate,custom:custom,timer:timer,generatedPreview:generatedPreview,templateObject:templateObject}"><![CDATA[		
+                    if (timer.value) {
                         clearTimeout(timer.value);
+                        timer.value=undefined;
+                    }
                     if (!custom.value) {
                         generatedPreview.value=null;
                         return;	
                     }
                     timer.value=root.setTimeout(function() {
+                        if (paused.value) {
+                            reupdate.value=true;
+                            return;       
+                        }
+                        paused.value=true;
                         root.db.remote("src/srv/renderer").renderTemplate(templateObject.value,custom.value).done(function(res) {
-                        
+                            paused.value=false;
                             generatedPreview.value=res;
+                            if (reupdate.value) {
+                                reupdate.value=false;
+                                update.execute();
+                            }
                         });
                     },generatedPreview.value === undefined ? 0 : 500);
                 ]]></execution>
