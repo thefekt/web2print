@@ -27,7 +27,7 @@
 		]"></providers-menu>
     	<span *ngIf="root.db.loggedIn" class="app-toolbar-user-text">{{root.db.userText}}<i *ngIf="root.storage == 'server'" class="material-icons" style="color:#CCCCCC;font-size: 22px;line-height: 12px;float: right;margin-left: 1px;margin-right:-3px;">wifi</i></span>
     	<span *ngIf="!root.db.loggedIn" class="app-toolbar-user-text">
-		    <i18n>INFO_NOT_LOGGED_IN</i18n>
+		    <i18n>LABEL_SETTINGS</i18n>
 	    </span>
 
         <img md-icon-button [mdMenuTriggerFor]="langMenu" style="width:28px;height:28px;margin-top:15px;margin-right:2px;cursor:pointer" src="/images/library/flags/128/{{root.db.lang.substring(root.db.lang.indexOf('-')+1).toLowerCase()}}.png"></img>
