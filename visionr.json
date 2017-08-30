@@ -4,7 +4,8 @@
         "template": "default-postgre-1.0"
     },
     "files" : {
-        "loader" : "src/srv/loader.js" 
+        "loader" : "src/srv/loader.js",
+        "formsDir" : "src/forms"
     },
     "server" : {
 		"devel" : true,

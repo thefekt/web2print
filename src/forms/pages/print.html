@@ -1,0 +1,253 @@
+<!--<ng-container *ngIf="root.db.loggedIn">-->
+    <variable #object export></variable>
+    <!--<variable #hierarchy [defaults]="{value : 'spaces.building:library.country.cities.root_properties.children*.buildings:filtered'}"></variable>-->
+    <variable #schemas></variable>
+    <variable #eschemas></variable>
+    <variable #currentHierarchy></variable>
+    <variable #currentEHierarchy></variable>
+    
+    <!-- Content if not logged in -->
+    <include shared ref="/app/not-logged"></include>
+    <div absolute-fill *ngIf="root.db.loggedIn">
+        <variable #tpl export></variable>
+        <div *ngIf="!tpl.value && tpl.ready">
+            <!-- CATEGORY MODE  -->
+            <variable #category></variable>
+            <variable #cindex [dependency]="category"></variable>
+            <variable #rootCategories></variable>
+            <variable #crr export></variable>
+            <variable #cat export [dependency]="crr"> 
+                <observe>
+                    <execution [params]="{cat:cat,crr:crr,category:category,root:root,cindex:cindex,rootCategories:rootCategories}"><![CDATA[
+                        if (rootCategories.value === undefined) {
+                            rootCategories.value = null;
+                            root.db.remote("src/srv/renderer").getRootCategoriesWithDetails(cat.value ? Number(cat.value) : undefined).done(function(res) {
+                                rootCategories.value = res || null;
+                              });
+                        }
+                        if (!cat.value) 
+                        {
+                            category.value = null;
+                            cindex.value = 0;
+                            return;
+                        };
+                        //----------------------------------------------------------------------------------------------------
+                        root.db.web2print.print_category.byId(Number(cat.value),{properties:"NAME,children"}).done(function (res) 
+                        {
+                            category.value = res || null;
+                            cindex.value=0;
+                            if (res && res.children && crr.value)
+                            for (var i=0;i < res.children.length;i++) 
+                            {
+                                if (res.children[i].id == crr.value) 
+                                {
+                                    cindex.value=i;
+                                    break;
+                                }
+                              }
+                        });
+                    ]]></execution> 
+                </observe> 
+            </variable>
+            <observe [event]="cindex.onChange" *ngIf="rootCategories.value"> 
+                <execution [params]="{crr:crr,root:root,cindex:cindex,rootCategories:rootCategories,cat:cat}"><![CDATA[
+                    var chip = rootCategories.value[cindex.value];
+                    if (!chip) {
+                        if (cat.value)
+                            root.app.openRoute('/print',args[0],{});
+                        return;
+                      }
+                    if (chip.id != crr.value)
+                        root.app.openRoute('/print',args[0],{crr : chip.id,cat:cat.value});
+                      ]]>
+                  </execution> 
+               </observe>
+               <execution #ex [params]="{root:root,cat:cat}"><![CDATA[
+                   var element = args[1];
+                root.app.openRoute('/print',args[0],{crr:element.id,cat:element.parent.id});
+               ]]></execution>
+               <!-- TOOLBAR CAPTION -->
+            <div toolbar-content style="line-height: 30px; overflow: visible" fxLayout="row">
+                <img src="{{root.app.url}}/images/logos/customer-logo_200x35.jpg" style="width: 200px; height: 35px; margin-top: -2.5px; cursor: pointer" (click)="root.app.openRoute('/print',$event)" /> 
+                <span fxFlex></span>
+                <h2 *ngIf="category.value !== undefined" no-margin style="font-weight: normal; line-height: 30px; color: #c0c0c0">
+                    <div *ngIf="category.value">{{category.value.NAME}}</div>
+                    <div *ngIf="!category.value">Web2Print</div>
+                </h2>
+                <span fxFlex></span>
+            </div>
+    
+            <!-- ROOT (parent is null) CATEGORIES -->
+            <div *ngIf="!cat.value">
+                <div *ngFor="let chip of (rootCategories.value || []);let i = index" style="margin-left: 4px; text-align: center">
+                    <h3 align="left" style="margin: 8px 8px 8px 8px">{{chip.NAME}}</h3>
+                    <div style="padding-left: 8px">
+                        <div *ngIf="chip.children && chip.children.length" [style.height]="chip.height+'px'" style="margin-bottom: 22px" relative>
+                            <swiper #sw absolute-fill [config]="{pagination: '.swiper-pagination', slidesPerView: 'auto', paginationClickable: true, spaceBetween: 12 }">
+                                <div class="swiper-wrapper">
+                                    <ng-template let-element let-i="index" ngFor [ngForOf]="chip.children">
+                                    <div relative (click)="ex.execute($event,element)" [style.width]="element.width+'px'" class="swiper-slide" fxLayout="column">
+                                        <img class="black-glow-soft" absolute-fill [src]="element.ICON" [style.width]="element.width+'px'" [style.height]="element.height+'px'" />
+                                        <div absolute style="left: 0; right: 0; top: 6px; text-align: center">
+                                            <span style="padding: 4px; display: inline-block">{{element.NAME}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div [style.visibility]="(sw.Swiper && sw.Swiper.bullets && sw.Swiper.bullets.length > 1) ? undefined : 'hidden'" class="swiper-pagination"></div>
+                            </swiper>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- CHILD CATEGORIES (parent NOT null) -->
+            <md-tab-group #tg *ngIf="cindex.value != undefined && cat.value" [(selectedIndex)]="cindex.value" class="tabs-full-height force-no-overflow" absolute-fill>
+            <md-tab [label]="rootCat.NAME" *ngFor="let rootCat of (rootCategories.value || []);let i = index" style="margin-left: 4px;text-align: center">
+            <div style="padding: 0; padding-left: 8px" *ngFor="let chip of (cindex.value == i ? (rootCat.children || []) : [])">
+                <h3 style="margin: 8px 8px 8px 8px">{{chip.NAME}}</h3>
+                <div *ngIf="chip.children && chip.children.length" [style.height]="chip.height+'px'" relative>
+                    <swiper #sw absolute-fill [config]="{pagination: '.swiper-pagination',slidesPerView: 'auto', paginationClickable: true, spaceBetween: 30 }">
+                        <div class="swiper-wrapper">
+                            <ng-template let-element let-i="index" ngFor [ngForOf]="chip.children">
+                            <div [style.width]="element.width+'px'" class="swiper-slide" relative>
+                                <img class="black-glow-soft" absolute-fill [src]="element.ICON" [style.width]="element.width+'px'" [style.height]="element.height+'px'" />
+                                <div absolute style="left: 0; right: 0; top: 6px; text-align: center">
+                                    <span style="padding: 4px; display: inline-block">{{element.NAME}}</span>
+                                </div>
+                            </div>
+                            </ng-template>
+                        </div>
+                        <div [style.visibility]="(sw.Swiper && sw.Swiper.bullets && sw.Swiper.bullets.length > 1) ? undefined : 'hidden'" class="swiper-pagination"></div>
+                    </swiper>
+                </div>
+                <!-- Returned from server function because of different icon sizes to be produced -->
+                <div *ngIf="chip.templates && chip.templates.length" [style.height]="chip.height+'px'" relative>
+                    <swiper #sw absolute-fill [config]="{pagination: '.swiper-pagination', slidesPerView: 'auto', paginationClickable: true, spaceBetween: 30 }">
+                        <div class="swiper-wrapper">
+                            <ng-template let-element let-i="index" ngFor [ngForOf]="chip.templates">
+                            <div [style.width]="element.width+'px'" class="swiper-slide" relative (click)="root.app.openRoute('/print',$event,{tpl:element.id})">
+                                <img class="black-glow-soft" absolute-fill [src]="element.ICON" [style.width]="element.width+'px'" [style.height]="element.height+'px'" />
+                                <div absolute style="left: 0; right: 0; top: 6px; text-align: center">
+                                    <span style="background-color: rgba(255,255,255,0.80);padding: 4px;display: inline-block;border-radius: 3px;">{{element.NAME}}</span>
+                                </div>
+                            </div>
+                            </ng-template>
+                        </div>
+                        <div [style.visibility]="(sw.Swiper && sw.Swiper.bullets && sw.Swiper.bullets.length > 1) ? undefined : 'hidden'" class="swiper-pagination"></div>
+                    </swiper>
+                </div>
+            </div>
+            </md-tab> </md-tab-group>
+        </div>
+    
+        <!-- Template part ----------------------------------------------- -->
+    
+        <div *ngIf="tpl.value && tpl.ready" absolute-fill fxLayout="column">
+            <div toolbar-content style="line-height: 30px; overflow: visible" fxLayout="row">
+                <img src="{{root.app.url}}/images/logos/customer-logo_200x35.jpg" style="width: 200px; height: 35px; margin-top: -2.5px; cursor: pointer" (click)="root.app.openRoute('/print',$event)" /> <span fxFlex></span>
+                <h2 no-margin style="font-weight: normal; line-height: 30px; color: #c0c0c0"><span *ngIf="templateObject.value">{{templateObject.value.NAME}}</span></h2>
+                <span fxFlex></span>
+            </div>
+            <variable #templateObject></variable>
+            <variable #path export> 
+                <observe> 
+                    <execution [params]="{path:path,tpl:tpl,root:root,templateObject:templateObject}"><![CDATA[
+                        if (!path.value) 
+                        {
+                            root.db.remote("src/srv/renderer").getTemplateDetails(Number(tpl.value)).done(function(res) {
+                                path.value = res.path;
+                                templateObject.value = res.object;
+                              });
+                        }
+                        ]]>
+                    </execution>
+                </observe>
+            </variable>
+            <div absolute-fill *ngIf="templateObject.value && templateObject.value.preview_document">
+                <!-- THE MAIN VIEWER + CUSTOMIZE TOOLBAR -->
+                <variable #timer></variable>
+                <variable #generatedPreview path="{{tpl.value}}" persist></variable>
+                <variable #custom path="{{tpl.value}}" persist></variable>
+    
+                <execution #update [params]="{root:root,custom:custom,timer:timer,generatedPreview:generatedPreview,templateObject:templateObject}"><![CDATA[		
+                    if (timer.value)
+                        clearTimeout(timer.value);
+                    if (!custom.value) {
+                        generatedPreview.value=null;
+                        return;	
+                    }
+                    timer.value=root.setTimeout(function() {
+                        root.db.remote("src/srv/renderer").renderTemplate(templateObject.value,custom.value).done(function(res) {
+                        
+                            generatedPreview.value=res;
+                        });
+                    },generatedPreview.value === undefined ? 0 : 500);
+                ]]></execution>
+    
+                <execution #resetContent [params]="{root:root,custom:custom,timer:timer,generatedPreview:generatedPreview,templateObject:templateObject}"><![CDATA[		
+                    custom.value=null;
+                    generatedPreview.value=null;
+                ]]></execution>
+                
+                
+                <execution #openOrder [params]="{root:root,custom:custom,timer:timer,generatedPreview:generatedPreview,templateObject:templateObject}"><![CDATA[		
+                    console.log("OPEN ORDER!");
+                ]]></execution>
+                
+                <md-sidenav-container absolute-fill>			
+                    <md-sidenav align="end" mode="side" #sidenav style="padding:8px;border-left:1px solid #eee">
+                        <div *ngIf="templateObject.value && templateObject.value.contents">
+                            <div *ngFor="let comp of templateObject.value.contents;let i = index" fxLayout="row">
+                                <variable #val [defaults]="{value : (custom.value||{})[comp.code] || templateObject.value.defaultData[i] }">
+                                    <observe [event]="val.onChange">
+                                        <execution [params]="{update:update,val:val,custom:custom,root:root,def:templateObject.value.defaultData[i],code:comp.code}">
+                                            custom.value=custom.value||{};
+                                            custom.value[code]=val.value;
+                                            update.execute();
+                                        </execution>
+                                    </observe>
+                                </variable>
+                                <md-form-field fxFlex *ngIf="comp.type == 'varchar' || comp.type == 'qrcode'">
+                                    <input mdInput placeholder="{{comp.NAME}}" [(ngModel)]="val.value">
+                                </md-form-field>
+                                <md-form-field fxFlex *ngIf="comp.type == 'text'">
+                                    <textarea mdInput placeholder="{{comp.NAME}}" [(ngModel)]="val.value" rows="4"></textarea>
+                                </md-form-field>
+                            </div>
+                        </div>
+                        <br/>
+                        <div style="margin-bottom:2em">
+                              <button color="accent" style="float:left;color:rgb(236, 138, 36);background-color:rgba(255,255,255,0.85);border:2px solid rgb(236, 138, 36);font-weight:bold" type="button" md-button (click)="resetContent.execute();sidenav.close()">
+                              RESET
+                              </button>
+                              <button color="accent" style="float:right;color:rgb(236, 138, 36);background-color:rgba(255,255,255,0.85);border:2px solid rgb(236, 138, 36);font-weight:bold" type="button" md-button (click)="sidenav.close()">
+                              CLOSE
+                              </button>
+                        </div>
+                      </md-sidenav>
+                      <div absolute-fill fxLayout="column">
+                      <div *ngIf="path.value">
+                            <div style="padding: 8px;line-height:1">
+                                <ng-template *ngIf="path" let-item let-i="index" let-last="last" ngFor [ngForOf]="path.value">
+                                    <label *ngIf="i" style="padding: 3px; color: #CCCCCC">/</label>
+                                    <label [style.pointer-events]="last ? 'none' : undefined" [style.color]="last ? '#ec8a24' : undefined" class="icon-button">{{item.NAME}}</label>
+                                </ng-template>
+                            </div>
+                        </div>
+                        <div fxFlex relative>
+                              <viewer preserveBounds [object]="generatedPreview.value || templateObject.value.preview_document" absolute-fill style="border-top:1px solid #eeeeee"></viewer>
+                              <div [style.display]="!sidenav.opened ? undefined : 'none'" style="position:absolute;right:6px;top:6px" fxLayout="row">
+                                  <button style="background-color:rgba(255,255,255,0.85);color:#808080;'border:1px solid #eee" type="button" md-button (click)="openOrder.execute()">
+                                  BUY
+                                  </button>
+                                  <button color="accent" style="color:rgb(236, 138, 36);background-color:rgba(255,255,255,0.85);border:1px solid #eee;font-weight:bold;" type="button" md-button (click)="sidenav.open()">
+                                  CUSTOMIZE
+                                  </button>
+                              </div>
+                        </div>
+                      </div>
+                </md-sidenav-container>
+            </div>
+        </div>
+    </div>
+    

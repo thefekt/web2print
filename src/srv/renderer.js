@@ -209,6 +209,9 @@ exports.getTemplateDetails = function (id) {
         });
         c = c.parent;
     }
+
+    var d1 = exports.getContentsData(tpl);
+
     return {
         path: res, 
         object : 
@@ -219,8 +222,8 @@ exports.getTemplateDetails = function (id) {
             id : tpl.id,
             SCHEMA : tpl.SCHEMA.module.code+"."+tpl.SCHEMA.code,
             preview_document : tpl.preview_document,
-            contents : exports.getContentsData(tpl),
-            defaultData : exports.getContentsDefault(tpl)
+            contents : d1,
+            defaultData : getContentsDefault(d1)
         }
     };
 }
@@ -286,11 +289,11 @@ exports.getContentsData = function(tpl) {
     return res;
 }
 
-exports.getContentsDefault = function(tpl) {
-    var t = exports.getContentsData();
+// NOT EXPORTED 
+function getContentsDefault(t) {
     var res = [];
-    for (var i=0;i<t.length;i++)
-        res.push(t.initial_value);
+    for (var i=0;i<t.length;i++) if (t[i].type != "image")
+        res.push(t[i].placeholder);
     return res;
 }
     
