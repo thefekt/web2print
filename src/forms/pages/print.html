@@ -237,7 +237,11 @@
                         <div fxFlex relative>
                               <viewer preserveBounds [object]="generatedPreview.value || templateObject.value.preview_document" absolute-fill style="border-top:1px solid #eeeeee"></viewer>
                               <div [style.display]="!sidenav.opened ? undefined : 'none'" style="position:absolute;right:6px;top:6px" fxLayout="row">
-                                  <button style="background-color:rgba(255,255,255,0.85);color:#808080;'border:1px solid #eee" type="button" md-button (click)="openOrder.execute()">
+                                <dialog ref="/dialogs/buy" #buyDialog></dialog>
+                                <button style="background-color:rgba(255,255,255,0.85);color:#808080;border:1px solid #eee" type="button" md-button (click)="buyDialog.open({
+                                    object : templateObject.value,
+                                    pdf : generatedPreview.value || templateObject.value.preview_document
+                                })">
                                   BUY
                                   </button>
                                   <button color="accent" style="color:rgb(236, 138, 36);background-color:rgba(255,255,255,0.85);border:1px solid #eee;font-weight:bold;" type="button" md-button (click)="sidenav.open()">
