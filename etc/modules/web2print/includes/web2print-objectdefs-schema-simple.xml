@@ -176,6 +176,11 @@
 
 		<print_template tbl="prnt_tmpl" copy_from="core.template_normal_transaction">
             
+            <code is_keep_settings="true">
+                <category>main.basic</category>
+                <sort_id>101</sort_id>
+            </code>
+
             <width_mm>
                 <sort_id>3000</sort_id>
                 <category>main.settings</category>

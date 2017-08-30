@@ -219,7 +219,8 @@ exports.getTemplateDetails = function (id) {
             id : tpl.id,
             SCHEMA : tpl.SCHEMA.module.code+"."+tpl.SCHEMA.code,
             preview_document : tpl.preview_document,
-            contents : exports.getContentsData(tpl)
+            contents : exports.getContentsData(tpl),
+            defaultData : exports.getContentsDefault(tpl)
         }
     };
 }
@@ -233,36 +234,50 @@ exports.getContentsData = function(tpl) {
     for (var e of tpl.contents) {
         if (e instanceof db.web2print.varchar_content) {
             res.push({
+                code : e.code,
+                NAME : misc.OBJSTR(e),
                 type : 'varchar',
                 placeholder : e.initial_value
             }); 
         } else if (e instanceof db.web2print.text_content) {
             res.push({
+                code : e.code,
+                NAME : misc.OBJSTR(e),
                 type : 'text',
                 placeholder : e.initial_value
             }); 
         } else if (e instanceof db.web2print.date_content) {
             res.push({
+                code : e.code,
+                NAME : misc.OBJSTR(e),
                 type : 'date',
                 placeholder : e.initial_value
             }); 
         } else if (e instanceof db.web2print.time_content) {
             res.push({
+                code : e.code,
+                NAME : misc.OBJSTR(e),
                 type : 'time',
                 placeholder : e.initial_value
             }); 
         } else if (e instanceof db.web2print.datetime_content) {
             res.push({
+                code : e.code,
+                NAME : misc.OBJSTR(e),
                 type : 'datetime',
                 placeholder : e.initial_value
             }); 
         } else if (e instanceof db.web2print.image_content) {
             res.push({
+                code : e.code,
+                NAME : misc.OBJSTR(e),
                 type : 'image',
                 placeholder : e.initial_value
             }); 
         } else if (e instanceof db.web2print.qrcode_content) {
             res.push({
+                NAME : misc.OBJSTR(e),
+                code : e.code,
                 type : 'qrcode',
                 placeholder : e.initial_value
             }); 
@@ -270,3 +285,12 @@ exports.getContentsData = function(tpl) {
     }
     return res;
 }
+
+exports.getContentsDefault = function(tpl) {
+    var t = exports.getContentsData();
+    var res = [];
+    for (var i=0;i<t.length;i++)
+        res.push(t.initial_value);
+    return res;
+}
+    
