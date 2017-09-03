@@ -141,7 +141,7 @@ exports.getRootCategoriesWithDetails = function(id)
     function rec(e,level) 
     {
         var r;
-        if (e instanceof db.web2print.print_category) 
+        if (e instanceof db.web2print.tag_category) 
         {
             r = 
             {
@@ -149,11 +149,8 @@ exports.getRootCategoriesWithDetails = function(id)
                 SCHEMA : e.SCHEMA.module.code+"."+e.SCHEMA.code,
                 code : e.code,
                 NAME : misc.OBJSTR(e),
-                ICON : misc.OIMG(e,240,240),
                 children : [],
-                templates : [],
-                width : 240,
-                height : 240,
+                tags : []
             };
             if (e.parent) 
             {
@@ -163,37 +160,30 @@ exports.getRootCategoriesWithDetails = function(id)
                 };
             }
             if (level < 2) {
-                for (var x of e.templates)
-                    r.templates.push(rec(x,level+1));
+                for (var x of e.tags)
+                    r.tags.push(rec(x,level+1));
                 for (var x of e.children)
                     r.children.push(rec(x,level+1));
             }
-        } else if (e instanceof db.web2print.print_template) {
-            var width = 240;
-            var height = 240;
-            if (e.width_mm && e.height_mm)
-                width=Math.floor(240*e.width_mm/e.height_mm);
+        } else if (e instanceof db.web2print.print_tag) {
             r = 
             {
                 id : e.id,
                 SCHEMA : e.SCHEMA.module.code+"."+e.SCHEMA.code,
                 code : e.code,
-                NAME : misc.OBJSTR(e),
-                ICON : misc.OIMG(e,width,height),
-                width : width,
-                height : height
+                NAME : misc.OBJSTR(e)
             };
         } 
         return r;
     }
     var res=[];
     if (id) {
-        var cat = db.web2print.print_category.byId(id);
+        var cat = db.web2print.tag_category.byId(id);
         if (cat) 
             for (var e of (cat.children || []))
                 res.push(rec(e,0));
     } else {
-        for (var cat of db.web2print.print_category.SELECT("parent is null"))
+        for (var cat of db.web2print.tag_category.SELECT("parent is null"))
             res.push(rec(cat,0));
     }
     return res;

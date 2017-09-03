@@ -32,7 +32,7 @@
                             return;
                         };
                         //----------------------------------------------------------------------------------------------------
-                        root.db.web2print.print_category.byId(Number(cat.value),{properties:"NAME,children"}).done(function (res) 
+                        root.db.web2print.tag_category.byId(Number(cat.value),{properties:"NAME,children"}).done(function (res)
                         {
                             category.value = res || null;
                             cindex.value=0;
@@ -79,25 +79,49 @@
     
             <!-- ROOT (parent is null) CATEGORIES -->
             <div *ngIf="!cat.value">
-                <div *ngFor="let chip of (rootCategories.value || []);let i = index" style="margin-left: 4px; text-align: center">
-                    <h3 align="left" style="margin: 8px 8px 8px 8px">{{chip.NAME}}</h3>
-                    <div style="padding-left: 8px">
-                        <div *ngIf="chip.children && chip.children.length" [style.height]="chip.height+'px'" style="margin-bottom: 22px" relative>
-                            <swiper #sw absolute-fill [config]="{pagination: '.swiper-pagination', slidesPerView: 'auto', paginationClickable: true, spaceBetween: 12 }">
-                                <div class="swiper-wrapper">
-                                    <ng-template let-element let-i="index" ngFor [ngForOf]="chip.children">
-                                    <div relative (click)="ex.execute($event,element)" [style.width]="element.width+'px'" class="swiper-slide" fxLayout="column">
-                                        <img class="black-glow-soft" absolute-fill [src]="element.ICON" [style.width]="element.width+'px'" [style.height]="element.height+'px'" />
-                                        <div absolute style="left: 0; right: 0; top: 6px; text-align: center">
-                                            <span style="padding: 4px; display: inline-block;background-color:rgba(255,255,255,0.75);border-radius:4px;">{{element.NAME}}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div [style.visibility]="(sw.Swiper && sw.Swiper.bullets && sw.Swiper.bullets.length > 1) ? undefined : 'hidden'" class="swiper-pagination"></div>
-                            </swiper>
-                        </div>
-                    </div>
+
+                <div>
+                    Home / <font color="#ec8a24">All Products</font>
                 </div>
+                <!--<div fxLayout="row">-->
+                    <div style="padding: 12px" *ngFor="let rootC of (rootCategories.value || []);let i = index">
+                        <h3 style="margin-bottom: 4px">{{rootC.NAME}}</h3>
+                        <ng-template let-tags ngFor [ngForOf]="(rootC.tags || [])">
+                            <div>
+                                <md-checkbox>{{tags.NAME}}</md-checkbox>
+                            </div>
+                        </ng-template>
+                        <ng-template let-subcat let-i="index" ngFor [ngForOf]="(rootC.children || [])">
+                            <div>
+                                <md-checkbox>{{subcat.NAME}}</md-checkbox>
+                            </div>
+
+                            <!--<div class="icon-button" (click)="ex.execute($event,subcat)">-->
+                                <!--{{subcat.NAME}}-->
+                            <!--</div>-->
+                        </ng-template>
+                    </div>
+                <!--</div>-->
+
+                <!--<div *ngFor="let chip of (rootCategories.value || []);let i = index" style="margin-left: 4px; text-align: center">-->
+                    <!--<h3 align="left" style="margin: 8px 8px 8px 8px">{{chip.NAME}}</h3>-->
+                    <!--<div style="padding-left: 8px">-->
+                        <!--<div *ngIf="chip.children && chip.children.length" [style.height]="chip.height+'px'" style="margin-bottom: 22px" relative>-->
+                            <!--<swiper #sw absolute-fill [config]="{pagination: '.swiper-pagination', slidesPerView: 'auto', paginationClickable: true, spaceBetween: 12 }">-->
+                                <!--<div class="swiper-wrapper">-->
+                                    <!--<ng-template let-element let-i="index" ngFor [ngForOf]="chip.children">-->
+                                    <!--<div relative (click)="ex.execute($event,element)" [style.width]="element.width+'px'" class="swiper-slide" fxLayout="column">-->
+                                        <!--<img class="black-glow-soft" absolute-fill [src]="element.ICON" [style.width]="element.width+'px'" [style.height]="element.height+'px'" />-->
+                                        <!--<div absolute style="left: 0; right: 0; top: 6px; text-align: center">-->
+                                            <!--<span style="padding: 4px; display: inline-block;background-color:rgba(255,255,255,0.75);border-radius:4px;">{{element.NAME}}</span>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                                <!--<div [style.visibility]="(sw.Swiper && sw.Swiper.bullets && sw.Swiper.bullets.length > 1) ? undefined : 'hidden'" class="swiper-pagination"></div>-->
+                            <!--</swiper>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
             </div>
     
             <!-- CHILD CATEGORIES (parent NOT null) -->
