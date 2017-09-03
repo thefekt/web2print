@@ -408,7 +408,7 @@ require("src/srv/renderer").checkPreview(this);
                 <category>main.basic</category>
                 <data_source>relation</data_source>
                 <relation_parent>web2print.print_tag.templates</relation_parent>
-                <relation_filter>core_property_default_relation_filter_simple_bidirectional_relation</relation_filter>
+                <relation_filter mode="delete"/>
                 <name>
                     <en-US>Tags</en-US>
                 </name>
