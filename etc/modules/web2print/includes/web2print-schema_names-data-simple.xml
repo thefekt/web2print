@@ -20,15 +20,26 @@
         </name>     
     </object>
 
-
-     <object cond="module.code='web2print' AND code='print_category'"
+    <object cond="module.code='web2print' AND code='print_tag'"
             module="core" 
             objectdef="objectdef" 
             mode="update">
         <name>
-            <value><en-US>Category (Print)</en-US></value>
-            <value><de-DE>Kategorie (Druck)</de-DE></value>
-            <value><bg-BG>Категория (Печат)</bg-BG></value>
+            <value><en-US>Print tag</en-US></value>
+            <value><de-DE>Drucktag</de-DE></value>
+            <value><bg-BG>Таг печат</bg-BG></value>
+        </name>     
+    </object>
+
+
+     <object cond="module.code='web2print' AND code='tag_category'"
+            module="core" 
+            objectdef="objectdef" 
+            mode="update">
+        <name>
+            <value><en-US>Category (Tag)</en-US></value>
+            <value><de-DE>Kategorie (Tag)</de-DE></value>
+            <value><bg-BG>Категория (Таг)</bg-BG></value>
         </name>     
     </object>
 
@@ -121,6 +132,16 @@
         </name>     
     </object>
 
+     <object cond="module.code='web2print' AND code='indexed_color_content'"
+            module="core" 
+            objectdef="objectdef" 
+            mode="update">
+        <name>
+            <value><en-US>Color (Indexed,CMYK)</en-US></value>
+            <value><de-DE>Farbe (Indexiert,CMYK)</de-DE></value>
+            <value><bg-BG>Цвят (Индексиран,CMYK)</bg-BG></value>
+        </name>     
+    </object>
 
 <!-- OBJECTDEF names -->
 <!-- HISTORY 

@@ -3,7 +3,7 @@
 <import revision="$LastChangedRevision: 12368 $">
     <!-- HIERARCIES -->
     <objects>
-        <object code="web2print.print_category:children" module="core" objectdef="hierarchy_property_relation">
+        <object code="web2print.tag_category:children" module="core" objectdef="hierarchy_property_relation">
             <name>
                 <value>
                     <en-US>By parent</en-US>
@@ -16,10 +16,10 @@
                 </value>
             </name>
             <objectdef_set_codes>
-                <value>web2print.print_category</value>
+                <value>web2print.tag_category</value>
             </objectdef_set_codes>
             <selection_group_code>
-                <value>web2print.print_category</value>
+                <value>web2print.tag_category</value>
             </selection_group_code>
             <root_label mode="delete"/>
             <property_code>
@@ -42,7 +42,7 @@
 		    </is_show_leafs>            
         </object>
                 
-        <object code="web2print.print_template:category.templates" module="core" objectdef="hierarchy_mixed">
+        <object code="web2print.print_tag:category.tags" module="core" objectdef="hierarchy_mixed">
             <name>
                 <value>
                     <en-US>By category</en-US>
@@ -55,14 +55,17 @@
                 </value>
             </name>
             <objectdef_set_codes>
-                <value>web2print.print_template</value>
-                <value>web2print.print_category</value>
+                <value>web2print.tag_category</value>
+                <value>web2print.print_tag</value>
             </objectdef_set_codes>
             <selection_group_code>
-                <value>web2print.print_category</value>
+                <value>web2print.tag_category</value>
+            </selection_group_code>
+            <selection_group_code>
+                <value>web2print.tag_category</value>
             </selection_group_code>
             <path>
-                <value>web2print.print_category.children*.templates</value>
+                <value>web2print.tag_category.children*.tags</value>
             </path>
             <vsql_condition>
                 <value>parent.id IS NULL</value>
@@ -87,7 +90,7 @@
             </expand_inital_depth>
             <get_parent>
                 <value>
-                    <object code="web2print.print_template:category.templates:get_parent" objectdef="jscript" module="core" >
+                    <object code="web2print.print_tag:category.tags:get_parent" objectdef="jscript" module="core" >
                         <params>
                             <value>                                     
                                 <object code="element" module="core" objectdef="script_param"></object>
@@ -95,7 +98,7 @@
                         </params>   
                         <script_code>
                             <value><![CDATA[
-if (element instanceof db.web2print.print_template)
+if (element instanceof db.web2print.print_tag)
     return element.category;
 return element.parent;
                             ]]></value>
@@ -106,7 +109,7 @@ return element.parent;
 
             <set_parent>
                 <value>
-                    <object code="web2print.template:print_category.templates:set_parent" module="core" objectdef="jscript">
+                    <object code="web2print.print_tag:catgory.tags:set_parent" module="core" objectdef="jscript">
                         <params>
                             <value>
                                 <object code="object" module="core" objectdef="script_param"></object>
@@ -127,16 +130,24 @@ for (var k=0;k<paths.length;k++)
     var path = paths[k];
     for (var i = path.length-1;i>=0;i--) 
     {
-        if (path[i] instanceof db.web2print.print_category)  
+        if (path[i] instanceof db.web2print.print_tag)  
         { 
-            if (object instanceof db.web2print.print_category) {
-	            object.parent=path[i];
+            if (object instanceof db.web2print.print_tag) {
+	            object.category=path[i].category;
 	            return;
-            } else if (object instanceof db.web2print.print_template) {
-                object.category=path[i];
+            } else if (object instanceof db.web2print.tag_category) {
+                object.category=path[i].category;
                 return;
             }      
-        }            
+        } else if (path[i] instanceof db.web2print.tag_category) {
+            if (object instanceof db.web2print.print_tag) {
+	            object.category=path[i];
+	            return;
+            } else if (object instanceof db.web2print.tag_category) {
+	            object.parent=path[i];
+                return;
+            }      
+        }
     }
 }
 ]]></value>
@@ -147,7 +158,7 @@ for (var k=0;k<paths.length;k++)
         </object>
 
 
-        <object code="web2print.print_template:category.templates:filtered" module="core" objectdef="hierarchy_mixed">
+        <object code="web2print.print_tag:category.tags:filtered" module="core" objectdef="hierarchy_mixed">
             <name>
                 <value>
                     <en-US>By category (filtered)</en-US>
@@ -160,14 +171,14 @@ for (var k=0;k<paths.length;k++)
                 </value>
             </name>
             <objectdef_set_codes>
-                <value>web2print.print_template</value>
-                <value>web2print.print_category</value>
+                <value>web2print.tag_category</value>
+                <value>web2print.print_tag</value>
             </objectdef_set_codes>
             <selection_group_code>
-                <value>web2print.print_category</value>
+                <value>web2print.tag_category</value>
             </selection_group_code>
             <path>
-                <value>web2print.print_category.children*.templates</value>
+                <value>web2print.tag_category.children*.tags</value>
             </path>
             <vsql_condition>
                 <value>parent.id IS NULL</value>
@@ -192,12 +203,12 @@ for (var k=0;k<paths.length;k++)
             </expand_inital_depth>
             <get_parent>
                 <value>
-                    <object code="web2print.print_template:category.templates:get_parent" objectdef="jscript" module="core"></object>
+                    <object code="web2print.print_tag:category.tags:get_parent" objectdef="jscript" module="core"></object>
                 </value>
             </get_parent>
             <set_parent>
                 <value>
-                    <object code="web2print.template:print_category.templates:set_parent" module="core" objectdef="jscript"></object>
+                    <object code="web2print.print_tag:catgory.tags:set_parent" module="core" objectdef="jscript"></object>
                 </value>
             </set_parent>
         </object>

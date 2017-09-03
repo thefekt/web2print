@@ -174,8 +174,87 @@
             </initial_value>
         </qrcode_content>
 
+        <indexed_color_content parent_objectdef="web2print.abstract_content">
+            
+            <initial_value col="ival_vc">
+                <sort_id>2001</sort_id>
+                <category>main.basic</category>
+                <data_source>input</data_source>
+                <data_type>varchar</data_type>
+                <is_inmaintbl>true</is_inmaintbl>
+                <is_obligatory>true</is_obligatory>
+                <name>
+                    <en-US>Initial color (CMYK)</en-US>
+                </name>
+                <name>
+                    <de-DE>Anfangswert (CMYK)</de-DE>
+                </name>
+                <name>
+                    <bg-BG>Начална стойност (CMYK)</bg-BG>
+                </name>
+            </initial_value>
+
+            <available_colors>
+                <sort_id>2001</sort_id>
+                <category>main.basic</category>
+                <data_source>input</data_source>
+                <data_type>varchar</data_type>
+                <is_inmaintbl>false</is_inmaintbl>
+                <is_multiple>true</is_multiple>
+                <name>
+                    <en-US>Available colors (CMYK)</en-US>
+                </name>
+                <name>
+                    <de-DE>Vorhandene Farben (CMYK)</de-DE>
+                </name>
+                <name>
+                    <bg-BG>Налични цветове (CMYK)</bg-BG>
+                </name>
+                <value_table>$(DB_PREFIX)_wp_var_avlcl</value_table>   
+            </available_colors>
+            
+        </indexed_color_content>       
+
+
+        <print_tag tbl="prnt_tag" copy_from="core.template_normal_transaction">
+             <category>
+                <sort_id>2000</sort_id>
+                <category>main.basic</category>
+                <data_source>relation</data_source>
+                <related_objectdef>web2print.tag_category</related_objectdef>
+                <is_inmaintbl>true</is_inmaintbl>
+                <name>
+                    <en-US>Category</en-US>
+                </name>
+                <name>
+                    <de-DE>Kategorie</de-DE>
+                </name>
+                <name>
+                    <bg-BG>Категория</bg-BG>
+                </name>
+            </category>
+            <templates>
+                <sort_id>4000</sort_id>
+                <category>main.settings</category>
+                <data_source>relation</data_source>
+                <related_objectdef>web2print.print_template</related_objectdef>
+                <is_multiple>true</is_multiple>
+                <value_table>$(DB_PREFIX)_wp_rel_tmplts</value_table>
+                <name>
+                    <en-US>Templates</en-US>
+                </name>
+                <name>
+                    <de-DE>Vorlagen</de-DE>
+                </name>
+                <name>
+                    <bg-BG>Шаблони</bg-BG>
+                </name>              
+            </templates>
+
+		</print_tag>
+
 		<print_template tbl="prnt_tmpl" copy_from="core.template_normal_transaction">
-         
+            <category mode="delete"/>
             <width_mm>
                 <sort_id>3000</sort_id>
                 <category>main.settings</category>
@@ -210,22 +289,6 @@
                 </name>
             </height_mm>
 
-            <category>
-                <sort_id>2000</sort_id>
-                <category>main.basic</category>
-                <data_source>relation</data_source>
-                <related_objectdef>web2print.print_category</related_objectdef>
-                <is_inmaintbl>true</is_inmaintbl>
-                <name>
-                    <en-US>Category</en-US>
-                </name>
-                <name>
-                    <de-DE>Kategorie</de-DE>
-                </name>
-                <name>
-                    <bg-BG>Категория</bg-BG>
-                </name>
-            </category>
 
             <document>
                 <sort_id>2001</sort_id>
@@ -340,14 +403,34 @@ require("src/srv/renderer").checkPreview(this);
                 </name>
             </preview_key>
 
+            <tags>
+                <sort_id>4000</sort_id>
+                <category>main.basic</category>
+                <data_source>relation</data_source>
+                <relation_parent>web2print.print_tag.templates</relation_parent>
+                <relation_filter>core_property_default_relation_filter_simple_bidirectional_relation</relation_filter>
+                <name>
+                    <en-US>Tags</en-US>
+                </name>
+                <name>
+                    <de-DE>Tags</de-DE>
+                </name>
+                <name>
+                    <bg-BG>Тагове</bg-BG>
+                </name>              
+            </tags>
+
 		</print_template>
 
-        <print_category tbl="prnt_cat" copy_from="core.template_normal_transaction">
-            <templates>
+        <print_category mode="delete"/>
+        
+        <tag_category tbl="prnt_tct" copy_from="core.template_normal_transaction">
+
+            <tags>
                 <sort_id>2000</sort_id>
                 <category>main.basic</category>
                 <data_source>relation</data_source>
-                <relation_parent>web2print.print_template.category</relation_parent>
+                <relation_parent>web2print.print_tag.category</relation_parent>
                 <display_type>property.relation.multiple.add.new</display_type>
                 <relation_filter>core_property_default_relation_filter_simple_bidirectional_relation</relation_filter>
                 <name>
@@ -359,7 +442,7 @@ require("src/srv/renderer").checkPreview(this);
                 <name>
                     <bg-BG>Шаблони</bg-BG>
                 </name>
-            </templates>
+            </tags>
 
             <!-- main.settings -->
             <parent>
@@ -367,7 +450,7 @@ require("src/srv/renderer").checkPreview(this);
                 <sort_id>3001</sort_id>
                 <is_inmaintbl>true</is_inmaintbl>
                 <data_source>relation</data_source>
-                <related_objectdef>web2print.print_category</related_objectdef>
+                <related_objectdef>web2print.tag_category</related_objectdef>
                 <is_selfreference>true</is_selfreference>
                 <name>
                     <en-US>Parent</en-US>
@@ -386,7 +469,7 @@ require("src/srv/renderer").checkPreview(this);
                 <category>main.settings</category>
                 <sort_id>3002</sort_id>
                 <data_source>relation</data_source>
-                <relation_parent>web2print.print_category.parent</relation_parent>
+                <relation_parent>web2print.tag_category.parent</relation_parent>
                 <name>
                     <en-US>Children</en-US>
                 </name>
@@ -401,7 +484,7 @@ require("src/srv/renderer").checkPreview(this);
                 <relation_filter>core_property_default_relation_filter_simple_bidirectional_relation</relation_filter>
                 <is_selfreference>true</is_selfreference>
             </children>
-		</print_category>
+		</tag_category>
 
 	</web2print>
 </objectdefs>

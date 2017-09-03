@@ -90,6 +90,10 @@ exports.getTemplateJSON = function(tmpl,data,doNotRender) {
                     toReplace[e.code]=d;
                 }
             }
+        } else if (e instanceof db.web2print.indexed_color_content ) {
+            var d = data[e.code]||e.initial_value;
+            if (!d) d="";
+            toReplace[e.code]=d;
         } 
     }
     return toReplace;
