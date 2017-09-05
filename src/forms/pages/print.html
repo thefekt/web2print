@@ -5,7 +5,27 @@
     <variable #eschemas></variable>
     <variable #currentHierarchy></variable>
     <variable #currentEHierarchy></variable>
-    
+    <variable #sidenavOpen [defaults]="{value: true}"></variable>
+    <variable #sidenavOpen2 [defaults]="{value:false}"></variable>
+
+    <execution #convertRBG [params]="{root:root}"><![CDATA[
+        var result = {};
+        var cmyk = args[0];
+        var c = cmyk.replace("cmyk(", "").replace(")", "").split(",")[0]/100;
+        var m = cmyk.replace("cmyk(", "").replace(")", "").split(",")[1]/100;
+        var y = cmyk.replace("cmyk(", "").replace(")", "").split(",")[2]/100;
+        var k = cmyk.replace("cmyk(", "").replace(")", "").split(",")[3]/100;
+
+        result.r = 1 - Math.min( 1, c * ( 1 - k ) + k );
+        result.g = 1 - Math.min( 1, m * ( 1 - k ) + k );
+        result.b = 1 - Math.min( 1, y * ( 1 - k ) + k );
+
+        result.r = Math.round( result.r * 255 );
+        result.g = Math.round( result.g * 255 );
+        result.b = Math.round( result.b * 255 );
+        return result;
+    ]]></execution>
+
     <!-- Content if not logged in -->
     <include shared ref="/app/not-logged"></include>
     <div absolute-fill *ngIf="root.db.loggedIn">
@@ -15,14 +35,55 @@
             <variable #category></variable>
             <variable #cindex [dependency]="category"></variable>
             <variable #rootCategories></variable>
+            <variable #idmap></variable>
+            <variable #tagmap></variable>
+            <variable #wlist></variable>
+            <variable #idmapJSON [dependency]="idmap" [value]="idmap.value | json">
+                <observe>
+                    <execution [params]="{idmap:idmap,wlist:wlist}"><![CDATA[
+                        var arr = [];
+                        for (var ids in idmap.value) {
+                            if (idmap.value[ids] == true) arr.push(ids);
+                        }
+                        var r = arr.join(",");
+                        wlist.value = r;
+                        if (!wlist.value) {
+                            for (var ids in idmap.value) {
+                                arr.push(ids);
+                            }
+                            var r = arr.join(",");
+                            wlist.value = r;
+                        }
+                        ]]></execution>
+                </observe>
+            </variable>
             <variable #crr export></variable>
             <variable #cat export [dependency]="crr"> 
                 <observe>
-                    <execution [params]="{cat:cat,crr:crr,category:category,root:root,cindex:cindex,rootCategories:rootCategories}"><![CDATA[
+                    <execution [params]="{tagmap:tagmap,crrC:crrC,idmap:idmap,cat:cat,crr:crr,category:category,root:root,cindex:cindex,rootCategories:rootCategories}"><![CDATA[
                         if (rootCategories.value === undefined) {
                             rootCategories.value = null;
                             root.db.remote("src/srv/renderer").getRootCategoriesWithDetails(cat.value ? Number(cat.value) : undefined).done(function(res) {
-                                rootCategories.value = res || null;
+                                rootCategories.value = res || [];
+
+                                var restags = [];
+                                var res = {};
+                                function rec(obj) {
+                                    for (var i=0;i<obj.tags.length;i++) {
+                                        var tag = obj.tags[i];
+                                        res[tag.id] = false;
+                                        restags.push({id:tag.id,NAME:tag.NAME});
+                                    }
+                                    for (var i=0;i<obj.children.length;i++) {
+                                        var c = obj.children[i];
+                                        rec(c);
+                                    }
+                                }
+                                for (var i=0;i<rootCategories.value.length;i++) {
+                                    rec(rootCategories.value[i]);
+                                }
+                                idmap.value = res;
+                                tagmap.value = restags;
                               });
                         }
                         if (!cat.value) 
@@ -59,8 +120,7 @@
                       }
                     if (chip.id != crr.value)
                         root.app.openRoute('/print',args[0],{crr : chip.id,cat:cat.value});
-                      ]]>
-                  </execution> 
+                ]]></execution>
                </observe>
                <execution #ex [params]="{root:root,cat:cat}"><![CDATA[
                    var element = args[1];
@@ -68,6 +128,7 @@
                ]]></execution>
                <!-- TOOLBAR CAPTION -->
             <div toolbar-content style="line-height: 30px; overflow: visible" fxLayout="row">
+                <i (click)="togg.execute()" class="material-icons icon-button" style="font-size:2em;padding-right: 4px">menu</i>
                 <img src="{{root.app.url}}/images/logos/customer-logo_200x35.jpg" style="width: 200px; height: 35px; margin-top: -2.5px; cursor: pointer" (click)="root.app.openRoute('/print',$event)" /> 
                 <span fxFlex></span>
                 <h2 *ngIf="category.value !== undefined" no-margin style="font-weight: normal; line-height: 30px; color: #c0c0c0">
@@ -76,32 +137,112 @@
                 </h2>
                 <span fxFlex></span>
             </div>
-    
+
+            <execution #togg [params]="{sidenavOpen:sidenavOpen}">
+                sidenavOpen.value = !sidenavOpen.value;
+            </execution>
+
             <!-- ROOT (parent is null) CATEGORIES -->
-            <div *ngIf="!cat.value">
+            <div *ngIf="!cat.value" absolute-fill fxLayout="row" style="overflow: auto">
 
-                <div>
-                    Home / <font color="#ec8a24">All Products</font>
+
+                <div #ldc hidden class.xs="layout-detect-xs">
+
                 </div>
-                <!--<div fxLayout="row">-->
-                    <div style="padding: 12px" *ngFor="let rootC of (rootCategories.value || []);let i = index">
-                        <h3 style="margin-bottom: 4px">{{rootC.NAME}}</h3>
-                        <ng-template let-tags ngFor [ngForOf]="(rootC.tags || [])">
+                <md-sidenav-container absolute-fill>
+                    <md-sidenav [style.width]="ldc.classList.contains('layout-detect-xs') ? '100%' : '200px'" [opened]="sidenavOpen.value" #sn [mode]="ldc.classList.contains('layout-detect-xs') ? 'over' : 'side'">
+                        <div *ngIf="rootCategories.value">
                             <div>
-                                <md-checkbox>{{tags.NAME}}</md-checkbox>
+                                Home / <font color="#ec8a24">All Products</font>
                             </div>
-                        </ng-template>
-                        <ng-template let-subcat let-i="index" ngFor [ngForOf]="(rootC.children || [])">
-                            <div>
-                                <md-checkbox>{{subcat.NAME}}</md-checkbox>
-                            </div>
+                            <div style="padding: 12px" *ngFor="let rootC of (rootCategories.value || []);let i = index">
+                                <div *ngIf="crrC.value" (click)="back.execute()" style="white-space: nowrap;font-size: 14px" class="icon-button">
+                                    Show all categories
+                                </div>
 
-                            <!--<div class="icon-button" (click)="ex.execute($event,subcat)">-->
-                                <!--{{subcat.NAME}}-->
-                            <!--</div>-->
-                        </ng-template>
+                                <h3 style="margin-bottom: 4px;margin-top: 8px">{{crrC.value ? crrC.value.NAME : rootC.NAME}}</h3>
+                                <variable #crrC></variable>
+                                <execution #back [params]="{crrC:crrC,idmap:idmap}"><![CDATA[
+                                    for (var i=0;i<crrC.value.tags.length;i++) {
+                                    idmap.value[crrC.value.tags[i].id] = false;
+                                    }
+                                    crrC.value = null;
+                                    ]]></execution>
+                                <ng-template let-subcat let-i="index" ngFor [ngForOf]="((crrC.value) ? crrC.value.children || [] : rootC.children || [])">
+                                    <div (click)="crrC.value = subcat" class="icon-button" style="white-space: nowrap">
+                                        {{subcat.NAME}} ({{subcat.children.length + subcat.tags.length}})
+                                    </div>
+                                    <!--{{subcat.tags | json}}-->
+                                </ng-template>
+                                <div *ngIf="idmap.value">
+                                    <ng-template let-tags let-i="index" ngFor [ngForOf]="((crrC.value) ? crrC.value.tags || [] : rootC.tags || [])">
+                                        <div>
+                                            <md-checkbox [(ngModel)]="idmap.value[tags.id]">{{tags.NAME}}</md-checkbox>
+                                        </div>
+                                    </ng-template>
+                                </div>
+                            </div>
+                        </div>
+                    </md-sidenav>
+                    <div absolute-fill *ngIf="wlist.value && tagmap && tagmap.value">
+                        <div style="padding-left: 8px" fxLayout="row">
+                            <ng-template let-t let-i="index" ngFor [ngForOf]="tagmap.value" style="display: inline-block">
+                                <div style="border: 1px solid lightgrey;margin: 8px;height: 24px;padding-left: 6px" *ngIf="idmap.value[t.id]">
+                                    <label style="vertical-align: super">{{t.NAME}}</label>
+                                    <i class="material-icons icon-button" (click)="idmap.value[t.id] = false">close</i>
+                                </div>
+                            </ng-template>
+                        </div>
+
+                        <query schema="web2print.print_template" where="tags IN ( {{wlist.value}} )" properties="OICON@280x300,width_mm,height_mm,contents">
+                            <paginator [pageSize]="10" #result></paginator>
+                            <div *ngFor="let o of result.objects" style="padding: 15px;width: 280px;height: 340px;display: inline-block;overflow:hidden">
+                                <div [style.padding-top]="(300-280*o.height_mm/o.width_mm)/2+'px'" [style.padding-bottom]="(300-280*o.height_mm/o.width_mm)/2+'px'">
+                                    <div [style.height]="280*o.height_mm/o.width_mm+'px'" style="position:relative;box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.3);-webkit-box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.3);-moz-box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.3);">
+                                        <img (click)="root.app.openRoute('/print',$event,{tpl:o.id})" [style.top]="-(300-280*o.height_mm/o.width_mm)/2+'px'" style="position: absolute;width: 280px;height: 300px;" src="{{o.ICON}}"/>
+                                    </div>
+                                </div>
+                                <div style="height: 40px">
+                                    <variable #tcol></variable>
+                                    <variable #tcol2></variable>
+                                    <div fxLayout="row">
+                                        <ng-template let-cn let-i="index" ngFor [ngForOf]="o.contents" style="padding: 12px">
+                                            <div *ngIf="cn.SCHEMA.includes('color')">
+                                                <query [schema]="cn.SCHEMA" where="id = {{cn.id}}" properties="OICON@280x300,initial_value,available_colors">
+                                                    <result #rz2>
+                                                    </result>
+                                                    <div *ngIf="rz2 && rz2.objects[0] && rz2.objects[0].initial_value">
+                                                        <variable>
+                                                            <observe>
+                                                                <execution [params]="{tcol2:tcol2,tcol:tcol,rz2:rz2,convertRBG:convertRBG}">
+                                                                    tcol.value = convertRBG.execute(rz2.objects[0].initial_value);
+                                                                    tcol2.value = [];
+                                                                    for (var i = 0; i < rz2.objects[0].available_colors.length; i++) {
+                                                                        var t = convertRBG.execute(rz2.objects[0].available_colors[i]);
+                                                                        tcol2.value.push(t);
+                                                                    }
+                                                                    console.log(tcol2.value);
+                                                                </execution>
+                                                            </observe>
+                                                        </variable>
+                                                        <div fxLayout="row">
+                                                            <variable #colorSelection [defaults]="{value: 0}"></variable>
+                                                            <div (click)="colorSelection.value = 0" [style.border]="colorSelection.value ? '0' : '2px solid black'" [style.background-color]="'rgb(' + tcol.value.r + ',' + tcol.value.g + ',' + tcol.value.b +')'" style="margin-right: 4px;width: 32px;height: 32px;border-radius: 100%"></div>
+                                                            <ng-template let-sc2 let-i="index" ngFor [ngForOf]="tcol2.value" style="display: inline-block">
+                                                                <div (click)="colorSelection.value = i+1" [style.border]="(colorSelection.value == i+1) ? '2px solid black' : '0'" [style.background-color]="'rgb(' + sc2.r + ',' + sc2.g + ',' + sc2.b +')'" style="margin-right: 4px;width: 32px;height: 32px;border-radius: 100%"></div>
+                                                            </ng-template>
+                                                        </div>
+                                                    </div>
+                                                </query>
+                                            </div>
+                                        </ng-template>
+                                    </div>
+                                </div>
+                            </div>
+                        </query>
                     </div>
-                <!--</div>-->
+                </md-sidenav-container>
+
 
                 <!--<div *ngFor="let chip of (rootCategories.value || []);let i = index" style="margin-left: 4px; text-align: center">-->
                     <!--<h3 align="left" style="margin: 8px 8px 8px 8px">{{chip.NAME}}</h3>-->
@@ -123,93 +264,52 @@
                     <!--</div>-->
                 <!--</div>-->
             </div>
-    
-            <!-- CHILD CATEGORIES (parent NOT null) -->
-            <md-tab-group #tg *ngIf="cindex.value != undefined && cat.value" [(selectedIndex)]="cindex.value" class="tabs-full-height force-no-overflow" absolute-fill>
-            <md-tab [label]="rootCat.NAME" *ngFor="let rootCat of (rootCategories.value || []);let i = index" style="margin-left: 4px;text-align: center">
-            <div style="padding: 0; padding-left: 8px" *ngFor="let chip of (cindex.value == i ? (rootCat.children || []) : [])">
-                <h3 style="margin: 8px 8px 8px 8px">{{chip.NAME}}</h3>
-                <div *ngIf="chip.children && chip.children.length" [style.height]="chip.height+'px'" relative>
-                    <swiper #sw absolute-fill [config]="{pagination: '.swiper-pagination',slidesPerView: 'auto', paginationClickable: true, spaceBetween: 30 }">
-                        <div class="swiper-wrapper">
-                            <ng-template let-element let-i="index" ngFor [ngForOf]="chip.children">
-                            <div [style.width]="element.width+'px'" class="swiper-slide" relative>
-                                <img class="black-glow-soft" absolute-fill [src]="element.ICON" [style.width]="element.width+'px'" [style.height]="element.height+'px'" />
-                                <div absolute style="left: 0; right: 0; top: 6px; text-align: center">
-                                    <span style="padding: 4px; display: inline-block">{{element.NAME}}</span>
-                                </div>
-                            </div>
-                            </ng-template>
-                        </div>
-                        <div [style.visibility]="(sw.Swiper && sw.Swiper.bullets && sw.Swiper.bullets.length > 1) ? undefined : 'hidden'" class="swiper-pagination"></div>
-                    </swiper>
-                </div>
-                <!-- Returned from server function because of different icon sizes to be produced -->
-                <div *ngIf="chip.templates && chip.templates.length" [style.height]="chip.height+'px'" relative>
-                    <swiper #sw absolute-fill [config]="{pagination: '.swiper-pagination', slidesPerView: 'auto', paginationClickable: true, spaceBetween: 30 }">
-                        <div class="swiper-wrapper">
-                            <ng-template let-element let-i="index" ngFor [ngForOf]="chip.templates">
-                            <div [style.width]="element.width+'px'" class="swiper-slide" relative (click)="root.app.openRoute('/print',$event,{tpl:element.id})">
-                                <img class="black-glow-soft" absolute-fill [src]="element.ICON" [style.width]="element.width+'px'" [style.height]="element.height+'px'" />
-                                <div absolute style="left: 0; right: 0; top: 6px; text-align: center">
-                                    <span style="background-color: rgba(255,255,255,0.80);padding: 4px;display: inline-block;border-radius: 3px;">{{element.NAME}}</span>
-                                </div>
-                            </div>
-                            </ng-template>
-                        </div>
-                        <div [style.visibility]="(sw.Swiper && sw.Swiper.bullets && sw.Swiper.bullets.length > 1) ? undefined : 'hidden'" class="swiper-pagination"></div>
-                    </swiper>
-                </div>
-            </div>
-            </md-tab> </md-tab-group>
         </div>
-    
+
         <!-- Template part ----------------------------------------------- -->
-    
+
         <div *ngIf="tpl.value && tpl.ready" absolute-fill fxLayout="column">
             <div toolbar-content style="line-height: 30px; overflow: visible" fxLayout="row">
+                <i (click)="sidenavOpen2.value = !sidenavOpen2.value" class="material-icons icon-button" style="font-size:2em;padding-right: 4px">menu</i>
                 <img src="{{root.app.url}}/images/logos/customer-logo_200x35.jpg" style="width: 200px; height: 35px; margin-top: -2.5px; cursor: pointer" (click)="root.app.openRoute('/print',$event)" /> <span fxFlex></span>
                 <h2 no-margin style="font-weight: normal; line-height: 30px; color: #c0c0c0"><span *ngIf="templateObject.value">{{templateObject.value.NAME}}</span></h2>
                 <span fxFlex></span>
             </div>
-            <variable #templateObject></variable>
-            <variable #path export> 
-                <observe> 
-                    <execution [params]="{path:path,tpl:tpl,root:root,templateObject:templateObject}"><![CDATA[
-                        if (!path.value) 
+            <variable #templateObject>
+                <observe>
+                    <execution [params]="{tpl:tpl,root:root,templateObject:templateObject}"><![CDATA[
+                        if (!templateObject.value)
                         {
                             root.db.remote("src/srv/renderer").getTemplateDetails(Number(tpl.value)).done(function(res) {
-                                path.value = res.path;
                                 templateObject.value = res.object;
                               });
                         }
-                        ]]>
-                    </execution>
+                    ]]></execution>
                 </observe>
             </variable>
             <div absolute-fill *ngIf="templateObject.value && templateObject.value.preview_document">
                 <!-- THE MAIN VIEWER + CUSTOMIZE TOOLBAR -->
                 <variable #timer></variable>
-                <variable #generatedPreview path="{{tpl.value}}" persist></variable>
+                <variable #generatedPreview></variable>
                 <variable #custom path="{{tpl.value}}" persist></variable>
                 <variable #paused></variable>
                 <variable #reupdate></variable>
-                
-                <execution #update [params]="{update:update,root:root,paused:paused,reupdate:reupdate,custom:custom,timer:timer,generatedPreview:generatedPreview,templateObject:templateObject}"><![CDATA[		
+                <execution #update [params]="{update:update,root:root,paused:paused,reupdate:reupdate,custom:custom,timer:timer,generatedPreview:generatedPreview,templateObject:templateObject}"><![CDATA[
                     if (timer.value) {
                         clearTimeout(timer.value);
                         timer.value=undefined;
                     }
                     if (!custom.value) {
                         generatedPreview.value=null;
-                        return;	
+                        return;
                     }
                     timer.value=root.setTimeout(function() {
                         if (paused.value) {
                             reupdate.value=true;
-                            return;       
+                            return;
                         }
                         paused.value=true;
+                        console.log(custom.value);
                         root.db.remote("src/srv/renderer").renderTemplate(templateObject.value,custom.value).done(function(res) {
                             paused.value=false;
                             generatedPreview.value=res;
@@ -220,19 +320,19 @@
                         });
                     },generatedPreview.value === undefined ? 0 : 500);
                 ]]></execution>
-    
-                <execution #resetContent [params]="{root:root,custom:custom,timer:timer,generatedPreview:generatedPreview,templateObject:templateObject}"><![CDATA[		
+
+                <execution #resetContent [params]="{root:root,custom:custom,timer:timer,generatedPreview:generatedPreview,templateObject:templateObject}"><![CDATA[
                     custom.value=null;
                     generatedPreview.value=null;
                 ]]></execution>
-                
-                
-                <execution #openOrder [params]="{root:root,custom:custom,timer:timer,generatedPreview:generatedPreview,templateObject:templateObject}"><![CDATA[		
+
+
+                <execution #openOrder [params]="{root:root,custom:custom,timer:timer,generatedPreview:generatedPreview,templateObject:templateObject}"><![CDATA[
                     console.log("OPEN ORDER!");
                 ]]></execution>
-                
-                <md-sidenav-container absolute-fill>			
-                    <md-sidenav align="end" mode="side" #sidenav style="padding:8px;border-left:1px solid #eee">
+
+                <md-sidenav-container absolute-fill>
+                    <md-sidenav [opened]="sidenavOpen2.value" mode="side" #sidenav style="padding:8px;border-left:1px solid #eee">
                         <div *ngIf="templateObject.value && templateObject.value.contents">
                             <div *ngFor="let comp of templateObject.value.contents;let i = index" fxLayout="row">
                                 <variable #val [defaults]="{value : (custom.value||{})[comp.code] || templateObject.value.defaultData[i] }">
@@ -250,43 +350,90 @@
                                 <md-form-field fxFlex *ngIf="comp.type == 'text'">
                                     <textarea mdInput placeholder="{{comp.NAME}}" [(ngModel)]="val.value" rows="4"></textarea>
                                 </md-form-field>
+                                <div fxFlex *ngIf="comp.type == 'image'">
+                                    <label style="color: #757575;font-size: 80%">{{comp.NAME}}</label>
+                                    <query [schema]="comp.placeholder.SCHEMA" where="id = {{comp.placeholder.id}}" properties="OICON@280x300,width_mm,height_mm">
+                                        <result #rz>
+                                            <div *ngIf="rz && rz.objects[0]">
+                                                <img [src]="rz.objects[0].ICON" style="width: 80px;height: 80px"/>
+                                                <button style="top: -32px" md-button>Browse</button>
+                                            </div>
+                                        </result>
+                                    </query>
+                                </div>
+                                <div fxFlex *ngIf="comp.type == 'color'">
+                                    <!--{{comp | json}}-->
+                                    <variable #rgbcolor></variable>
+                                    <variable #rgbcolorSec></variable>
+                                    <variable #col [defaults]="{value : comp.code}">
+                                        <observe>
+                                            <execution [params]="{convertRBG:convertRBG,col:col,root:root,comp:comp,rgbcolor:rgbcolor,rgbcolorSec:rgbcolorSec}">
+                                                var result = {};
+                                                result = convertRBG.execute(comp.placeholder);
+                                                rgbcolor.value = result;
+
+                                                var result2 = [];
+                                                for (var i = 0; i < comp.colors.length; i++) {
+                                                    result = {};
+                                                    result = convertRBG.execute(comp.colors[i]);
+                                                    result2.push(result);
+                                                }
+                                                rgbcolorSec.value = result2;
+                                            </execution>
+
+                                        </observe>
+                                    </variable>
+
+                                    <label style="color: #757575;font-size: 80%">Colors</label>
+                                    <div style="margin-top: 4px" fxLayout="row">
+                                        <variable #colorSelection2 [defaults]="{value: 0}"></variable>
+                                        <div (click)="chval.execute(0)" [style.border]="colorSelection2.value ? '0' : '2px solid black'" [style.background-color]="'rgb(' + rgbcolor.value.r + ',' + rgbcolor.value.g + ',' + rgbcolor.value.b +')'" style="margin-right: 4px;width: 32px;height: 32px;border-radius: 100%"></div>
+                                        <ng-template let-sc let-i="index" ngFor [ngForOf]="rgbcolorSec.value" style="display: inline-block">
+                                            <div (click)="chval.execute(i+1)" [style.border]="(colorSelection2.value == i+1) ? '2px solid black' : '0'" [style.background-color]="'rgb(' + sc.r + ',' + sc.g + ',' + sc.b +')'" style="margin-right: 4px;width: 32px;height: 32px;border-radius: 100%"></div>
+                                        </ng-template>
+                                        <execution #chval [params]="{val:val,comp:comp,colorSelection2:colorSelection2}"><![CDATA[
+                                            colorSelection2.value = args[0];
+                                            if (!args[0]) {
+                                                val.value = comp.placeholder;
+                                            } else {
+                                                val.value = comp.colors[args[0]-1];
+                                            }
+                                            console.log(val.value);
+                                        ]]></execution>
+                                    </div>
+                                </div>
                             </div>
+
+
+                            <!--{{templateObject.value.contents | json}}-->
                         </div>
                         <br/>
                         <div style="margin-bottom:2em">
-                              <button color="accent" style="float:left;color:rgb(236, 138, 36);background-color:rgba(255,255,255,0.85);border:2px solid rgb(236, 138, 36);font-weight:bold" type="button" md-button (click)="resetContent.execute();sidenav.close()">
+                              <button color="accent" style="float:left;color:rgb(236, 138, 36);background-color:rgba(255,255,255,0.85);border:2px solid rgb(236, 138, 36);font-weight:bold" type="button" md-button (click)="resetContent.execute();sidenav.close();sidenavOpen2.value = false">
                               RESET
                               </button>
-                              <button color="accent" style="float:right;color:rgb(236, 138, 36);background-color:rgba(255,255,255,0.85);border:2px solid rgb(236, 138, 36);font-weight:bold" type="button" md-button (click)="sidenav.close()">
+                              <button color="accent" style="float:right;color:rgb(236, 138, 36);background-color:rgba(255,255,255,0.85);border:2px solid rgb(236, 138, 36);font-weight:bold" type="button" md-button (click)="sidenav.close();sidenavOpen2.value = false">
                               CLOSE
                               </button>
                         </div>
-                      </md-sidenav>
-                      <div absolute-fill fxLayout="column">
-                      <div *ngIf="path.value">
-                            <div style="padding: 8px;line-height:1">
-                                <ng-template *ngIf="path" let-item let-i="index" let-last="last" ngFor [ngForOf]="path.value">
-                                    <label *ngIf="i" style="padding: 3px; color: #CCCCCC">/</label>
-                                    <label [style.pointer-events]="last ? 'none' : undefined" [style.color]="last ? '#ec8a24' : undefined" class="icon-button">{{item.NAME}}</label>
-                                </ng-template>
-                            </div>
-                        </div>
+                    </md-sidenav>
+                    <div absolute-fill fxLayout="column">
                         <div fxFlex relative>
-                              <viewer [initialPaddingPercents]="10" preserveBounds [object]="generatedPreview.value || templateObject.value.preview_document" absolute-fill style="border-top:1px solid #eeeeee"></viewer>
+                              <viewer *ngIf="templateObject && templateObject.value" [initialPaddingPercents]="10" preserveBounds [object]="generatedPreview.value || templateObject.value.preview_document" absolute-fill style="border-top:1px solid #eeeeee"></viewer>
                               <div [style.display]="!sidenav.opened ? undefined : 'none'" style="position:absolute;right:6px;top:6px" fxLayout="row">
-                                <dialog ref="/dialogs/buy" #buyDialog></dialog>
-                                <button style="background-color:rgba(255,255,255,0.85);color:#808080;border:1px solid #eee" type="button" md-button (click)="buyDialog.open({
-                                    object : templateObject.value,
-                                    pdf : generatedPreview.value || templateObject.value.preview_document
-                                })">
-                                  BUY
+                                  <dialog ref="/dialogs/buy" #buyDialog></dialog>
+                                  <button style="background-color:rgba(255,255,255,0.85);color:#808080;border:1px solid #eee" type="button" md-button (click)="buyDialog.open({
+                                        object : templateObject.value,
+                                        pdf : generatedPreview.value || templateObject.value.preview_document
+                                    })">
+                                      BUY
                                   </button>
-                                  <button color="accent" style="color:rgb(236, 138, 36);background-color:rgba(255,255,255,0.85);border:1px solid #eee;font-weight:bold;" type="button" md-button (click)="sidenav.open()">
-                                  CUSTOMIZE
+                                  <button color="accent" style="color:rgb(236, 138, 36);background-color:rgba(255,255,255,0.85);border:1px solid #eee;font-weight:bold;" type="button" md-button (click)="sidenav.open();;sidenavOpen2.value = true">
+                                      CUSTOMIZE
                                   </button>
                               </div>
                         </div>
-                      </div>
+                    </div>
                 </md-sidenav-container>
             </div>
         </div>

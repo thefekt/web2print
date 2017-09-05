@@ -159,12 +159,12 @@ exports.getRootCategoriesWithDetails = function(id)
                     SCHEMA : e.parent.SCHEMA.module.code+"."+e.parent.SCHEMA.code
                 };
             }
-            if (level < 2) {
+            // if (level < 2) {
                 for (var x of e.tags)
                     r.tags.push(rec(x,level+1));
                 for (var x of e.children)
                     r.children.push(rec(x,level+1));
-            }
+            // }
         } else if (e instanceof db.web2print.print_tag) {
             r = 
             {
@@ -192,22 +192,9 @@ exports.getRootCategoriesWithDetails = function(id)
 exports.getTemplateDetails = function (id) {
     var tpl = db.web2print.print_template.byId(id);
     if (!tpl) return {path:[],NAME: 'error'};
-    var res = [];
-    var c = tpl.category;
-    while (c) {
-        res.unshift({
-                id : c.id,
-                SCHEMA : c.SCHEMA.module.code+"."+c.SCHEMA.code,
-                code : c.code,
-                NAME : misc.OBJSTR(c)
-        });
-        c = c.parent;
-    }
-
     var d1 = exports.getContentsData(tpl);
 
-    return {
-        path: res, 
+    return { 
         object : 
         {
             NAME : misc.OBJSTR(tpl)+" ("+misc.formatDouble(tpl.width_mm)+"x"+misc.formatDouble(tpl.height_mm)+" mm)",
@@ -278,6 +265,14 @@ exports.getContentsData = function(tpl) {
                 type : 'qrcode',
                 placeholder : e.initial_value
             }); 
+        } else if (e instanceof db.web2print.indexed_color_content) {
+            res.push({
+                NAME : misc.OBJSTR(e),
+                code : e.code,
+                type : 'color',
+                placeholder : e.initial_value,
+                colors: e.available_colors
+            }); 
         } 
     }
     return res;
@@ -286,7 +281,7 @@ exports.getContentsData = function(tpl) {
 // NOT EXPORTED 
 function getContentsDefault(t) {
     var res = [];
-    for (var i=0;i<t.length;i++) if (t[i].type != "image")
+    for (var i=0;i<t.length;i++)
         res.push(t[i].placeholder);
     return res;
 }
