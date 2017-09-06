@@ -145,7 +145,6 @@
             <!-- ROOT (parent is null) CATEGORIES -->
             <div *ngIf="!cat.value" absolute-fill fxLayout="row" style="overflow: auto">
 
-
                 <div #ldc hidden class.xs="layout-detect-xs">
 
                 </div>
@@ -164,10 +163,10 @@
                                 <variable #crrC></variable>
                                 <execution #back [params]="{crrC:crrC,idmap:idmap}"><![CDATA[
                                     for (var i=0;i<crrC.value.tags.length;i++) {
-                                    idmap.value[crrC.value.tags[i].id] = false;
+                                        idmap.value[crrC.value.tags[i].id] = false;
                                     }
                                     crrC.value = null;
-                                    ]]></execution>
+                                ]]></execution>
                                 <ng-template let-subcat let-i="index" ngFor [ngForOf]="((crrC.value) ? crrC.value.children || [] : rootC.children || [])">
                                     <div (click)="crrC.value = subcat" class="icon-button" style="white-space: nowrap">
                                         {{subcat.NAME}} ({{subcat.children.length + subcat.tags.length}})
@@ -209,8 +208,7 @@
                                         <ng-template let-cn let-i="index" ngFor [ngForOf]="o.contents" style="padding: 12px">
                                             <div *ngIf="cn.SCHEMA.includes('color')">
                                                 <query [schema]="cn.SCHEMA" where="id = {{cn.id}}" properties="OICON@280x300,initial_value,available_colors">
-                                                    <result #rz2>
-                                                    </result>
+                                                    <result #rz2></result>
                                                     <div *ngIf="rz2 && rz2.objects[0] && rz2.objects[0].initial_value">
                                                         <variable>
                                                             <observe>
@@ -242,7 +240,6 @@
                         </query>
                     </div>
                 </md-sidenav-container>
-
 
                 <!--<div *ngFor="let chip of (rootCategories.value || []);let i = index" style="margin-left: 4px; text-align: center">-->
                     <!--<h3 align="left" style="margin: 8px 8px 8px 8px">{{chip.NAME}}</h3>-->
@@ -404,8 +401,6 @@
                                 </div>
                             </div>
 
-
-                            <!--{{templateObject.value.contents | json}}-->
                         </div>
                         <br/>
                         <div style="margin-bottom:2em">
