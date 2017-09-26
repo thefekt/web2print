@@ -23,13 +23,27 @@
         result.r = Math.round( result.r * 255 );
         result.g = Math.round( result.g * 255 );
         result.b = Math.round( result.b * 255 );
+        console.log(result);
         return result;
+    ]]></execution>
+
+    <execution #onch><![CDATA[
+        var br = args[0];
+        var img = args[1];
+        if (br.files && br.files[0]) {
+            var reader = new FileReader();
+            reader.onloadend = function() {
+            img.src = reader.result;
+        }
+        reader.readAsDataURL(br.files[0]);
+        }
     ]]></execution>
 
     <!-- Content if not logged in -->
     <include shared ref="/app/not-logged"></include>
     <div absolute-fill *ngIf="root.db.loggedIn">
         <variable #tpl export></variable>
+        <div #ldc hidden class.xs="layout-detect-xs"> </div>
         <div *ngIf="!tpl.value && tpl.ready">
             <!-- CATEGORY MODE  -->
             <variable #category></variable>
@@ -145,11 +159,8 @@
             <!-- ROOT (parent is null) CATEGORIES -->
             <div *ngIf="!cat.value" absolute-fill fxLayout="row" style="overflow: auto">
 
-                <div #ldc hidden class.xs="layout-detect-xs">
-
-                </div>
                 <md-sidenav-container absolute-fill>
-                    <md-sidenav [style.width]="ldc.classList.contains('layout-detect-xs') ? '100%' : '200px'" [opened]="sidenavOpen.value" #sn [mode]="ldc.classList.contains('layout-detect-xs') ? 'over' : 'side'">
+                    <md-sidenav [style.width]="ldc.classList.contains('layout-detect-xs') ? '100%' : '200px'" [opened]="sidenavOpen.value" #sn mode="side">
                         <div *ngIf="rootCategories.value">
                             <div>
                                 Home / <font color="#ec8a24">All Products</font>
@@ -329,7 +340,7 @@
                 ]]></execution>
 
                 <md-sidenav-container absolute-fill>
-                    <md-sidenav [opened]="sidenavOpen2.value" mode="side" #sidenav style="padding:8px;border-left:1px solid #eee">
+                    <md-sidenav [style.width]="ldc.classList.contains('layout-detect-xs') ? '100%' : '240px'" [opened]="sidenavOpen2.value" mode="side" #sidenav style="padding:8px;border-left:1px solid #eee">
                         <div *ngIf="templateObject.value && templateObject.value.contents">
                             <div *ngFor="let comp of templateObject.value.contents;let i = index" fxLayout="row">
                                 <variable #val [defaults]="{value : (custom.value||{})[comp.code] || templateObject.value.defaultData[i] }">
@@ -352,8 +363,9 @@
                                     <query [schema]="comp.placeholder.SCHEMA" where="id = {{comp.placeholder.id}}" properties="OICON@280x300,width_mm,height_mm">
                                         <result #rz>
                                             <div *ngIf="rz && rz.objects[0]">
-                                                <img [src]="rz.objects[0].ICON" style="width: 80px;height: 80px"/>
-                                                <button style="top: -32px" md-button>Browse</button>
+                                                <img #img id="blah" [src]="rz.objects[0].ICON" style="width: 80px;height: 80px"/>
+                                                <button (click)="br.click()" style="top: -32px" md-button>Browse</button>
+                                                <input hidden #br (change)="onch.execute(br,img)" type="file" accept="image/*">
                                             </div>
                                         </result>
                                     </query>
@@ -408,7 +420,7 @@
                               RESET
                               </button>
                               <button color="accent" style="float:right;color:rgb(236, 138, 36);background-color:rgba(255,255,255,0.85);border:2px solid rgb(236, 138, 36);font-weight:bold" type="button" md-button (click)="sidenav.close();sidenavOpen2.value = false">
-                              CLOSE
+                              DONE
                               </button>
                         </div>
                     </md-sidenav>

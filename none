@@ -1,0 +1,2456 @@
+2017-09-06 11:49:24,379 INFO ! starting automation on port 19883, timeout in 30 secs
+2017-09-06 11:49:24,629 INFO ! handle request. initiate dialogue.
+2017-09-06 11:49:24,629 INFO ! adapter v7.4 - timeouts
+2017-09-06 11:49:24,631 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3649/result.pdf:%7B%22CAPT%22%3A%22kfhgms%2Ffgkmh%2Ffklg%22%2C%22DESC1%22%3A%22BLAH%20%D0%91%D0%9B%D0%AF%20111%22%2C%22DESC2%22%3A%22BLAH%20%D0%91%D0%9B%D0%AF%202%22%2C%22COLOR%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 11:49:24,631 INFO .commence command [CONVERT]
+2017-09-06 11:49:24,631 INFO ..decoding params...
+2017-09-06 11:49:24,631 INFO ..opath: [./work/tmp/web_tmp//rndr-3649/result.pdf]
+2017-09-06 11:49:24,631 INFO ..json: [{"CAPT":"kfhgms/fgkmh/fklg","DESC1":"BLAH БЛЯ 111","DESC2":"BLAH БЛЯ 2","COLOR":"cmyk(12,84,60,48)"}]
+2017-09-06 11:49:24,632 INFO ..xlat: {u'CAPT': u'kfhgms/fgkmh/fklg', u'COLOR': u'cmyk(12,84,60,48)', u'DESC1': u'BLAH \u0411\u041b\u042f 111', u'DESC2': u'BLAH \u0411\u041b\u042f 2'}
+2017-09-06 11:49:24,633 INFO ! process template
+2017-09-06 11:49:24,633 INFO .process page 1
+2017-09-06 11:49:24,634 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 11:49:24,634 INFO ...cur text: [{{CAPT}}]
+2017-09-06 11:49:24,637 INFO ...new text: kfhgms/fgkmh/fklg
+2017-09-06 11:49:24,637 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 11:49:24,637 INFO ...cur text: [{{DESC1}}]
+2017-09-06 11:49:24,638 INFO ...new text: BLAH БЛЯ 111
+2017-09-06 11:49:24,638 INFO .process page 2
+2017-09-06 11:49:24,639 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 11:49:24,639 INFO ...cur text: [{{DESC2}}]
+2017-09-06 11:49:24,640 INFO ...new text: BLAH БЛЯ 2
+2017-09-06 11:49:24,640 INFO ! done processing template
+2017-09-06 11:49:24,640 INFO ! process colors
+2017-09-06 11:49:24,641 INFO ! colcodes []
+2017-09-06 11:49:24,641 INFO ! colors xlat {} 
+2017-09-06 11:49:40,985 INFO ! export current to PDF
+2017-09-06 11:49:40,985 INFO ! done :D
+2017-09-06 11:49:40,986 INFO ! done processing command [CONVERT]
+2017-09-06 11:50:29,460 INFO ! starting automation on port 15751, timeout in 30 secs
+2017-09-06 11:50:29,792 INFO ! handle request. initiate dialogue.
+2017-09-06 11:50:29,792 INFO ! adapter v7.4 - timeouts
+2017-09-06 11:50:29,792 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3649/result.pdf:%7B%22CAPT%22%3A%22balala%22%2C%22DESC1%22%3A%22BLAH%20%D0%91%D0%9B%D0%AF%20111%22%2C%22DESC2%22%3A%22BLAH%20%D0%91%D0%9B%D0%AF%202%22%2C%22COLOR%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 11:50:29,793 INFO .commence command [CONVERT]
+2017-09-06 11:50:29,793 INFO ..decoding params...
+2017-09-06 11:50:29,793 INFO ..opath: [./work/tmp/web_tmp//rndr-3649/result.pdf]
+2017-09-06 11:50:29,793 INFO ..json: [{"CAPT":"balala","DESC1":"BLAH БЛЯ 111","DESC2":"BLAH БЛЯ 2","COLOR":"cmyk(12,84,60,48)"}]
+2017-09-06 11:50:29,793 INFO ..xlat: {u'CAPT': u'balala', u'COLOR': u'cmyk(12,84,60,48)', u'DESC1': u'BLAH \u0411\u041b\u042f 111', u'DESC2': u'BLAH \u0411\u041b\u042f 2'}
+2017-09-06 11:50:29,793 INFO ! process template
+2017-09-06 11:50:29,793 INFO .process page 1
+2017-09-06 11:50:29,794 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 11:50:29,794 INFO ...cur text: [{{CAPT}}]
+2017-09-06 11:50:29,796 INFO ...new text: balala
+2017-09-06 11:50:29,796 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 11:50:29,796 INFO ...cur text: [{{DESC1}}]
+2017-09-06 11:50:29,797 INFO ...new text: BLAH БЛЯ 111
+2017-09-06 11:50:29,798 INFO .process page 2
+2017-09-06 11:50:29,798 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 11:50:29,798 INFO ...cur text: [{{DESC2}}]
+2017-09-06 11:50:29,800 INFO ...new text: BLAH БЛЯ 2
+2017-09-06 11:50:29,800 INFO ! done processing template
+2017-09-06 11:50:29,800 INFO ! process colors
+2017-09-06 11:50:29,800 INFO ! colcodes []
+2017-09-06 11:50:29,800 INFO ! colors xlat {} 
+2017-09-06 11:50:45,858 INFO ! export current to PDF
+2017-09-06 11:50:45,858 INFO ! done :D
+2017-09-06 11:50:45,858 INFO ! done processing command [CONVERT]
+2017-09-06 11:50:48,087 INFO ! starting automation on port 23953, timeout in 30 secs
+2017-09-06 11:50:48,464 INFO ! handle request. initiate dialogue.
+2017-09-06 11:50:48,464 INFO ! adapter v7.4 - timeouts
+2017-09-06 11:50:48,465 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MU%22%2C%22B%22%3A%22SA%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 11:50:48,465 INFO .commence command [CONVERT]
+2017-09-06 11:50:48,465 INFO ..decoding params...
+2017-09-06 11:50:48,465 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 11:50:48,466 INFO ..json: [{"A":"MU","B":"SA","C":"01234M","D":"cmyk(12,84,60,48)"}]
+2017-09-06 11:50:48,466 INFO ..xlat: {u'A': u'MU', u'C': u'01234M', u'B': u'SA', u'D': u'cmyk(12,84,60,48)'}
+2017-09-06 11:50:48,466 INFO ! process template
+2017-09-06 11:50:48,466 INFO .process page 1
+2017-09-06 11:50:48,467 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 11:50:48,467 INFO ...cur text: [{{C}}]
+2017-09-06 11:50:48,470 INFO ...new text: 01234M
+2017-09-06 11:50:48,470 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 11:50:48,470 INFO ...cur text: [ {{B}}]
+2017-09-06 11:50:48,471 INFO ...new text: SA
+2017-09-06 11:50:48,471 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 11:50:48,471 INFO ...cur text: [{{A}}]
+2017-09-06 11:50:48,472 INFO ...new text: MU
+2017-09-06 11:50:48,472 INFO ! done processing template
+2017-09-06 11:50:48,473 INFO ! process colors
+2017-09-06 11:50:48,473 INFO ! colcodes []
+2017-09-06 11:50:48,473 INFO ! colors xlat {} 
+2017-09-06 11:50:48,650 INFO ! export current to PDF
+2017-09-06 11:50:48,651 INFO ! done :D
+2017-09-06 11:50:48,651 INFO ! done processing command [CONVERT]
+2017-09-06 11:50:52,819 INFO ! starting automation on port 14594, timeout in 30 secs
+2017-09-06 11:50:53,286 INFO ! handle request. initiate dialogue.
+2017-09-06 11:50:53,287 INFO ! adapter v7.4 - timeouts
+2017-09-06 11:50:53,287 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3649/result.pdf:%7B%7D]
+2017-09-06 11:50:53,287 INFO .commence command [CONVERT]
+2017-09-06 11:50:53,287 INFO ..decoding params...
+2017-09-06 11:50:53,287 INFO ..opath: [./work/tmp/web_tmp//rndr-3649/result.pdf]
+2017-09-06 11:50:53,287 INFO ..json: [{}]
+2017-09-06 11:50:53,288 INFO ..xlat: {}
+2017-09-06 11:50:53,288 INFO ! process template
+2017-09-06 11:50:53,288 INFO .process page 1
+2017-09-06 11:50:53,288 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 11:50:53,288 INFO ...cur text: [{{CAPT}}]
+2017-09-06 11:50:53,290 INFO ...new text: {{CAPT}}
+2017-09-06 11:50:53,291 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 11:50:53,291 INFO ...cur text: [{{DESC1}}]
+2017-09-06 11:50:53,292 INFO ...new text: {{DESC1}}
+2017-09-06 11:50:53,292 INFO .process page 2
+2017-09-06 11:50:53,292 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 11:50:53,292 INFO ...cur text: [{{DESC2}}]
+2017-09-06 11:50:53,293 INFO ...new text: {{DESC2}}
+2017-09-06 11:50:53,293 INFO ! done processing template
+2017-09-06 11:50:53,294 INFO ! process colors
+2017-09-06 11:50:53,294 INFO ! colcodes []
+2017-09-06 11:50:53,294 INFO ! colors xlat {} 
+2017-09-06 11:51:09,306 INFO ! export current to PDF
+2017-09-06 11:51:09,306 INFO ! done :D
+2017-09-06 11:51:09,307 INFO ! done processing command [CONVERT]
+2017-09-06 11:51:13,550 INFO ! starting automation on port 22356, timeout in 30 secs
+2017-09-06 11:51:13,938 INFO ! handle request. initiate dialogue.
+2017-09-06 11:51:13,938 INFO ! adapter v7.4 - timeouts
+2017-09-06 11:51:13,939 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3649/result.pdf:%7B%7D]
+2017-09-06 11:51:13,939 INFO .commence command [CONVERT]
+2017-09-06 11:51:13,939 INFO ..decoding params...
+2017-09-06 11:51:13,939 INFO ..opath: [./work/tmp/web_tmp//rndr-3649/result.pdf]
+2017-09-06 11:51:13,939 INFO ..json: [{}]
+2017-09-06 11:51:13,939 INFO ..xlat: {}
+2017-09-06 11:51:13,939 INFO ! process template
+2017-09-06 11:51:13,939 INFO .process page 1
+2017-09-06 11:51:13,940 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 11:51:13,940 INFO ...cur text: [{{CAPT}}]
+2017-09-06 11:51:13,942 INFO ...new text: {{CAPT}}
+2017-09-06 11:51:13,942 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 11:51:13,942 INFO ...cur text: [{{DESC1}}]
+2017-09-06 11:51:13,943 INFO ...new text: {{DESC1}}
+2017-09-06 11:51:13,943 INFO .process page 2
+2017-09-06 11:51:13,944 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 11:51:13,944 INFO ...cur text: [{{DESC2}}]
+2017-09-06 11:51:13,945 INFO ...new text: {{DESC2}}
+2017-09-06 11:51:13,945 INFO ! done processing template
+2017-09-06 11:51:13,945 INFO ! process colors
+2017-09-06 11:51:13,946 INFO ! colcodes []
+2017-09-06 11:51:13,946 INFO ! colors xlat {} 
+2017-09-06 11:51:30,017 INFO ! export current to PDF
+2017-09-06 11:51:30,018 INFO ! done :D
+2017-09-06 11:51:30,018 INFO ! done processing command [CONVERT]
+2017-09-06 11:51:34,314 INFO ! starting automation on port 22515, timeout in 30 secs
+2017-09-06 11:51:34,624 INFO ! handle request. initiate dialogue.
+2017-09-06 11:51:34,625 INFO ! adapter v7.4 - timeouts
+2017-09-06 11:51:34,625 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3649/result.pdf:%7B%7D]
+2017-09-06 11:51:34,625 INFO .commence command [CONVERT]
+2017-09-06 11:51:34,625 INFO ..decoding params...
+2017-09-06 11:51:34,625 INFO ..opath: [./work/tmp/web_tmp//rndr-3649/result.pdf]
+2017-09-06 11:51:34,625 INFO ..json: [{}]
+2017-09-06 11:51:34,626 INFO ..xlat: {}
+2017-09-06 11:51:34,626 INFO ! process template
+2017-09-06 11:51:34,626 INFO .process page 1
+2017-09-06 11:51:34,626 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 11:51:34,626 INFO ...cur text: [{{CAPT}}]
+2017-09-06 11:51:34,628 INFO ...new text: {{CAPT}}
+2017-09-06 11:51:34,629 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 11:51:34,629 INFO ...cur text: [{{DESC1}}]
+2017-09-06 11:51:34,630 INFO ...new text: {{DESC1}}
+2017-09-06 11:51:34,630 INFO .process page 2
+2017-09-06 11:51:34,630 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 11:51:34,630 INFO ...cur text: [{{DESC2}}]
+2017-09-06 11:51:34,631 INFO ...new text: {{DESC2}}
+2017-09-06 11:51:34,632 INFO ! done processing template
+2017-09-06 11:51:34,632 INFO ! process colors
+2017-09-06 11:51:34,632 INFO ! colcodes []
+2017-09-06 11:51:34,632 INFO ! colors xlat {} 
+2017-09-06 11:51:50,758 INFO ! export current to PDF
+2017-09-06 11:51:50,758 INFO ! done :D
+2017-09-06 11:51:50,758 INFO ! done processing command [CONVERT]
+2017-09-06 11:51:54,924 INFO ! starting automation on port 15271, timeout in 30 secs
+2017-09-06 11:51:55,374 INFO ! handle request. initiate dialogue.
+2017-09-06 11:51:55,375 INFO ! adapter v7.4 - timeouts
+2017-09-06 11:51:55,375 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3649/result.pdf:%7B%7D]
+2017-09-06 11:51:55,375 INFO .commence command [CONVERT]
+2017-09-06 11:51:55,375 INFO ..decoding params...
+2017-09-06 11:51:55,376 INFO ..opath: [./work/tmp/web_tmp//rndr-3649/result.pdf]
+2017-09-06 11:51:55,376 INFO ..json: [{}]
+2017-09-06 11:51:55,376 INFO ..xlat: {}
+2017-09-06 11:51:55,376 INFO ! process template
+2017-09-06 11:51:55,376 INFO .process page 1
+2017-09-06 11:51:55,377 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 11:51:55,377 INFO ...cur text: [{{CAPT}}]
+2017-09-06 11:51:55,379 INFO ...new text: {{CAPT}}
+2017-09-06 11:51:55,379 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 11:51:55,379 INFO ...cur text: [{{DESC1}}]
+2017-09-06 11:51:55,380 INFO ...new text: {{DESC1}}
+2017-09-06 11:51:55,380 INFO .process page 2
+2017-09-06 11:51:55,381 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 11:51:55,381 INFO ...cur text: [{{DESC2}}]
+2017-09-06 11:51:55,382 INFO ...new text: {{DESC2}}
+2017-09-06 11:51:55,382 INFO ! done processing template
+2017-09-06 11:51:55,383 INFO ! process colors
+2017-09-06 11:51:55,383 INFO ! colcodes []
+2017-09-06 11:51:55,383 INFO ! colors xlat {} 
+2017-09-06 11:52:11,344 INFO ! export current to PDF
+2017-09-06 11:52:11,345 INFO ! done :D
+2017-09-06 11:52:11,345 INFO ! done processing command [CONVERT]
+2017-09-06 11:52:15,513 INFO ! starting automation on port 20989, timeout in 30 secs
+2017-09-06 11:52:15,944 INFO ! handle request. initiate dialogue.
+2017-09-06 11:52:15,944 INFO ! adapter v7.4 - timeouts
+2017-09-06 11:52:15,945 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3649/result.pdf:%7B%7D]
+2017-09-06 11:52:15,945 INFO .commence command [CONVERT]
+2017-09-06 11:52:15,945 INFO ..decoding params...
+2017-09-06 11:52:15,945 INFO ..opath: [./work/tmp/web_tmp//rndr-3649/result.pdf]
+2017-09-06 11:52:15,945 INFO ..json: [{}]
+2017-09-06 11:52:15,945 INFO ..xlat: {}
+2017-09-06 11:52:15,946 INFO ! process template
+2017-09-06 11:52:15,946 INFO .process page 1
+2017-09-06 11:52:15,946 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 11:52:15,946 INFO ...cur text: [{{CAPT}}]
+2017-09-06 11:52:15,949 INFO ...new text: {{CAPT}}
+2017-09-06 11:52:15,949 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 11:52:15,949 INFO ...cur text: [{{DESC1}}]
+2017-09-06 11:52:15,950 INFO ...new text: {{DESC1}}
+2017-09-06 11:52:15,950 INFO .process page 2
+2017-09-06 11:52:15,950 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 11:52:15,950 INFO ...cur text: [{{DESC2}}]
+2017-09-06 11:52:15,952 INFO ...new text: {{DESC2}}
+2017-09-06 11:52:15,952 INFO ! done processing template
+2017-09-06 11:52:15,952 INFO ! process colors
+2017-09-06 11:52:15,952 INFO ! colcodes []
+2017-09-06 11:52:15,952 INFO ! colors xlat {} 
+2017-09-06 11:52:31,997 INFO ! export current to PDF
+2017-09-06 11:52:31,998 INFO ! done :D
+2017-09-06 11:52:31,998 INFO ! done processing command [CONVERT]
+2017-09-06 11:52:36,175 INFO ! starting automation on port 22872, timeout in 30 secs
+2017-09-06 11:52:36,609 INFO ! handle request. initiate dialogue.
+2017-09-06 11:52:36,610 INFO ! adapter v7.4 - timeouts
+2017-09-06 11:52:36,610 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3649/result.pdf:%7B%7D]
+2017-09-06 11:52:36,610 INFO .commence command [CONVERT]
+2017-09-06 11:52:36,611 INFO ..decoding params...
+2017-09-06 11:52:36,611 INFO ..opath: [./work/tmp/web_tmp//rndr-3649/result.pdf]
+2017-09-06 11:52:36,611 INFO ..json: [{}]
+2017-09-06 11:52:36,611 INFO ..xlat: {}
+2017-09-06 11:52:36,611 INFO ! process template
+2017-09-06 11:52:36,611 INFO .process page 1
+2017-09-06 11:52:36,612 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 11:52:36,612 INFO ...cur text: [{{CAPT}}]
+2017-09-06 11:52:36,615 INFO ...new text: {{CAPT}}
+2017-09-06 11:52:36,615 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 11:52:36,615 INFO ...cur text: [{{DESC1}}]
+2017-09-06 11:52:36,616 INFO ...new text: {{DESC1}}
+2017-09-06 11:52:36,616 INFO .process page 2
+2017-09-06 11:52:36,617 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 11:52:36,617 INFO ...cur text: [{{DESC2}}]
+2017-09-06 11:52:36,618 INFO ...new text: {{DESC2}}
+2017-09-06 11:52:36,618 INFO ! done processing template
+2017-09-06 11:52:36,619 INFO ! process colors
+2017-09-06 11:52:36,619 INFO ! colcodes []
+2017-09-06 11:52:36,619 INFO ! colors xlat {} 
+2017-09-06 11:52:52,569 INFO ! export current to PDF
+2017-09-06 11:52:52,569 INFO ! done :D
+2017-09-06 11:52:52,569 INFO ! done processing command [CONVERT]
+2017-09-06 11:52:56,738 INFO ! starting automation on port 14088, timeout in 30 secs
+2017-09-06 11:52:57,166 INFO ! handle request. initiate dialogue.
+2017-09-06 11:52:57,166 INFO ! adapter v7.4 - timeouts
+2017-09-06 11:52:57,166 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3649/result.pdf:%7B%7D]
+2017-09-06 11:52:57,166 INFO .commence command [CONVERT]
+2017-09-06 11:52:57,166 INFO ..decoding params...
+2017-09-06 11:52:57,166 INFO ..opath: [./work/tmp/web_tmp//rndr-3649/result.pdf]
+2017-09-06 11:52:57,167 INFO ..json: [{}]
+2017-09-06 11:52:57,167 INFO ..xlat: {}
+2017-09-06 11:52:57,167 INFO ! process template
+2017-09-06 11:52:57,167 INFO .process page 1
+2017-09-06 11:52:57,167 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 11:52:57,168 INFO ...cur text: [{{CAPT}}]
+2017-09-06 11:52:57,170 INFO ...new text: {{CAPT}}
+2017-09-06 11:52:57,170 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 11:52:57,170 INFO ...cur text: [{{DESC1}}]
+2017-09-06 11:52:57,171 INFO ...new text: {{DESC1}}
+2017-09-06 11:52:57,171 INFO .process page 2
+2017-09-06 11:52:57,172 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 11:52:57,172 INFO ...cur text: [{{DESC2}}]
+2017-09-06 11:52:57,173 INFO ...new text: {{DESC2}}
+2017-09-06 11:52:57,173 INFO ! done processing template
+2017-09-06 11:52:57,173 INFO ! process colors
+2017-09-06 11:52:57,173 INFO ! colcodes []
+2017-09-06 11:52:57,173 INFO ! colors xlat {} 
+2017-09-06 11:53:13,144 INFO ! export current to PDF
+2017-09-06 11:53:13,144 INFO ! done :D
+2017-09-06 11:53:13,144 INFO ! done processing command [CONVERT]
+2017-09-06 11:53:17,321 INFO ! starting automation on port 16896, timeout in 30 secs
+2017-09-06 11:53:17,750 INFO ! handle request. initiate dialogue.
+2017-09-06 11:53:17,750 INFO ! adapter v7.4 - timeouts
+2017-09-06 11:53:17,751 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3649/result.pdf:%7B%7D]
+2017-09-06 11:53:17,751 INFO .commence command [CONVERT]
+2017-09-06 11:53:17,752 INFO ..decoding params...
+2017-09-06 11:53:17,752 INFO ..opath: [./work/tmp/web_tmp//rndr-3649/result.pdf]
+2017-09-06 11:53:17,752 INFO ..json: [{}]
+2017-09-06 11:53:17,752 INFO ..xlat: {}
+2017-09-06 11:53:17,752 INFO ! process template
+2017-09-06 11:53:17,752 INFO .process page 1
+2017-09-06 11:53:17,753 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 11:53:17,753 INFO ...cur text: [{{CAPT}}]
+2017-09-06 11:53:17,755 INFO ...new text: {{CAPT}}
+2017-09-06 11:53:17,755 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 11:53:17,755 INFO ...cur text: [{{DESC1}}]
+2017-09-06 11:53:17,756 INFO ...new text: {{DESC1}}
+2017-09-06 11:53:17,756 INFO .process page 2
+2017-09-06 11:53:17,757 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 11:53:17,757 INFO ...cur text: [{{DESC2}}]
+2017-09-06 11:53:17,758 INFO ...new text: {{DESC2}}
+2017-09-06 11:53:17,758 INFO ! done processing template
+2017-09-06 11:53:17,758 INFO ! process colors
+2017-09-06 11:53:17,759 INFO ! colcodes []
+2017-09-06 11:53:17,759 INFO ! colors xlat {} 
+2017-09-06 11:53:33,763 INFO ! export current to PDF
+2017-09-06 11:53:33,763 INFO ! done :D
+2017-09-06 11:53:33,764 INFO ! done processing command [CONVERT]
+2017-09-06 11:53:48,647 INFO ! timeout waiting for input
+2017-09-06 11:53:48,648 WARNING ! shutdown system.
+2017-09-06 11:53:48,653 WARNING could not import PyQt4.QtGui. just close all
+2017-09-06 11:55:05,712 INFO ! starting automation on port 21272, timeout in 30 secs
+2017-09-06 11:55:05,994 INFO ! handle request. initiate dialogue.
+2017-09-06 11:55:05,994 INFO ! adapter v7.4 - timeouts
+2017-09-06 11:55:05,995 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3649/result.pdf:%7B%7D]
+2017-09-06 11:55:05,995 INFO .commence command [CONVERT]
+2017-09-06 11:55:05,995 INFO ..decoding params...
+2017-09-06 11:55:05,995 INFO ..opath: [./work/tmp/web_tmp//rndr-3649/result.pdf]
+2017-09-06 11:55:05,995 INFO ..json: [{}]
+2017-09-06 11:55:05,995 INFO ..xlat: {}
+2017-09-06 11:55:05,995 INFO ! process template
+2017-09-06 11:55:05,995 INFO .process page 1
+2017-09-06 11:55:05,996 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 11:55:05,996 INFO ...cur text: [{{CAPT}}]
+2017-09-06 11:55:05,998 INFO ...new text: {{CAPT}}
+2017-09-06 11:55:05,998 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 11:55:05,998 INFO ...cur text: [{{DESC1}}]
+2017-09-06 11:55:05,999 INFO ...new text: {{DESC1}}
+2017-09-06 11:55:06,000 INFO .process page 2
+2017-09-06 11:55:06,000 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 11:55:06,000 INFO ...cur text: [{{DESC2}}]
+2017-09-06 11:55:06,001 INFO ...new text: {{DESC2}}
+2017-09-06 11:55:06,001 INFO ! done processing template
+2017-09-06 11:55:06,002 INFO ! process colors
+2017-09-06 11:55:06,002 INFO ! colcodes []
+2017-09-06 11:55:06,002 INFO ! colors xlat {} 
+2017-09-06 11:55:22,292 INFO ! export current to PDF
+2017-09-06 11:55:22,292 INFO ! done :D
+2017-09-06 11:55:22,292 INFO ! done processing command [CONVERT]
+2017-09-06 11:55:26,518 INFO ! starting automation on port 20371, timeout in 30 secs
+2017-09-06 11:55:26,913 INFO ! handle request. initiate dialogue.
+2017-09-06 11:55:26,913 INFO ! adapter v7.4 - timeouts
+2017-09-06 11:55:26,913 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3649/result.pdf:%7B%7D]
+2017-09-06 11:55:26,914 INFO .commence command [CONVERT]
+2017-09-06 11:55:26,914 INFO ..decoding params...
+2017-09-06 11:55:26,914 INFO ..opath: [./work/tmp/web_tmp//rndr-3649/result.pdf]
+2017-09-06 11:55:26,914 INFO ..json: [{}]
+2017-09-06 11:55:26,914 INFO ..xlat: {}
+2017-09-06 11:55:26,914 INFO ! process template
+2017-09-06 11:55:26,914 INFO .process page 1
+2017-09-06 11:55:26,915 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 11:55:26,915 INFO ...cur text: [{{CAPT}}]
+2017-09-06 11:55:26,917 INFO ...new text: {{CAPT}}
+2017-09-06 11:55:26,917 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 11:55:26,917 INFO ...cur text: [{{DESC1}}]
+2017-09-06 11:55:26,918 INFO ...new text: {{DESC1}}
+2017-09-06 11:55:26,918 INFO .process page 2
+2017-09-06 11:55:26,918 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 11:55:26,919 INFO ...cur text: [{{DESC2}}]
+2017-09-06 11:55:26,920 INFO ...new text: {{DESC2}}
+2017-09-06 11:55:26,920 INFO ! done processing template
+2017-09-06 11:55:26,920 INFO ! process colors
+2017-09-06 11:55:26,920 INFO ! colcodes []
+2017-09-06 11:55:26,920 INFO ! colors xlat {} 
+2017-09-06 11:55:43,072 INFO ! export current to PDF
+2017-09-06 11:55:43,072 INFO ! done :D
+2017-09-06 11:55:43,073 INFO ! done processing command [CONVERT]
+2017-09-06 11:55:47,238 INFO ! starting automation on port 22573, timeout in 30 secs
+2017-09-06 11:55:47,672 INFO ! handle request. initiate dialogue.
+2017-09-06 11:55:47,672 INFO ! adapter v7.4 - timeouts
+2017-09-06 11:55:47,673 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3649/result.pdf:%7B%7D]
+2017-09-06 11:55:47,673 INFO .commence command [CONVERT]
+2017-09-06 11:55:47,673 INFO ..decoding params...
+2017-09-06 11:55:47,673 INFO ..opath: [./work/tmp/web_tmp//rndr-3649/result.pdf]
+2017-09-06 11:55:47,673 INFO ..json: [{}]
+2017-09-06 11:55:47,674 INFO ..xlat: {}
+2017-09-06 11:55:47,674 INFO ! process template
+2017-09-06 11:55:47,674 INFO .process page 1
+2017-09-06 11:55:47,675 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 11:55:47,675 INFO ...cur text: [{{CAPT}}]
+2017-09-06 11:55:47,677 INFO ...new text: {{CAPT}}
+2017-09-06 11:55:47,677 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 11:55:47,677 INFO ...cur text: [{{DESC1}}]
+2017-09-06 11:55:47,679 INFO ...new text: {{DESC1}}
+2017-09-06 11:55:47,679 INFO .process page 2
+2017-09-06 11:55:47,679 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 11:55:47,680 INFO ...cur text: [{{DESC2}}]
+2017-09-06 11:55:47,681 INFO ...new text: {{DESC2}}
+2017-09-06 11:55:47,681 INFO ! done processing template
+2017-09-06 11:55:47,681 INFO ! process colors
+2017-09-06 11:55:47,681 INFO ! colcodes []
+2017-09-06 11:55:47,681 INFO ! colors xlat {} 
+2017-09-06 11:56:03,862 INFO ! export current to PDF
+2017-09-06 11:56:03,862 INFO ! done :D
+2017-09-06 11:56:03,862 INFO ! done processing command [CONVERT]
+2017-09-06 11:56:08,041 INFO ! starting automation on port 16421, timeout in 30 secs
+2017-09-06 11:56:08,473 INFO ! handle request. initiate dialogue.
+2017-09-06 11:56:08,473 INFO ! adapter v7.4 - timeouts
+2017-09-06 11:56:08,474 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3649/result.pdf:%7B%7D]
+2017-09-06 11:56:08,474 INFO .commence command [CONVERT]
+2017-09-06 11:56:08,474 INFO ..decoding params...
+2017-09-06 11:56:08,474 INFO ..opath: [./work/tmp/web_tmp//rndr-3649/result.pdf]
+2017-09-06 11:56:08,474 INFO ..json: [{}]
+2017-09-06 11:56:08,474 INFO ..xlat: {}
+2017-09-06 11:56:08,474 INFO ! process template
+2017-09-06 11:56:08,474 INFO .process page 1
+2017-09-06 11:56:08,475 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 11:56:08,475 INFO ...cur text: [{{CAPT}}]
+2017-09-06 11:56:08,477 INFO ...new text: {{CAPT}}
+2017-09-06 11:56:08,477 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 11:56:08,477 INFO ...cur text: [{{DESC1}}]
+2017-09-06 11:56:08,478 INFO ...new text: {{DESC1}}
+2017-09-06 11:56:08,478 INFO .process page 2
+2017-09-06 11:56:08,479 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 11:56:08,479 INFO ...cur text: [{{DESC2}}]
+2017-09-06 11:56:08,480 INFO ...new text: {{DESC2}}
+2017-09-06 11:56:08,480 INFO ! done processing template
+2017-09-06 11:56:08,481 INFO ! process colors
+2017-09-06 11:56:08,481 INFO ! colcodes []
+2017-09-06 11:56:08,481 INFO ! colors xlat {} 
+2017-09-06 11:56:24,572 INFO ! export current to PDF
+2017-09-06 11:56:24,572 INFO ! done :D
+2017-09-06 11:56:24,572 INFO ! done processing command [CONVERT]
+2017-09-06 11:58:16,931 INFO ! starting automation on port 14997, timeout in 30 secs
+2017-09-06 11:58:17,046 INFO ! handle request. initiate dialogue.
+2017-09-06 11:58:17,047 INFO ! adapter v7.4 - timeouts
+2017-09-06 11:58:17,047 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3649/result.pdf:%7B%22CAPT%22%3A%22kfhgms%2Ffgkmh%2Ffklg%22%2C%22DESC1%22%3A%22BLAH%20%D0%91%D0%9B%D0%AF%20111%22%2C%22DESC2%22%3A%22BLAH%20%D0%91%D0%9B%D0%AF%202%22%2C%22COLOR%22%3A%22cmyk(32%2C45%2C44%2C12)%22%7D]
+2017-09-06 11:58:17,047 INFO .commence command [CONVERT]
+2017-09-06 11:58:17,047 INFO ..decoding params...
+2017-09-06 11:58:17,047 INFO ..opath: [./work/tmp/web_tmp//rndr-3649/result.pdf]
+2017-09-06 11:58:17,047 INFO ..json: [{"CAPT":"kfhgms/fgkmh/fklg","DESC1":"BLAH БЛЯ 111","DESC2":"BLAH БЛЯ 2","COLOR":"cmyk(32,45,44,12)"}]
+2017-09-06 11:58:17,048 INFO ..xlat: {u'CAPT': u'kfhgms/fgkmh/fklg', u'COLOR': u'cmyk(32,45,44,12)', u'DESC1': u'BLAH \u0411\u041b\u042f 111', u'DESC2': u'BLAH \u0411\u041b\u042f 2'}
+2017-09-06 11:58:17,048 INFO ! process template
+2017-09-06 11:58:17,048 INFO .process page 1
+2017-09-06 11:58:17,048 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 11:58:17,049 INFO ...cur text: [{{CAPT}}]
+2017-09-06 11:58:17,051 INFO ...new text: kfhgms/fgkmh/fklg
+2017-09-06 11:58:17,051 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 11:58:17,051 INFO ...cur text: [{{DESC1}}]
+2017-09-06 11:58:17,052 INFO ...new text: BLAH БЛЯ 111
+2017-09-06 11:58:17,052 INFO .process page 2
+2017-09-06 11:58:17,053 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 11:58:17,053 INFO ...cur text: [{{DESC2}}]
+2017-09-06 11:58:17,054 INFO ...new text: BLAH БЛЯ 2
+2017-09-06 11:58:17,054 INFO ! done processing template
+2017-09-06 11:58:17,054 INFO ! process colors
+2017-09-06 11:58:17,054 INFO ! colcodes []
+2017-09-06 11:58:17,054 INFO ! colors xlat {} 
+2017-09-06 11:58:33,576 INFO ! export current to PDF
+2017-09-06 11:58:33,576 INFO ! done :D
+2017-09-06 11:58:33,576 INFO ! done processing command [CONVERT]
+2017-09-06 11:58:34,121 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3649/result.pdf:%7B%22CAPT%22%3A%22kfhgms%2Ffgkmh%2Ffklg%22%2C%22DESC1%22%3A%22BLAH%20%D0%91%D0%9B%D0%AF%20111%22%2C%22DESC2%22%3A%22BLAH%20%D0%91%D0%9B%D0%AF%202%22%2C%22COLOR%22%3A%22cmyk(32%2C45%2C44%2C12)%22%7D]
+2017-09-06 11:58:34,121 INFO .commence command [CONVERT]
+2017-09-06 11:58:34,121 INFO ..decoding params...
+2017-09-06 11:58:34,121 INFO ..opath: [./work/tmp/web_tmp//rndr-3649/result.pdf]
+2017-09-06 11:58:34,122 INFO ..json: [{"CAPT":"kfhgms/fgkmh/fklg","DESC1":"BLAH БЛЯ 111","DESC2":"BLAH БЛЯ 2","COLOR":"cmyk(32,45,44,12)"}]
+2017-09-06 11:58:34,122 INFO ..xlat: {u'CAPT': u'kfhgms/fgkmh/fklg', u'COLOR': u'cmyk(32,45,44,12)', u'DESC1': u'BLAH \u0411\u041b\u042f 111', u'DESC2': u'BLAH \u0411\u041b\u042f 2'}
+2017-09-06 11:58:34,122 INFO ! process template
+2017-09-06 11:58:34,122 INFO .process page 1
+2017-09-06 11:58:34,123 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 11:58:34,123 INFO ...cur text: [kfhgms/fgkmh/fklg]
+2017-09-06 11:58:34,124 INFO ...new text: kfhgms/fgkmh/fklg
+2017-09-06 11:58:34,124 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 11:58:34,124 INFO ...cur text: [BLAH БЛЯ 111]
+2017-09-06 11:58:34,126 INFO ...new text: BLAH БЛЯ 111
+2017-09-06 11:58:34,126 INFO .process page 2
+2017-09-06 11:58:34,126 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 11:58:34,127 INFO ...cur text: [BLAH БЛЯ 2]
+2017-09-06 11:58:34,129 INFO ...new text: BLAH БЛЯ 2
+2017-09-06 11:58:34,129 INFO ! done processing template
+2017-09-06 11:58:34,129 INFO ! process colors
+2017-09-06 11:58:34,129 INFO ! colcodes []
+2017-09-06 11:58:34,129 INFO ! colors xlat {} 
+2017-09-06 11:58:50,508 INFO ! export current to PDF
+2017-09-06 11:58:50,508 INFO ! done :D
+2017-09-06 11:58:50,509 INFO ! done processing command [CONVERT]
+2017-09-06 11:59:00,611 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3649/result.pdf:%7B%22CAPT%22%3A%22kfhgm%22%2C%22DESC1%22%3A%22BLAH%20%D0%91%D0%9B%D0%AF%20111%22%2C%22DESC2%22%3A%22BLAH%20%D0%91%D0%9B%D0%AF%202%22%2C%22COLOR%22%3A%22cmyk(32%2C45%2C44%2C12)%22%7D]
+2017-09-06 11:59:00,611 INFO .commence command [CONVERT]
+2017-09-06 11:59:00,611 INFO ..decoding params...
+2017-09-06 11:59:00,611 INFO ..opath: [./work/tmp/web_tmp//rndr-3649/result.pdf]
+2017-09-06 11:59:00,611 INFO ..json: [{"CAPT":"kfhgm","DESC1":"BLAH БЛЯ 111","DESC2":"BLAH БЛЯ 2","COLOR":"cmyk(32,45,44,12)"}]
+2017-09-06 11:59:00,611 INFO ..xlat: {u'CAPT': u'kfhgm', u'COLOR': u'cmyk(32,45,44,12)', u'DESC1': u'BLAH \u0411\u041b\u042f 111', u'DESC2': u'BLAH \u0411\u041b\u042f 2'}
+2017-09-06 11:59:00,611 INFO ! process template
+2017-09-06 11:59:00,611 INFO .process page 1
+2017-09-06 11:59:00,612 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 11:59:00,612 INFO ...cur text: [kfhgms/fgkmh/fklg]
+2017-09-06 11:59:00,614 INFO ...new text: kfhgm
+2017-09-06 11:59:00,614 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 11:59:00,614 INFO ...cur text: [BLAH БЛЯ 111]
+2017-09-06 11:59:00,616 INFO ...new text: BLAH БЛЯ 111
+2017-09-06 11:59:00,616 INFO .process page 2
+2017-09-06 11:59:00,616 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 11:59:00,616 INFO ...cur text: [BLAH БЛЯ 2]
+2017-09-06 11:59:00,618 INFO ...new text: BLAH БЛЯ 2
+2017-09-06 11:59:00,618 INFO ! done processing template
+2017-09-06 11:59:00,618 INFO ! process colors
+2017-09-06 11:59:00,619 INFO ! colcodes []
+2017-09-06 11:59:00,619 INFO ! colors xlat {} 
+2017-09-06 11:59:16,607 INFO ! export current to PDF
+2017-09-06 11:59:16,607 INFO ! done :D
+2017-09-06 11:59:16,608 INFO ! done processing command [CONVERT]
+2017-09-06 12:01:41,520 INFO ! starting automation on port 18874, timeout in 30 secs
+2017-09-06 12:01:41,883 INFO ! handle request. initiate dialogue.
+2017-09-06 12:01:41,883 INFO ! adapter v7.4 - timeouts
+2017-09-06 12:01:41,884 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3649/result.pdf:%7B%22CAPT%22%3A%22kfhgms%2Ffgkmh%2Ffklg%22%2C%22DESC1%22%3A%22BLAH%20%D0%91%D0%9B%D0%AF%20111%22%2C%22DESC2%22%3A%22BLAH%20%D0%91%D0%9B%D0%AF%202%22%2C%22COLOR%22%3A%22cmyk(32%2C45%2C44%2C12)%22%7D]
+2017-09-06 12:01:41,884 INFO .commence command [CONVERT]
+2017-09-06 12:01:41,884 INFO ..decoding params...
+2017-09-06 12:01:41,884 INFO ..opath: [./work/tmp/web_tmp//rndr-3649/result.pdf]
+2017-09-06 12:01:41,884 INFO ..json: [{"CAPT":"kfhgms/fgkmh/fklg","DESC1":"BLAH БЛЯ 111","DESC2":"BLAH БЛЯ 2","COLOR":"cmyk(32,45,44,12)"}]
+2017-09-06 12:01:41,885 INFO ..xlat: {u'CAPT': u'kfhgms/fgkmh/fklg', u'COLOR': u'cmyk(32,45,44,12)', u'DESC1': u'BLAH \u0411\u041b\u042f 111', u'DESC2': u'BLAH \u0411\u041b\u042f 2'}
+2017-09-06 12:01:41,885 INFO ! process template
+2017-09-06 12:01:41,885 INFO .process page 1
+2017-09-06 12:01:41,886 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 12:01:41,886 INFO ...cur text: [{{CAPT}}]
+2017-09-06 12:01:41,888 INFO ...new text: kfhgms/fgkmh/fklg
+2017-09-06 12:01:41,888 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 12:01:41,889 INFO ...cur text: [{{DESC1}}]
+2017-09-06 12:01:41,890 INFO ...new text: BLAH БЛЯ 111
+2017-09-06 12:01:41,890 INFO .process page 2
+2017-09-06 12:01:41,890 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 12:01:41,890 INFO ...cur text: [{{DESC2}}]
+2017-09-06 12:01:41,892 INFO ...new text: BLAH БЛЯ 2
+2017-09-06 12:01:41,892 INFO ! done processing template
+2017-09-06 12:01:41,892 INFO ! process colors
+2017-09-06 12:01:41,892 INFO ! colcodes ['COLOR']
+2017-09-06 12:01:41,896 ERROR ..standard error: invalid literal for int() with base 10: '32,45,44,12'
+2017-09-06 12:01:58,385 INFO ! export current to PDF
+2017-09-06 12:01:58,385 INFO ! done :D
+2017-09-06 12:01:58,385 INFO ! done processing command [CONVERT]
+2017-09-06 12:01:59,152 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3649/result.pdf:%7B%22CAPT%22%3A%22kfhgms%2Ffgkmh%2Ffklg%22%2C%22DESC1%22%3A%22BLAH%20%D0%91%D0%9B%D0%AF%20111%22%2C%22DESC2%22%3A%22BLAH%20%D0%91%D0%9B%D0%AF%202%22%2C%22COLOR%22%3A%22cmyk(32%2C45%2C44%2C12)%22%7D]
+2017-09-06 12:01:59,152 INFO .commence command [CONVERT]
+2017-09-06 12:01:59,152 INFO ..decoding params...
+2017-09-06 12:01:59,152 INFO ..opath: [./work/tmp/web_tmp//rndr-3649/result.pdf]
+2017-09-06 12:01:59,152 INFO ..json: [{"CAPT":"kfhgms/fgkmh/fklg","DESC1":"BLAH БЛЯ 111","DESC2":"BLAH БЛЯ 2","COLOR":"cmyk(32,45,44,12)"}]
+2017-09-06 12:01:59,152 INFO ..xlat: {u'CAPT': u'kfhgms/fgkmh/fklg', u'COLOR': u'cmyk(32,45,44,12)', u'DESC1': u'BLAH \u0411\u041b\u042f 111', u'DESC2': u'BLAH \u0411\u041b\u042f 2'}
+2017-09-06 12:01:59,152 INFO ! process template
+2017-09-06 12:01:59,152 INFO .process page 1
+2017-09-06 12:01:59,153 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 12:01:59,153 INFO ...cur text: [kfhgms/fgkmh/fklg]
+2017-09-06 12:01:59,156 INFO ...new text: kfhgms/fgkmh/fklg
+2017-09-06 12:01:59,156 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 12:01:59,156 INFO ...cur text: [BLAH БЛЯ 111]
+2017-09-06 12:01:59,158 INFO ...new text: BLAH БЛЯ 111
+2017-09-06 12:01:59,158 INFO .process page 2
+2017-09-06 12:01:59,159 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 12:01:59,159 INFO ...cur text: [BLAH БЛЯ 2]
+2017-09-06 12:01:59,161 INFO ...new text: BLAH БЛЯ 2
+2017-09-06 12:01:59,161 INFO ! done processing template
+2017-09-06 12:01:59,161 INFO ! process colors
+2017-09-06 12:01:59,161 INFO ! colcodes ['COLOR']
+2017-09-06 12:01:59,161 ERROR ..standard error: invalid literal for int() with base 10: '32,45,44,12'
+2017-09-06 12:02:15,462 INFO ! export current to PDF
+2017-09-06 12:02:15,462 INFO ! done :D
+2017-09-06 12:02:15,462 INFO ! done processing command [CONVERT]
+2017-09-06 12:02:16,017 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3649/result.pdf:%7B%22CAPT%22%3A%22kfhgms%2Ffgkmh%2Ffklg%22%2C%22DESC1%22%3A%22BLAH%20%D0%91%D0%9B%D0%AF%20111%22%2C%22DESC2%22%3A%22BLAH%20%D0%91%D0%9B%D0%AF%202%22%2C%22COLOR%22%3A%22cmyk(24%2C24%2C24%2C24)%22%7D]
+2017-09-06 12:02:16,017 INFO .commence command [CONVERT]
+2017-09-06 12:02:16,017 INFO ..decoding params...
+2017-09-06 12:02:16,017 INFO ..opath: [./work/tmp/web_tmp//rndr-3649/result.pdf]
+2017-09-06 12:02:16,017 INFO ..json: [{"CAPT":"kfhgms/fgkmh/fklg","DESC1":"BLAH БЛЯ 111","DESC2":"BLAH БЛЯ 2","COLOR":"cmyk(24,24,24,24)"}]
+2017-09-06 12:02:16,017 INFO ..xlat: {u'CAPT': u'kfhgms/fgkmh/fklg', u'COLOR': u'cmyk(24,24,24,24)', u'DESC1': u'BLAH \u0411\u041b\u042f 111', u'DESC2': u'BLAH \u0411\u041b\u042f 2'}
+2017-09-06 12:02:16,017 INFO ! process template
+2017-09-06 12:02:16,017 INFO .process page 1
+2017-09-06 12:02:16,018 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 12:02:16,018 INFO ...cur text: [kfhgms/fgkmh/fklg]
+2017-09-06 12:02:16,020 INFO ...new text: kfhgms/fgkmh/fklg
+2017-09-06 12:02:16,020 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 12:02:16,020 INFO ...cur text: [BLAH БЛЯ 111]
+2017-09-06 12:02:16,022 INFO ...new text: BLAH БЛЯ 111
+2017-09-06 12:02:16,022 INFO .process page 2
+2017-09-06 12:02:16,023 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 12:02:16,023 INFO ...cur text: [BLAH БЛЯ 2]
+2017-09-06 12:02:16,025 INFO ...new text: BLAH БЛЯ 2
+2017-09-06 12:02:16,026 INFO ! done processing template
+2017-09-06 12:02:16,026 INFO ! process colors
+2017-09-06 12:02:16,026 INFO ! colcodes ['COLOR']
+2017-09-06 12:02:16,026 ERROR ..standard error: invalid literal for int() with base 10: '24,24,24,24'
+2017-09-06 12:02:32,095 INFO ! export current to PDF
+2017-09-06 12:02:32,095 INFO ! done :D
+2017-09-06 12:02:32,096 INFO ! done processing command [CONVERT]
+2017-09-06 12:02:39,297 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3649/result.pdf:%7B%22CAPT%22%3A%22kfhgms%2Ffgkmh%2Ffklg%22%2C%22DESC1%22%3A%22BLAH%20%D0%91%D0%9B%D0%AF%20111%22%2C%22DESC2%22%3A%22BLAH%20%D0%91%D0%9B%D0%AF%202%22%2C%22COLOR%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 12:02:39,297 INFO .commence command [CONVERT]
+2017-09-06 12:02:39,297 INFO ..decoding params...
+2017-09-06 12:02:39,297 INFO ..opath: [./work/tmp/web_tmp//rndr-3649/result.pdf]
+2017-09-06 12:02:39,298 INFO ..json: [{"CAPT":"kfhgms/fgkmh/fklg","DESC1":"BLAH БЛЯ 111","DESC2":"BLAH БЛЯ 2","COLOR":"cmyk(12,84,60,48)"}]
+2017-09-06 12:02:39,298 INFO ..xlat: {u'CAPT': u'kfhgms/fgkmh/fklg', u'COLOR': u'cmyk(12,84,60,48)', u'DESC1': u'BLAH \u0411\u041b\u042f 111', u'DESC2': u'BLAH \u0411\u041b\u042f 2'}
+2017-09-06 12:02:39,298 INFO ! process template
+2017-09-06 12:02:39,298 INFO .process page 1
+2017-09-06 12:02:39,299 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 12:02:39,299 INFO ...cur text: [kfhgms/fgkmh/fklg]
+2017-09-06 12:02:39,301 INFO ...new text: kfhgms/fgkmh/fklg
+2017-09-06 12:02:39,301 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 12:02:39,301 INFO ...cur text: [BLAH БЛЯ 111]
+2017-09-06 12:02:39,303 INFO ...new text: BLAH БЛЯ 111
+2017-09-06 12:02:39,303 INFO .process page 2
+2017-09-06 12:02:39,304 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 12:02:39,304 INFO ...cur text: [BLAH БЛЯ 2]
+2017-09-06 12:02:39,307 INFO ...new text: BLAH БЛЯ 2
+2017-09-06 12:02:39,307 INFO ! done processing template
+2017-09-06 12:02:39,307 INFO ! process colors
+2017-09-06 12:02:39,307 INFO ! colcodes ['COLOR']
+2017-09-06 12:02:39,307 ERROR ..standard error: invalid literal for int() with base 10: '12,84,60,48'
+2017-09-06 12:02:55,412 INFO ! export current to PDF
+2017-09-06 12:02:55,412 INFO ! done :D
+2017-09-06 12:02:55,413 INFO ! done processing command [CONVERT]
+2017-09-06 12:04:38,780 INFO ! starting automation on port 20741, timeout in 30 secs
+2017-09-06 12:04:38,958 INFO ! handle request. initiate dialogue.
+2017-09-06 12:04:38,958 INFO ! adapter v7.4 - timeouts
+2017-09-06 12:04:38,959 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22%20SA%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 12:04:38,959 INFO .commence command [CONVERT]
+2017-09-06 12:04:38,959 INFO ..decoding params...
+2017-09-06 12:04:38,959 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:04:38,959 INFO ..json: [{"A":"MUM","B":" SA","C":"01234M","D":"cmyk(12,84,60,48)"}]
+2017-09-06 12:04:38,959 INFO ..xlat: {u'A': u'MUM', u'C': u'01234M', u'B': u' SA', u'D': u'cmyk(12,84,60,48)'}
+2017-09-06 12:04:38,959 INFO ! process template
+2017-09-06 12:04:38,959 INFO .process page 1
+2017-09-06 12:04:38,960 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:04:38,960 INFO ...cur text: [{{C}}]
+2017-09-06 12:04:38,962 INFO ...new text: 01234M
+2017-09-06 12:04:38,962 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:04:38,962 INFO ...cur text: [ {{B}}]
+2017-09-06 12:04:38,963 INFO ...new text:  SA
+2017-09-06 12:04:38,963 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:04:38,963 INFO ...cur text: [{{A}}]
+2017-09-06 12:04:38,964 INFO ...new text: MUM
+2017-09-06 12:04:38,964 INFO ! done processing template
+2017-09-06 12:04:38,965 INFO ! process colors
+2017-09-06 12:04:38,965 INFO ! colcodes []
+2017-09-06 12:04:38,965 INFO ! colors xlat {} 
+2017-09-06 12:04:39,141 INFO ! export current to PDF
+2017-09-06 12:04:39,141 INFO ! done :D
+2017-09-06 12:04:39,141 INFO ! done processing command [CONVERT]
+2017-09-06 12:04:39,676 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22%20SA%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 12:04:39,676 INFO .commence command [CONVERT]
+2017-09-06 12:04:39,676 INFO ..decoding params...
+2017-09-06 12:04:39,676 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:04:39,676 INFO ..json: [{"A":"MUM","B":" SA","C":"01234M","D":"cmyk(12,84,60,48)"}]
+2017-09-06 12:04:39,676 INFO ..xlat: {u'A': u'MUM', u'C': u'01234M', u'B': u' SA', u'D': u'cmyk(12,84,60,48)'}
+2017-09-06 12:04:39,676 INFO ! process template
+2017-09-06 12:04:39,676 INFO .process page 1
+2017-09-06 12:04:39,677 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:04:39,677 INFO ...cur text: [01234M]
+2017-09-06 12:04:39,678 INFO ...new text: 01234M
+2017-09-06 12:04:39,678 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:04:39,679 INFO ...cur text: [ SA]
+2017-09-06 12:04:39,680 INFO ...new text:  SA
+2017-09-06 12:04:39,680 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:04:39,680 INFO ...cur text: [MUM]
+2017-09-06 12:04:39,682 INFO ...new text: MUM
+2017-09-06 12:04:39,682 INFO ! done processing template
+2017-09-06 12:04:39,682 INFO ! process colors
+2017-09-06 12:04:39,682 INFO ! colcodes []
+2017-09-06 12:04:39,682 INFO ! colors xlat {} 
+2017-09-06 12:04:39,751 INFO ! export current to PDF
+2017-09-06 12:04:39,751 INFO ! done :D
+2017-09-06 12:04:39,751 INFO ! done processing command [CONVERT]
+2017-09-06 12:04:56,210 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22%20SA%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C12%2C12%2C12)%22%7D]
+2017-09-06 12:04:56,210 INFO .commence command [CONVERT]
+2017-09-06 12:04:56,210 INFO ..decoding params...
+2017-09-06 12:04:56,210 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:04:56,210 INFO ..json: [{"A":"MUM","B":" SA","C":"01234M","D":"cmyk(12,12,12,12)"}]
+2017-09-06 12:04:56,211 INFO ..xlat: {u'A': u'MUM', u'C': u'01234M', u'B': u' SA', u'D': u'cmyk(12,12,12,12)'}
+2017-09-06 12:04:56,211 INFO ! process template
+2017-09-06 12:04:56,211 INFO .process page 1
+2017-09-06 12:04:56,211 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:04:56,211 INFO ...cur text: [01234M]
+2017-09-06 12:04:56,213 INFO ...new text: 01234M
+2017-09-06 12:04:56,213 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:04:56,213 INFO ...cur text: [ SA]
+2017-09-06 12:04:56,215 INFO ...new text:  SA
+2017-09-06 12:04:56,215 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:04:56,215 INFO ...cur text: [MUM]
+2017-09-06 12:04:56,217 INFO ...new text: MUM
+2017-09-06 12:04:56,217 INFO ! done processing template
+2017-09-06 12:04:56,217 INFO ! process colors
+2017-09-06 12:04:56,217 INFO ! colcodes []
+2017-09-06 12:04:56,217 INFO ! colors xlat {} 
+2017-09-06 12:04:56,324 INFO ! export current to PDF
+2017-09-06 12:04:56,324 INFO ! done :D
+2017-09-06 12:04:56,324 INFO ! done processing command [CONVERT]
+2017-09-06 12:04:59,451 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22%20SA%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 12:04:59,451 INFO .commence command [CONVERT]
+2017-09-06 12:04:59,451 INFO ..decoding params...
+2017-09-06 12:04:59,451 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:04:59,451 INFO ..json: [{"A":"MUM","B":" SA","C":"01234M","D":"cmyk(12,84,60,48)"}]
+2017-09-06 12:04:59,451 INFO ..xlat: {u'A': u'MUM', u'C': u'01234M', u'B': u' SA', u'D': u'cmyk(12,84,60,48)'}
+2017-09-06 12:04:59,451 INFO ! process template
+2017-09-06 12:04:59,451 INFO .process page 1
+2017-09-06 12:04:59,452 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:04:59,452 INFO ...cur text: [01234M]
+2017-09-06 12:04:59,454 INFO ...new text: 01234M
+2017-09-06 12:04:59,454 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:04:59,454 INFO ...cur text: [ SA]
+2017-09-06 12:04:59,456 INFO ...new text:  SA
+2017-09-06 12:04:59,456 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:04:59,456 INFO ...cur text: [MUM]
+2017-09-06 12:04:59,458 INFO ...new text: MUM
+2017-09-06 12:04:59,458 INFO ! done processing template
+2017-09-06 12:04:59,458 INFO ! process colors
+2017-09-06 12:04:59,458 INFO ! colcodes []
+2017-09-06 12:04:59,458 INFO ! colors xlat {} 
+2017-09-06 12:04:59,530 INFO ! export current to PDF
+2017-09-06 12:04:59,531 INFO ! done :D
+2017-09-06 12:04:59,531 INFO ! done processing command [CONVERT]
+2017-09-06 12:05:55,408 INFO ! timeout waiting for input
+2017-09-06 12:05:55,408 WARNING ! shutdown system.
+2017-09-06 12:05:55,409 WARNING could not import PyQt4.QtGui. just close all
+2017-09-06 12:07:59,526 INFO ! timeout waiting for input
+2017-09-06 12:07:59,526 WARNING ! shutdown system.
+2017-09-06 12:07:59,527 WARNING could not import PyQt4.QtGui. just close all
+2017-09-06 12:30:54,546 INFO ! starting automation on port 21327, timeout in 30 secs
+2017-09-06 12:30:54,837 INFO ! handle request. initiate dialogue.
+2017-09-06 12:30:54,837 INFO ! adapter v7.4 - timeouts
+2017-09-06 12:30:54,838 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22SA%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C12%2C12%2C12)%22%7D]
+2017-09-06 12:30:54,838 INFO .commence command [CONVERT]
+2017-09-06 12:30:54,838 INFO ..decoding params...
+2017-09-06 12:30:54,838 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:30:54,838 INFO ..json: [{"A":"MUM","B":"SA","C":"01234M","D":"cmyk(12,12,12,12)"}]
+2017-09-06 12:30:54,839 INFO ..xlat: {u'A': u'MUM', u'C': u'01234M', u'B': u'SA', u'D': u'cmyk(12,12,12,12)'}
+2017-09-06 12:30:54,839 INFO ! process template
+2017-09-06 12:30:54,839 INFO .process page 1
+2017-09-06 12:30:54,839 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:30:54,840 INFO ...cur text: [{{C}}]
+2017-09-06 12:30:54,841 INFO ...new text: 01234M
+2017-09-06 12:30:54,841 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:30:54,841 INFO ...cur text: [ {{B}}]
+2017-09-06 12:30:54,842 INFO ...new text: SA
+2017-09-06 12:30:54,842 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:30:54,842 INFO ...cur text: [{{A}}]
+2017-09-06 12:30:54,843 INFO ...new text: MUM
+2017-09-06 12:30:54,843 INFO ! done processing template
+2017-09-06 12:30:54,844 INFO ! process colors
+2017-09-06 12:30:54,844 INFO ! colcodes ['COLOR']
+2017-09-06 12:30:54,844 INFO ! colors xlat {} 
+2017-09-06 12:30:54,957 INFO ! export current to PDF
+2017-09-06 12:30:54,957 INFO ! done :D
+2017-09-06 12:30:54,957 INFO ! done processing command [CONVERT]
+2017-09-06 12:30:55,944 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22SA%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C12%2C12%2C12)%22%7D]
+2017-09-06 12:30:55,944 INFO .commence command [CONVERT]
+2017-09-06 12:30:55,944 INFO ..decoding params...
+2017-09-06 12:30:55,944 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:30:55,944 INFO ..json: [{"A":"MUM","B":"SA","C":"01234M","D":"cmyk(12,12,12,12)"}]
+2017-09-06 12:30:55,944 INFO ..xlat: {u'A': u'MUM', u'C': u'01234M', u'B': u'SA', u'D': u'cmyk(12,12,12,12)'}
+2017-09-06 12:30:55,944 INFO ! process template
+2017-09-06 12:30:55,944 INFO .process page 1
+2017-09-06 12:30:55,945 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:30:55,945 INFO ...cur text: [01234M]
+2017-09-06 12:30:55,946 INFO ...new text: 01234M
+2017-09-06 12:30:55,946 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:30:55,946 INFO ...cur text: [SA]
+2017-09-06 12:30:55,947 INFO ...new text: SA
+2017-09-06 12:30:55,948 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:30:55,948 INFO ...cur text: [MUM]
+2017-09-06 12:30:55,949 INFO ...new text: MUM
+2017-09-06 12:30:55,949 INFO ! done processing template
+2017-09-06 12:30:55,949 INFO ! process colors
+2017-09-06 12:30:55,949 INFO ! colcodes ['COLOR']
+2017-09-06 12:30:55,949 INFO ! colors xlat {} 
+2017-09-06 12:30:56,002 INFO ! export current to PDF
+2017-09-06 12:30:56,002 INFO ! done :D
+2017-09-06 12:30:56,002 INFO ! done processing command [CONVERT]
+2017-09-06 12:31:02,320 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22SA%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 12:31:02,320 INFO .commence command [CONVERT]
+2017-09-06 12:31:02,320 INFO ..decoding params...
+2017-09-06 12:31:02,320 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:31:02,320 INFO ..json: [{"A":"MUM","B":"SA","C":"01234M","D":"cmyk(12,84,60,48)"}]
+2017-09-06 12:31:02,320 INFO ..xlat: {u'A': u'MUM', u'C': u'01234M', u'B': u'SA', u'D': u'cmyk(12,84,60,48)'}
+2017-09-06 12:31:02,321 INFO ! process template
+2017-09-06 12:31:02,321 INFO .process page 1
+2017-09-06 12:31:02,321 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:31:02,321 INFO ...cur text: [01234M]
+2017-09-06 12:31:02,323 INFO ...new text: 01234M
+2017-09-06 12:31:02,323 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:31:02,323 INFO ...cur text: [SA]
+2017-09-06 12:31:02,325 INFO ...new text: SA
+2017-09-06 12:31:02,325 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:31:02,325 INFO ...cur text: [MUM]
+2017-09-06 12:31:02,327 INFO ...new text: MUM
+2017-09-06 12:31:02,327 INFO ! done processing template
+2017-09-06 12:31:02,327 INFO ! process colors
+2017-09-06 12:31:02,327 INFO ! colcodes ['COLOR']
+2017-09-06 12:31:02,327 INFO ! colors xlat {} 
+2017-09-06 12:31:02,392 INFO ! export current to PDF
+2017-09-06 12:31:02,392 INFO ! done :D
+2017-09-06 12:31:02,392 INFO ! done processing command [CONVERT]
+2017-09-06 12:34:07,935 INFO ! starting automation on port 21620, timeout in 30 secs
+2017-09-06 12:34:08,359 INFO ! handle request. initiate dialogue.
+2017-09-06 12:34:08,359 INFO ! adapter v7.4 - timeouts
+2017-09-06 12:34:08,359 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22%20SA%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 12:34:08,360 INFO .commence command [CONVERT]
+2017-09-06 12:34:08,360 INFO ..decoding params...
+2017-09-06 12:34:08,360 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:34:08,360 INFO ..json: [{"A":"MUM","B":" SA","C":"01234M","D":"cmyk(12,84,60,48)"}]
+2017-09-06 12:34:08,360 INFO ..xlat: {u'A': u'MUM', u'C': u'01234M', u'B': u' SA', u'D': u'cmyk(12,84,60,48)'}
+2017-09-06 12:34:08,360 INFO ! process template
+2017-09-06 12:34:08,360 INFO .process page 1
+2017-09-06 12:34:08,361 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:34:08,361 INFO ...cur text: [{{C}}]
+2017-09-06 12:34:08,363 INFO ...new text: 01234M
+2017-09-06 12:34:08,363 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:34:08,363 INFO ...cur text: [ {{B}}]
+2017-09-06 12:34:08,364 INFO ...new text:  SA
+2017-09-06 12:34:08,364 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:34:08,364 INFO ...cur text: [{{A}}]
+2017-09-06 12:34:08,365 INFO ...new text: MUM
+2017-09-06 12:34:08,365 INFO ! done processing template
+2017-09-06 12:34:08,366 INFO ! process colors
+2017-09-06 12:34:08,366 INFO ! colcodes ['COLOR']
+2017-09-06 12:34:08,366 INFO ! colors xlat {} 
+2017-09-06 12:34:08,478 INFO ! export current to PDF
+2017-09-06 12:34:08,478 INFO ! done :D
+2017-09-06 12:34:08,478 INFO ! done processing command [CONVERT]
+2017-09-06 12:34:12,112 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22%20SA%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C12%2C12%2C12)%22%7D]
+2017-09-06 12:34:12,112 INFO .commence command [CONVERT]
+2017-09-06 12:34:12,112 INFO ..decoding params...
+2017-09-06 12:34:12,112 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:34:12,112 INFO ..json: [{"A":"MUM","B":" SA","C":"01234M","D":"cmyk(12,12,12,12)"}]
+2017-09-06 12:34:12,112 INFO ..xlat: {u'A': u'MUM', u'C': u'01234M', u'B': u' SA', u'D': u'cmyk(12,12,12,12)'}
+2017-09-06 12:34:12,112 INFO ! process template
+2017-09-06 12:34:12,112 INFO .process page 1
+2017-09-06 12:34:12,113 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:34:12,113 INFO ...cur text: [01234M]
+2017-09-06 12:34:12,114 INFO ...new text: 01234M
+2017-09-06 12:34:12,114 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:34:12,115 INFO ...cur text: [ SA]
+2017-09-06 12:34:12,116 INFO ...new text:  SA
+2017-09-06 12:34:12,116 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:34:12,116 INFO ...cur text: [MUM]
+2017-09-06 12:34:12,117 INFO ...new text: MUM
+2017-09-06 12:34:12,117 INFO ! done processing template
+2017-09-06 12:34:12,117 INFO ! process colors
+2017-09-06 12:34:12,118 INFO ! colcodes ['COLOR']
+2017-09-06 12:34:12,118 INFO ! colors xlat {} 
+2017-09-06 12:34:12,198 INFO ! export current to PDF
+2017-09-06 12:34:12,198 INFO ! done :D
+2017-09-06 12:34:12,198 INFO ! done processing command [CONVERT]
+2017-09-06 12:38:22,963 INFO ! starting automation on port 14972, timeout in 30 secs
+2017-09-06 12:38:23,294 INFO ! handle request. initiate dialogue.
+2017-09-06 12:38:23,294 INFO ! adapter v7.4 - timeouts
+2017-09-06 12:38:23,295 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22%20SA%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 12:38:23,295 INFO .commence command [CONVERT]
+2017-09-06 12:38:23,295 INFO ..decoding params...
+2017-09-06 12:38:23,295 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:38:23,295 INFO ..json: [{"A":"MUM","B":" SA","C":"01234M","D":"cmyk(12,84,60,48)"}]
+2017-09-06 12:38:23,295 INFO ..xlat: {u'A': u'MUM', u'C': u'01234M', u'B': u' SA', u'D': u'cmyk(12,84,60,48)'}
+2017-09-06 12:38:23,295 INFO ! process template
+2017-09-06 12:38:23,296 INFO .process page 1
+2017-09-06 12:38:23,296 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:38:23,297 INFO ...cur text: [{{C}}]
+2017-09-06 12:38:23,299 INFO ...new text: 01234M
+2017-09-06 12:38:23,299 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:38:23,299 INFO ...cur text: [ {{B}}]
+2017-09-06 12:38:23,300 INFO ...new text:  SA
+2017-09-06 12:38:23,300 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:38:23,300 INFO ...cur text: [{{A}}]
+2017-09-06 12:38:23,302 INFO ...new text: MUM
+2017-09-06 12:38:23,302 INFO ! done processing template
+2017-09-06 12:38:23,302 INFO ! process colors
+2017-09-06 12:38:23,302 INFO ! colcodes ['COLOR']
+2017-09-06 12:38:23,302 INFO ! colors xlat {} 
+2017-09-06 12:38:23,451 INFO ! export current to PDF
+2017-09-06 12:38:23,451 INFO ! done :D
+2017-09-06 12:38:23,451 INFO ! done processing command [CONVERT]
+2017-09-06 12:38:24,461 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22%20SA%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 12:38:24,461 INFO .commence command [CONVERT]
+2017-09-06 12:38:24,461 INFO ..decoding params...
+2017-09-06 12:38:24,462 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:38:24,462 INFO ..json: [{"A":"MUM","B":" SA","C":"01234M","D":"cmyk(12,84,60,48)"}]
+2017-09-06 12:38:24,462 INFO ..xlat: {u'A': u'MUM', u'C': u'01234M', u'B': u' SA', u'D': u'cmyk(12,84,60,48)'}
+2017-09-06 12:38:24,462 INFO ! process template
+2017-09-06 12:38:24,462 INFO .process page 1
+2017-09-06 12:38:24,463 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:38:24,463 INFO ...cur text: [01234M]
+2017-09-06 12:38:24,465 INFO ...new text: 01234M
+2017-09-06 12:38:24,465 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:38:24,465 INFO ...cur text: [ SA]
+2017-09-06 12:38:24,466 INFO ...new text:  SA
+2017-09-06 12:38:24,467 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:38:24,467 INFO ...cur text: [MUM]
+2017-09-06 12:38:24,468 INFO ...new text: MUM
+2017-09-06 12:38:24,468 INFO ! done processing template
+2017-09-06 12:38:24,468 INFO ! process colors
+2017-09-06 12:38:24,468 INFO ! colcodes ['COLOR']
+2017-09-06 12:38:24,468 INFO ! colors xlat {} 
+2017-09-06 12:38:24,580 INFO ! export current to PDF
+2017-09-06 12:38:24,580 INFO ! done :D
+2017-09-06 12:38:24,580 INFO ! done processing command [CONVERT]
+2017-09-06 12:38:27,388 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22%20SA%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C12%2C12%2C12)%22%7D]
+2017-09-06 12:38:27,388 INFO .commence command [CONVERT]
+2017-09-06 12:38:27,388 INFO ..decoding params...
+2017-09-06 12:38:27,388 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:38:27,388 INFO ..json: [{"A":"MUM","B":" SA","C":"01234M","D":"cmyk(12,12,12,12)"}]
+2017-09-06 12:38:27,388 INFO ..xlat: {u'A': u'MUM', u'C': u'01234M', u'B': u' SA', u'D': u'cmyk(12,12,12,12)'}
+2017-09-06 12:38:27,388 INFO ! process template
+2017-09-06 12:38:27,388 INFO .process page 1
+2017-09-06 12:38:27,389 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:38:27,389 INFO ...cur text: [01234M]
+2017-09-06 12:38:27,390 INFO ...new text: 01234M
+2017-09-06 12:38:27,391 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:38:27,391 INFO ...cur text: [ SA]
+2017-09-06 12:38:27,392 INFO ...new text:  SA
+2017-09-06 12:38:27,392 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:38:27,393 INFO ...cur text: [MUM]
+2017-09-06 12:38:27,394 INFO ...new text: MUM
+2017-09-06 12:38:27,394 INFO ! done processing template
+2017-09-06 12:38:27,394 INFO ! process colors
+2017-09-06 12:38:27,394 INFO ! colcodes ['COLOR']
+2017-09-06 12:38:27,395 INFO ! colors xlat {} 
+2017-09-06 12:38:27,458 INFO ! export current to PDF
+2017-09-06 12:38:27,459 INFO ! done :D
+2017-09-06 12:38:27,459 INFO ! done processing command [CONVERT]
+2017-09-06 12:38:33,940 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22%20SA%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 12:38:33,940 INFO .commence command [CONVERT]
+2017-09-06 12:38:33,940 INFO ..decoding params...
+2017-09-06 12:38:33,940 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:38:33,940 INFO ..json: [{"A":"MUM","B":" SA","C":"01234M","D":"cmyk(12,84,60,48)"}]
+2017-09-06 12:38:33,940 INFO ..xlat: {u'A': u'MUM', u'C': u'01234M', u'B': u' SA', u'D': u'cmyk(12,84,60,48)'}
+2017-09-06 12:38:33,941 INFO ! process template
+2017-09-06 12:38:33,941 INFO .process page 1
+2017-09-06 12:38:33,942 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:38:33,942 INFO ...cur text: [01234M]
+2017-09-06 12:38:33,944 INFO ...new text: 01234M
+2017-09-06 12:38:33,945 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:38:33,945 INFO ...cur text: [ SA]
+2017-09-06 12:38:33,947 INFO ...new text:  SA
+2017-09-06 12:38:33,947 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:38:33,947 INFO ...cur text: [MUM]
+2017-09-06 12:38:33,949 INFO ...new text: MUM
+2017-09-06 12:38:33,949 INFO ! done processing template
+2017-09-06 12:38:33,949 INFO ! process colors
+2017-09-06 12:38:33,949 INFO ! colcodes ['COLOR']
+2017-09-06 12:38:33,949 INFO ! colors xlat {} 
+2017-09-06 12:38:34,013 INFO ! export current to PDF
+2017-09-06 12:38:34,013 INFO ! done :D
+2017-09-06 12:38:34,013 INFO ! done processing command [CONVERT]
+2017-09-06 12:39:00,005 INFO ! starting automation on port 19696, timeout in 30 secs
+2017-09-06 12:39:00,326 INFO ! handle request. initiate dialogue.
+2017-09-06 12:39:00,326 INFO ! adapter v7.4 - timeouts
+2017-09-06 12:39:00,326 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3649/result.pdf:%7B%22CAPT%22%3A%22kfhgms%2Ffgkmh%2Ffklg%22%2C%22DESC1%22%3A%22BLAH%20%D0%91%D0%9B%D0%AF%20111%22%2C%22DESC2%22%3A%22BLAH%20%D0%91%D0%9B%D0%AF%202%22%2C%22COLOR%22%3A%22cmyk(32%2C45%2C44%2C12)%22%7D]
+2017-09-06 12:39:00,327 INFO .commence command [CONVERT]
+2017-09-06 12:39:00,327 INFO ..decoding params...
+2017-09-06 12:39:00,327 INFO ..opath: [./work/tmp/web_tmp//rndr-3649/result.pdf]
+2017-09-06 12:39:00,327 INFO ..json: [{"CAPT":"kfhgms/fgkmh/fklg","DESC1":"BLAH БЛЯ 111","DESC2":"BLAH БЛЯ 2","COLOR":"cmyk(32,45,44,12)"}]
+2017-09-06 12:39:00,327 INFO ..xlat: {u'CAPT': u'kfhgms/fgkmh/fklg', u'COLOR': u'cmyk(32,45,44,12)', u'DESC1': u'BLAH \u0411\u041b\u042f 111', u'DESC2': u'BLAH \u0411\u041b\u042f 2'}
+2017-09-06 12:39:00,327 INFO ! process template
+2017-09-06 12:39:00,327 INFO .process page 1
+2017-09-06 12:39:00,328 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 12:39:00,328 INFO ...cur text: [{{CAPT}}]
+2017-09-06 12:39:00,330 INFO ...new text: kfhgms/fgkmh/fklg
+2017-09-06 12:39:00,330 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 12:39:00,330 INFO ...cur text: [{{DESC1}}]
+2017-09-06 12:39:00,331 INFO ...new text: BLAH БЛЯ 111
+2017-09-06 12:39:00,331 INFO .process page 2
+2017-09-06 12:39:00,331 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 12:39:00,332 INFO ...cur text: [{{DESC2}}]
+2017-09-06 12:39:00,333 INFO ...new text: BLAH БЛЯ 2
+2017-09-06 12:39:00,333 INFO ! done processing template
+2017-09-06 12:39:00,333 INFO ! process colors
+2017-09-06 12:39:00,333 INFO ! colcodes ['COLOR']
+2017-09-06 12:39:00,333 ERROR ..standard error: invalid literal for int() with base 10: '32,45,44,12'
+2017-09-06 12:39:16,841 INFO ! export current to PDF
+2017-09-06 12:39:16,841 INFO ! done :D
+2017-09-06 12:39:16,841 INFO ! done processing command [CONVERT]
+2017-09-06 12:39:17,413 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3649/result.pdf:%7B%22CAPT%22%3A%22kfhgms%2Ffgkmh%2Ffklg%22%2C%22DESC1%22%3A%22BLAH%20%D0%91%D0%9B%D0%AF%20111%22%2C%22DESC2%22%3A%22BLAH%20%D0%91%D0%9B%D0%AF%202%22%2C%22COLOR%22%3A%22cmyk(32%2C45%2C44%2C12)%22%7D]
+2017-09-06 12:39:17,413 INFO .commence command [CONVERT]
+2017-09-06 12:39:17,413 INFO ..decoding params...
+2017-09-06 12:39:17,413 INFO ..opath: [./work/tmp/web_tmp//rndr-3649/result.pdf]
+2017-09-06 12:39:17,414 INFO ..json: [{"CAPT":"kfhgms/fgkmh/fklg","DESC1":"BLAH БЛЯ 111","DESC2":"BLAH БЛЯ 2","COLOR":"cmyk(32,45,44,12)"}]
+2017-09-06 12:39:17,414 INFO ..xlat: {u'CAPT': u'kfhgms/fgkmh/fklg', u'COLOR': u'cmyk(32,45,44,12)', u'DESC1': u'BLAH \u0411\u041b\u042f 111', u'DESC2': u'BLAH \u0411\u041b\u042f 2'}
+2017-09-06 12:39:17,414 INFO ! process template
+2017-09-06 12:39:17,414 INFO .process page 1
+2017-09-06 12:39:17,415 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 12:39:17,415 INFO ...cur text: [kfhgms/fgkmh/fklg]
+2017-09-06 12:39:17,417 INFO ...new text: kfhgms/fgkmh/fklg
+2017-09-06 12:39:17,418 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 12:39:17,418 INFO ...cur text: [BLAH БЛЯ 111]
+2017-09-06 12:39:17,419 INFO ...new text: BLAH БЛЯ 111
+2017-09-06 12:39:17,419 INFO .process page 2
+2017-09-06 12:39:17,420 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 12:39:17,420 INFO ...cur text: [BLAH БЛЯ 2]
+2017-09-06 12:39:17,421 INFO ...new text: BLAH БЛЯ 2
+2017-09-06 12:39:17,421 INFO ! done processing template
+2017-09-06 12:39:17,421 INFO ! process colors
+2017-09-06 12:39:17,421 INFO ! colcodes ['COLOR']
+2017-09-06 12:39:17,421 ERROR ..standard error: invalid literal for int() with base 10: '32,45,44,12'
+2017-09-06 12:39:33,918 INFO ! export current to PDF
+2017-09-06 12:39:33,918 INFO ! done :D
+2017-09-06 12:39:33,918 INFO ! done processing command [CONVERT]
+2017-09-06 12:45:50,763 INFO ! starting automation on port 19677, timeout in 30 secs
+2017-09-06 12:45:51,010 INFO ! handle request. initiate dialogue.
+2017-09-06 12:45:51,010 INFO ! adapter v7.4 - timeouts
+2017-09-06 12:45:51,011 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22S%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 12:45:51,012 INFO .commence command [CONVERT]
+2017-09-06 12:45:51,012 INFO ..decoding params...
+2017-09-06 12:45:51,012 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:45:51,012 INFO ..json: [{"A":"MUM","B":"S","C":"01234M","D":"cmyk(12,84,60,48)"}]
+2017-09-06 12:45:51,012 INFO ..xlat: {u'A': u'MUM', u'C': u'01234M', u'B': u'S', u'D': u'cmyk(12,84,60,48)'}
+2017-09-06 12:45:51,012 INFO ! process template
+2017-09-06 12:45:51,012 INFO .process page 1
+2017-09-06 12:45:51,013 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:45:51,013 INFO ...cur text: [{{C}}]
+2017-09-06 12:45:51,015 INFO ...new text: 01234M
+2017-09-06 12:45:51,015 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:45:51,015 INFO ...cur text: [ {{B}}]
+2017-09-06 12:45:51,016 INFO ...new text: S
+2017-09-06 12:45:51,016 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:45:51,016 INFO ...cur text: [{{A}}]
+2017-09-06 12:45:51,017 INFO ...new text: MUM
+2017-09-06 12:45:51,017 INFO ! done processing template
+2017-09-06 12:45:51,018 INFO ! process colors
+2017-09-06 12:45:51,018 INFO ! colcodes ['COLOR']
+2017-09-06 12:45:51,018 INFO ! colors xlat {} 
+2017-09-06 12:45:51,167 INFO ! export current to PDF
+2017-09-06 12:45:51,167 INFO ! done :D
+2017-09-06 12:45:51,167 INFO ! done processing command [CONVERT]
+2017-09-06 12:45:52,166 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22S%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 12:45:52,166 INFO .commence command [CONVERT]
+2017-09-06 12:45:52,166 INFO ..decoding params...
+2017-09-06 12:45:52,166 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:45:52,166 INFO ..json: [{"A":"MUM","B":"S","C":"01234M","D":"cmyk(12,84,60,48)"}]
+2017-09-06 12:45:52,166 INFO ..xlat: {u'A': u'MUM', u'C': u'01234M', u'B': u'S', u'D': u'cmyk(12,84,60,48)'}
+2017-09-06 12:45:52,166 INFO ! process template
+2017-09-06 12:45:52,166 INFO .process page 1
+2017-09-06 12:45:52,167 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:45:52,167 INFO ...cur text: [01234M]
+2017-09-06 12:45:52,168 INFO ...new text: 01234M
+2017-09-06 12:45:52,168 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:45:52,168 INFO ...cur text: [S]
+2017-09-06 12:45:52,169 INFO ...new text: S
+2017-09-06 12:45:52,169 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:45:52,169 INFO ...cur text: [MUM]
+2017-09-06 12:45:52,170 INFO ...new text: MUM
+2017-09-06 12:45:52,170 INFO ! done processing template
+2017-09-06 12:45:52,170 INFO ! process colors
+2017-09-06 12:45:52,171 INFO ! colcodes ['COLOR']
+2017-09-06 12:45:52,171 INFO ! colors xlat {} 
+2017-09-06 12:45:52,249 INFO ! export current to PDF
+2017-09-06 12:45:52,249 INFO ! done :D
+2017-09-06 12:45:52,249 INFO ! done processing command [CONVERT]
+2017-09-06 12:45:56,881 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22SA%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 12:45:56,881 INFO .commence command [CONVERT]
+2017-09-06 12:45:56,881 INFO ..decoding params...
+2017-09-06 12:45:56,881 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:45:56,881 INFO ..json: [{"A":"MUM","B":"SA","C":"01234M","D":"cmyk(12,84,60,48)"}]
+2017-09-06 12:45:56,881 INFO ..xlat: {u'A': u'MUM', u'C': u'01234M', u'B': u'SA', u'D': u'cmyk(12,84,60,48)'}
+2017-09-06 12:45:56,881 INFO ! process template
+2017-09-06 12:45:56,881 INFO .process page 1
+2017-09-06 12:45:56,882 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:45:56,882 INFO ...cur text: [01234M]
+2017-09-06 12:45:56,884 INFO ...new text: 01234M
+2017-09-06 12:45:56,884 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:45:56,884 INFO ...cur text: []
+2017-09-06 12:45:56,885 INFO ...new text: SA
+2017-09-06 12:45:56,885 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:45:56,885 INFO ...cur text: [MUM]
+2017-09-06 12:45:56,886 INFO ...new text: MUM
+2017-09-06 12:45:56,886 INFO ! done processing template
+2017-09-06 12:45:56,886 INFO ! process colors
+2017-09-06 12:45:56,886 INFO ! colcodes ['COLOR']
+2017-09-06 12:45:56,887 INFO ! colors xlat {} 
+2017-09-06 12:45:56,999 INFO ! export current to PDF
+2017-09-06 12:45:56,999 INFO ! done :D
+2017-09-06 12:45:56,999 INFO ! done processing command [CONVERT]
+2017-09-06 12:46:01,792 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22SAAAA%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 12:46:01,792 INFO .commence command [CONVERT]
+2017-09-06 12:46:01,792 INFO ..decoding params...
+2017-09-06 12:46:01,792 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:46:01,793 INFO ..json: [{"A":"MUM","B":"SAAAA","C":"01234M","D":"cmyk(12,84,60,48)"}]
+2017-09-06 12:46:01,793 INFO ..xlat: {u'A': u'MUM', u'C': u'01234M', u'B': u'SAAAA', u'D': u'cmyk(12,84,60,48)'}
+2017-09-06 12:46:01,793 INFO ! process template
+2017-09-06 12:46:01,793 INFO .process page 1
+2017-09-06 12:46:01,793 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:46:01,793 INFO ...cur text: [01234M]
+2017-09-06 12:46:01,796 INFO ...new text: 01234M
+2017-09-06 12:46:01,796 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:46:01,796 INFO ...cur text: [S]
+2017-09-06 12:46:01,797 INFO ...new text: SAAAA
+2017-09-06 12:46:01,797 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:46:01,797 INFO ...cur text: [MUM]
+2017-09-06 12:46:01,799 INFO ...new text: MUM
+2017-09-06 12:46:01,799 INFO ! done processing template
+2017-09-06 12:46:01,799 INFO ! process colors
+2017-09-06 12:46:01,799 INFO ! colcodes ['COLOR']
+2017-09-06 12:46:01,799 INFO ! colors xlat {} 
+2017-09-06 12:46:01,872 INFO ! export current to PDF
+2017-09-06 12:46:01,872 INFO ! done :D
+2017-09-06 12:46:01,872 INFO ! done processing command [CONVERT]
+2017-09-06 12:46:08,085 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22SA%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 12:46:08,085 INFO .commence command [CONVERT]
+2017-09-06 12:46:08,085 INFO ..decoding params...
+2017-09-06 12:46:08,086 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:46:08,086 INFO ..json: [{"A":"MUM","B":"SA","C":"01234M","D":"cmyk(12,84,60,48)"}]
+2017-09-06 12:46:08,086 INFO ..xlat: {u'A': u'MUM', u'C': u'01234M', u'B': u'SA', u'D': u'cmyk(12,84,60,48)'}
+2017-09-06 12:46:08,086 INFO ! process template
+2017-09-06 12:46:08,086 INFO .process page 1
+2017-09-06 12:46:08,086 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:46:08,086 INFO ...cur text: [01234M]
+2017-09-06 12:46:08,089 INFO ...new text: 01234M
+2017-09-06 12:46:08,089 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:46:08,089 INFO ...cur text: [SAAA]
+2017-09-06 12:46:08,091 INFO ...new text: SA
+2017-09-06 12:46:08,091 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:46:08,091 INFO ...cur text: [MUM]
+2017-09-06 12:46:08,093 INFO ...new text: MUM
+2017-09-06 12:46:08,094 INFO ! done processing template
+2017-09-06 12:46:08,094 INFO ! process colors
+2017-09-06 12:46:08,094 INFO ! colcodes ['COLOR']
+2017-09-06 12:46:08,094 INFO ! colors xlat {} 
+2017-09-06 12:46:08,160 INFO ! export current to PDF
+2017-09-06 12:46:08,160 INFO ! done :D
+2017-09-06 12:46:08,160 INFO ! done processing command [CONVERT]
+2017-09-06 12:46:13,784 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22SA%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C12%2C12%2C12)%22%7D]
+2017-09-06 12:46:13,785 INFO .commence command [CONVERT]
+2017-09-06 12:46:13,785 INFO ..decoding params...
+2017-09-06 12:46:13,785 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:46:13,785 INFO ..json: [{"A":"MUM","B":"SA","C":"01234M","D":"cmyk(12,12,12,12)"}]
+2017-09-06 12:46:13,785 INFO ..xlat: {u'A': u'MUM', u'C': u'01234M', u'B': u'SA', u'D': u'cmyk(12,12,12,12)'}
+2017-09-06 12:46:13,785 INFO ! process template
+2017-09-06 12:46:13,785 INFO .process page 1
+2017-09-06 12:46:13,785 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:46:13,785 INFO ...cur text: [01234M]
+2017-09-06 12:46:13,788 INFO ...new text: 01234M
+2017-09-06 12:46:13,788 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:46:13,788 INFO ...cur text: [SA]
+2017-09-06 12:46:13,791 INFO ...new text: SA
+2017-09-06 12:46:13,791 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:46:13,791 INFO ...cur text: [MUM]
+2017-09-06 12:46:13,793 INFO ...new text: MUM
+2017-09-06 12:46:13,793 INFO ! done processing template
+2017-09-06 12:46:13,794 INFO ! process colors
+2017-09-06 12:46:13,794 INFO ! colcodes ['COLOR']
+2017-09-06 12:46:13,794 INFO ! colors xlat {} 
+2017-09-06 12:46:13,861 INFO ! export current to PDF
+2017-09-06 12:46:13,862 INFO ! done :D
+2017-09-06 12:46:13,862 INFO ! done processing command [CONVERT]
+2017-09-06 12:46:15,768 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22SA%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(22%2C22%2C22%2C22)%22%7D]
+2017-09-06 12:46:15,768 INFO .commence command [CONVERT]
+2017-09-06 12:46:15,768 INFO ..decoding params...
+2017-09-06 12:46:15,768 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:46:15,768 INFO ..json: [{"A":"MUM","B":"SA","C":"01234M","D":"cmyk(22,22,22,22)"}]
+2017-09-06 12:46:15,768 INFO ..xlat: {u'A': u'MUM', u'C': u'01234M', u'B': u'SA', u'D': u'cmyk(22,22,22,22)'}
+2017-09-06 12:46:15,768 INFO ! process template
+2017-09-06 12:46:15,768 INFO .process page 1
+2017-09-06 12:46:15,769 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:46:15,769 INFO ...cur text: [01234M]
+2017-09-06 12:46:15,772 INFO ...new text: 01234M
+2017-09-06 12:46:15,772 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:46:15,772 INFO ...cur text: [SA]
+2017-09-06 12:46:15,775 INFO ...new text: SA
+2017-09-06 12:46:15,775 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:46:15,775 INFO ...cur text: [MUM]
+2017-09-06 12:46:15,778 INFO ...new text: MUM
+2017-09-06 12:46:15,778 INFO ! done processing template
+2017-09-06 12:46:15,778 INFO ! process colors
+2017-09-06 12:46:15,778 INFO ! colcodes ['COLOR']
+2017-09-06 12:46:15,779 INFO ! colors xlat {} 
+2017-09-06 12:46:15,845 INFO ! export current to PDF
+2017-09-06 12:46:15,845 INFO ! done :D
+2017-09-06 12:46:15,845 INFO ! done processing command [CONVERT]
+2017-09-06 12:46:17,312 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22SA%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 12:46:17,312 INFO .commence command [CONVERT]
+2017-09-06 12:46:17,313 INFO ..decoding params...
+2017-09-06 12:46:17,313 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:46:17,313 INFO ..json: [{"A":"MUM","B":"SA","C":"01234M","D":"cmyk(12,84,60,48)"}]
+2017-09-06 12:46:17,313 INFO ..xlat: {u'A': u'MUM', u'C': u'01234M', u'B': u'SA', u'D': u'cmyk(12,84,60,48)'}
+2017-09-06 12:46:17,313 INFO ! process template
+2017-09-06 12:46:17,313 INFO .process page 1
+2017-09-06 12:46:17,313 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:46:17,314 INFO ...cur text: [01234M]
+2017-09-06 12:46:17,317 INFO ...new text: 01234M
+2017-09-06 12:46:17,317 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:46:17,317 INFO ...cur text: [SA]
+2017-09-06 12:46:17,321 INFO ...new text: SA
+2017-09-06 12:46:17,321 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:46:17,321 INFO ...cur text: [MUM]
+2017-09-06 12:46:17,324 INFO ...new text: MUM
+2017-09-06 12:46:17,324 INFO ! done processing template
+2017-09-06 12:46:17,324 INFO ! process colors
+2017-09-06 12:46:17,324 INFO ! colcodes ['COLOR']
+2017-09-06 12:46:17,324 INFO ! colors xlat {} 
+2017-09-06 12:46:17,394 INFO ! export current to PDF
+2017-09-06 12:46:17,394 INFO ! done :D
+2017-09-06 12:46:17,395 INFO ! done processing command [CONVERT]
+2017-09-06 12:46:37,448 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22SA%22%2C%22C%22%3A%2201234Mn%22%2C%22D%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 12:46:37,448 INFO .commence command [CONVERT]
+2017-09-06 12:46:37,448 INFO ..decoding params...
+2017-09-06 12:46:37,448 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:46:37,448 INFO ..json: [{"A":"MUM","B":"SA","C":"01234Mn","D":"cmyk(12,84,60,48)"}]
+2017-09-06 12:46:37,448 INFO ..xlat: {u'A': u'MUM', u'C': u'01234Mn', u'B': u'SA', u'D': u'cmyk(12,84,60,48)'}
+2017-09-06 12:46:37,448 INFO ! process template
+2017-09-06 12:46:37,448 INFO .process page 1
+2017-09-06 12:46:37,449 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:46:37,449 INFO ...cur text: [01234M]
+2017-09-06 12:46:37,453 INFO ...new text: 01234Mn
+2017-09-06 12:46:37,453 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:46:37,453 INFO ...cur text: [SA]
+2017-09-06 12:46:37,457 INFO ...new text: SA
+2017-09-06 12:46:37,457 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:46:37,457 INFO ...cur text: [MUM]
+2017-09-06 12:46:37,461 INFO ...new text: MUM
+2017-09-06 12:46:37,461 INFO ! done processing template
+2017-09-06 12:46:37,461 INFO ! process colors
+2017-09-06 12:46:37,461 INFO ! colcodes ['COLOR']
+2017-09-06 12:46:37,461 INFO ! colors xlat {} 
+2017-09-06 12:46:37,651 INFO ! export current to PDF
+2017-09-06 12:46:37,651 INFO ! done :D
+2017-09-06 12:46:37,651 INFO ! done processing command [CONVERT]
+2017-09-06 12:46:38,181 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22SA%22%2C%22C%22%3A%2201234Mn%22%2C%22D%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 12:46:38,181 INFO .commence command [CONVERT]
+2017-09-06 12:46:38,181 INFO ..decoding params...
+2017-09-06 12:46:38,181 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:46:38,181 INFO ..json: [{"A":"MUM","B":"SA","C":"01234Mn","D":"cmyk(12,84,60,48)"}]
+2017-09-06 12:46:38,181 INFO ..xlat: {u'A': u'MUM', u'C': u'01234Mn', u'B': u'SA', u'D': u'cmyk(12,84,60,48)'}
+2017-09-06 12:46:38,181 INFO ! process template
+2017-09-06 12:46:38,181 INFO .process page 1
+2017-09-06 12:46:38,182 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:46:38,182 INFO ...cur text: [01234Mn]
+2017-09-06 12:46:38,186 INFO ...new text: 01234Mn
+2017-09-06 12:46:38,187 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:46:38,187 INFO ...cur text: [SA]
+2017-09-06 12:46:38,191 INFO ...new text: SA
+2017-09-06 12:46:38,191 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:46:38,191 INFO ...cur text: [MUM]
+2017-09-06 12:46:38,195 INFO ...new text: MUM
+2017-09-06 12:46:38,195 INFO ! done processing template
+2017-09-06 12:46:38,195 INFO ! process colors
+2017-09-06 12:46:38,195 INFO ! colcodes ['COLOR']
+2017-09-06 12:46:38,195 INFO ! colors xlat {} 
+2017-09-06 12:46:38,290 INFO ! export current to PDF
+2017-09-06 12:46:38,290 INFO ! done :D
+2017-09-06 12:46:38,290 INFO ! done processing command [CONVERT]
+2017-09-06 12:46:41,766 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22SA%22%2C%22C%22%3A%2201234%22%2C%22D%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 12:46:41,766 INFO .commence command [CONVERT]
+2017-09-06 12:46:41,766 INFO ..decoding params...
+2017-09-06 12:46:41,766 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:46:41,766 INFO ..json: [{"A":"MUM","B":"SA","C":"01234","D":"cmyk(12,84,60,48)"}]
+2017-09-06 12:46:41,766 INFO ..xlat: {u'A': u'MUM', u'C': u'01234', u'B': u'SA', u'D': u'cmyk(12,84,60,48)'}
+2017-09-06 12:46:41,766 INFO ! process template
+2017-09-06 12:46:41,766 INFO .process page 1
+2017-09-06 12:46:41,767 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:46:41,767 INFO ...cur text: [01234Mn]
+2017-09-06 12:46:41,771 INFO ...new text: 01234
+2017-09-06 12:46:41,771 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:46:41,771 INFO ...cur text: [SA]
+2017-09-06 12:46:41,776 INFO ...new text: SA
+2017-09-06 12:46:41,776 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:46:41,776 INFO ...cur text: [MUM]
+2017-09-06 12:46:41,780 INFO ...new text: MUM
+2017-09-06 12:46:41,780 INFO ! done processing template
+2017-09-06 12:46:41,780 INFO ! process colors
+2017-09-06 12:46:41,780 INFO ! colcodes ['COLOR']
+2017-09-06 12:46:41,780 INFO ! colors xlat {} 
+2017-09-06 12:46:41,851 INFO ! export current to PDF
+2017-09-06 12:46:41,851 INFO ! done :D
+2017-09-06 12:46:41,851 INFO ! done processing command [CONVERT]
+2017-09-06 12:46:42,392 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22SA%22%2C%22C%22%3A%220123%22%2C%22D%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 12:46:42,392 INFO .commence command [CONVERT]
+2017-09-06 12:46:42,392 INFO ..decoding params...
+2017-09-06 12:46:42,393 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:46:42,393 INFO ..json: [{"A":"MUM","B":"SA","C":"0123","D":"cmyk(12,84,60,48)"}]
+2017-09-06 12:46:42,393 INFO ..xlat: {u'A': u'MUM', u'C': u'0123', u'B': u'SA', u'D': u'cmyk(12,84,60,48)'}
+2017-09-06 12:46:42,393 INFO ! process template
+2017-09-06 12:46:42,393 INFO .process page 1
+2017-09-06 12:46:42,393 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:46:42,393 INFO ...cur text: [01234]
+2017-09-06 12:46:42,398 INFO ...new text: 0123
+2017-09-06 12:46:42,398 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:46:42,399 INFO ...cur text: [SA]
+2017-09-06 12:46:42,403 INFO ...new text: SA
+2017-09-06 12:46:42,403 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:46:42,403 INFO ...cur text: [MUM]
+2017-09-06 12:46:42,408 INFO ...new text: MUM
+2017-09-06 12:46:42,409 INFO ! done processing template
+2017-09-06 12:46:42,409 INFO ! process colors
+2017-09-06 12:46:42,409 INFO ! colcodes ['COLOR']
+2017-09-06 12:46:42,409 INFO ! colors xlat {} 
+2017-09-06 12:46:42,478 INFO ! export current to PDF
+2017-09-06 12:46:42,478 INFO ! done :D
+2017-09-06 12:46:42,478 INFO ! done processing command [CONVERT]
+2017-09-06 12:46:43,604 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22SA%22%2C%22C%22%3A%22012%22%2C%22D%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 12:46:43,604 INFO .commence command [CONVERT]
+2017-09-06 12:46:43,604 INFO ..decoding params...
+2017-09-06 12:46:43,604 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:46:43,604 INFO ..json: [{"A":"MUM","B":"SA","C":"012","D":"cmyk(12,84,60,48)"}]
+2017-09-06 12:46:43,604 INFO ..xlat: {u'A': u'MUM', u'C': u'012', u'B': u'SA', u'D': u'cmyk(12,84,60,48)'}
+2017-09-06 12:46:43,604 INFO ! process template
+2017-09-06 12:46:43,604 INFO .process page 1
+2017-09-06 12:46:43,605 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:46:43,605 INFO ...cur text: [0123]
+2017-09-06 12:46:43,610 INFO ...new text: 012
+2017-09-06 12:46:43,610 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:46:43,610 INFO ...cur text: [SA]
+2017-09-06 12:46:43,615 INFO ...new text: SA
+2017-09-06 12:46:43,615 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:46:43,616 INFO ...cur text: [MUM]
+2017-09-06 12:46:43,621 INFO ...new text: MUM
+2017-09-06 12:46:43,621 INFO ! done processing template
+2017-09-06 12:46:43,621 INFO ! process colors
+2017-09-06 12:46:43,621 INFO ! colcodes ['COLOR']
+2017-09-06 12:46:43,621 INFO ! colors xlat {} 
+2017-09-06 12:46:43,688 INFO ! export current to PDF
+2017-09-06 12:46:43,688 INFO ! done :D
+2017-09-06 12:46:43,688 INFO ! done processing command [CONVERT]
+2017-09-06 12:46:47,969 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22SA%22%2C%22C%22%3A%2201234%22%2C%22D%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 12:46:47,969 INFO .commence command [CONVERT]
+2017-09-06 12:46:47,969 INFO ..decoding params...
+2017-09-06 12:46:47,969 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:46:47,969 INFO ..json: [{"A":"MUM","B":"SA","C":"01234","D":"cmyk(12,84,60,48)"}]
+2017-09-06 12:46:47,969 INFO ..xlat: {u'A': u'MUM', u'C': u'01234', u'B': u'SA', u'D': u'cmyk(12,84,60,48)'}
+2017-09-06 12:46:47,969 INFO ! process template
+2017-09-06 12:46:47,969 INFO .process page 1
+2017-09-06 12:46:47,970 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:46:47,970 INFO ...cur text: [012]
+2017-09-06 12:46:47,975 INFO ...new text: 01234
+2017-09-06 12:46:47,975 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:46:47,976 INFO ...cur text: [SA]
+2017-09-06 12:46:47,981 INFO ...new text: SA
+2017-09-06 12:46:47,981 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:46:47,981 INFO ...cur text: [MUM]
+2017-09-06 12:46:47,987 INFO ...new text: MUM
+2017-09-06 12:46:47,987 INFO ! done processing template
+2017-09-06 12:46:47,987 INFO ! process colors
+2017-09-06 12:46:47,987 INFO ! colcodes ['COLOR']
+2017-09-06 12:46:47,987 INFO ! colors xlat {} 
+2017-09-06 12:46:48,058 INFO ! export current to PDF
+2017-09-06 12:46:48,058 INFO ! done :D
+2017-09-06 12:46:48,058 INFO ! done processing command [CONVERT]
+2017-09-06 12:47:48,628 INFO ! starting automation on port 14115, timeout in 30 secs
+2017-09-06 12:47:48,864 INFO ! handle request. initiate dialogue.
+2017-09-06 12:47:48,865 INFO ! adapter v7.4 - timeouts
+2017-09-06 12:47:48,866 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22SA%20%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 12:47:48,866 INFO .commence command [CONVERT]
+2017-09-06 12:47:48,866 INFO ..decoding params...
+2017-09-06 12:47:48,866 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:47:48,866 INFO ..json: [{"A":"MUM","B":"SA ","C":"01234M","D":"cmyk(12,84,60,48)"}]
+2017-09-06 12:47:48,866 INFO ..xlat: {u'A': u'MUM', u'C': u'01234M', u'B': u'SA ', u'D': u'cmyk(12,84,60,48)'}
+2017-09-06 12:47:48,867 INFO ! process template
+2017-09-06 12:47:48,867 INFO .process page 1
+2017-09-06 12:47:48,868 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:47:48,868 INFO ...cur text: [{{C}}]
+2017-09-06 12:47:48,870 INFO ...new text: 01234M
+2017-09-06 12:47:48,870 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:47:48,870 INFO ...cur text: [ {{B}}]
+2017-09-06 12:47:48,871 INFO ...new text: SA 
+2017-09-06 12:47:48,871 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:47:48,871 INFO ...cur text: [{{A}}]
+2017-09-06 12:47:48,873 INFO ...new text: MUM
+2017-09-06 12:47:48,873 INFO ! done processing template
+2017-09-06 12:47:48,873 INFO ! process colors
+2017-09-06 12:47:48,873 INFO ! colcodes ['COLOR']
+2017-09-06 12:47:48,873 INFO ! colors xlat {} 
+2017-09-06 12:47:49,043 INFO ! export current to PDF
+2017-09-06 12:47:49,043 INFO ! done :D
+2017-09-06 12:47:49,044 INFO ! done processing command [CONVERT]
+2017-09-06 12:47:50,014 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22SA%20%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 12:47:50,014 INFO .commence command [CONVERT]
+2017-09-06 12:47:50,014 INFO ..decoding params...
+2017-09-06 12:47:50,014 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:47:50,014 INFO ..json: [{"A":"MUM","B":"SA ","C":"01234M","D":"cmyk(12,84,60,48)"}]
+2017-09-06 12:47:50,014 INFO ..xlat: {u'A': u'MUM', u'C': u'01234M', u'B': u'SA ', u'D': u'cmyk(12,84,60,48)'}
+2017-09-06 12:47:50,014 INFO ! process template
+2017-09-06 12:47:50,015 INFO .process page 1
+2017-09-06 12:47:50,015 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:47:50,015 INFO ...cur text: [01234M]
+2017-09-06 12:47:50,018 INFO ...new text: 01234M
+2017-09-06 12:47:50,018 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:47:50,018 INFO ...cur text: [SA ]
+2017-09-06 12:47:50,019 INFO ...new text: SA 
+2017-09-06 12:47:50,020 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:47:50,020 INFO ...cur text: [MUM]
+2017-09-06 12:47:50,021 INFO ...new text: MUM
+2017-09-06 12:47:50,022 INFO ! done processing template
+2017-09-06 12:47:50,022 INFO ! process colors
+2017-09-06 12:47:50,022 INFO ! colcodes ['COLOR']
+2017-09-06 12:47:50,022 INFO ! colors xlat {} 
+2017-09-06 12:47:50,101 INFO ! export current to PDF
+2017-09-06 12:47:50,101 INFO ! done :D
+2017-09-06 12:47:50,101 INFO ! done processing command [CONVERT]
+2017-09-06 12:47:54,636 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22SAo%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 12:47:54,636 INFO .commence command [CONVERT]
+2017-09-06 12:47:54,637 INFO ..decoding params...
+2017-09-06 12:47:54,637 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:47:54,637 INFO ..json: [{"A":"MUM","B":"SAo","C":"01234M","D":"cmyk(12,84,60,48)"}]
+2017-09-06 12:47:54,637 INFO ..xlat: {u'A': u'MUM', u'C': u'01234M', u'B': u'SAo', u'D': u'cmyk(12,84,60,48)'}
+2017-09-06 12:47:54,637 INFO ! process template
+2017-09-06 12:47:54,637 INFO .process page 1
+2017-09-06 12:47:54,638 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:47:54,638 INFO ...cur text: [01234M]
+2017-09-06 12:47:54,639 INFO ...new text: 01234M
+2017-09-06 12:47:54,640 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:47:54,640 INFO ...cur text: [SA ]
+2017-09-06 12:47:54,641 INFO ...new text: SAo
+2017-09-06 12:47:54,641 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:47:54,641 INFO ...cur text: [MUM]
+2017-09-06 12:47:54,643 INFO ...new text: MUM
+2017-09-06 12:47:54,643 INFO ! done processing template
+2017-09-06 12:47:54,643 INFO ! process colors
+2017-09-06 12:47:54,643 INFO ! colcodes ['COLOR']
+2017-09-06 12:47:54,643 INFO ! colors xlat {} 
+2017-09-06 12:47:54,762 INFO ! export current to PDF
+2017-09-06 12:47:54,762 INFO ! done :D
+2017-09-06 12:47:54,762 INFO ! done processing command [CONVERT]
+2017-09-06 12:47:57,037 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22SA%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 12:47:57,037 INFO .commence command [CONVERT]
+2017-09-06 12:47:57,037 INFO ..decoding params...
+2017-09-06 12:47:57,037 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:47:57,037 INFO ..json: [{"A":"MUM","B":"SA","C":"01234M","D":"cmyk(12,84,60,48)"}]
+2017-09-06 12:47:57,037 INFO ..xlat: {u'A': u'MUM', u'C': u'01234M', u'B': u'SA', u'D': u'cmyk(12,84,60,48)'}
+2017-09-06 12:47:57,037 INFO ! process template
+2017-09-06 12:47:57,037 INFO .process page 1
+2017-09-06 12:47:57,038 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:47:57,038 INFO ...cur text: [01234M]
+2017-09-06 12:47:57,040 INFO ...new text: 01234M
+2017-09-06 12:47:57,040 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:47:57,040 INFO ...cur text: [SAo]
+2017-09-06 12:47:57,042 INFO ...new text: SA
+2017-09-06 12:47:57,042 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:47:57,042 INFO ...cur text: [MUM]
+2017-09-06 12:47:57,044 INFO ...new text: MUM
+2017-09-06 12:47:57,044 INFO ! done processing template
+2017-09-06 12:47:57,044 INFO ! process colors
+2017-09-06 12:47:57,044 INFO ! colcodes ['COLOR']
+2017-09-06 12:47:57,044 INFO ! colors xlat {} 
+2017-09-06 12:47:57,117 INFO ! export current to PDF
+2017-09-06 12:47:57,117 INFO ! done :D
+2017-09-06 12:47:57,117 INFO ! done processing command [CONVERT]
+2017-09-06 12:48:21,293 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22M%22%2C%22B%22%3A%22SA%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 12:48:21,294 INFO .commence command [CONVERT]
+2017-09-06 12:48:21,294 INFO ..decoding params...
+2017-09-06 12:48:21,294 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:48:21,294 INFO ..json: [{"A":"M","B":"SA","C":"01234M","D":"cmyk(12,84,60,48)"}]
+2017-09-06 12:48:21,294 INFO ..xlat: {u'A': u'M', u'C': u'01234M', u'B': u'SA', u'D': u'cmyk(12,84,60,48)'}
+2017-09-06 12:48:21,294 INFO ! process template
+2017-09-06 12:48:21,294 INFO .process page 1
+2017-09-06 12:48:21,295 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:48:21,295 INFO ...cur text: [01234M]
+2017-09-06 12:48:21,297 INFO ...new text: 01234M
+2017-09-06 12:48:21,297 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:48:21,297 INFO ...cur text: [SA]
+2017-09-06 12:48:21,300 INFO ...new text: SA
+2017-09-06 12:48:21,300 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:48:21,300 INFO ...cur text: [MUM]
+2017-09-06 12:48:21,302 INFO ...new text: M
+2017-09-06 12:48:21,302 INFO ! done processing template
+2017-09-06 12:48:21,302 INFO ! process colors
+2017-09-06 12:48:21,302 INFO ! colcodes ['COLOR']
+2017-09-06 12:48:21,302 INFO ! colors xlat {} 
+2017-09-06 12:48:21,370 INFO ! export current to PDF
+2017-09-06 12:48:21,370 INFO ! done :D
+2017-09-06 12:48:21,370 INFO ! done processing command [CONVERT]
+2017-09-06 12:48:24,776 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MU%22%2C%22B%22%3A%22SA%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 12:48:24,777 INFO .commence command [CONVERT]
+2017-09-06 12:48:24,777 INFO ..decoding params...
+2017-09-06 12:48:24,777 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:48:24,777 INFO ..json: [{"A":"MU","B":"SA","C":"01234M","D":"cmyk(12,84,60,48)"}]
+2017-09-06 12:48:24,777 INFO ..xlat: {u'A': u'MU', u'C': u'01234M', u'B': u'SA', u'D': u'cmyk(12,84,60,48)'}
+2017-09-06 12:48:24,777 INFO ! process template
+2017-09-06 12:48:24,777 INFO .process page 1
+2017-09-06 12:48:24,778 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:48:24,778 INFO ...cur text: [01234M]
+2017-09-06 12:48:24,780 INFO ...new text: 01234M
+2017-09-06 12:48:24,780 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:48:24,781 INFO ...cur text: [SA]
+2017-09-06 12:48:24,783 INFO ...new text: SA
+2017-09-06 12:48:24,783 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:48:24,783 INFO ...cur text: [M]
+2017-09-06 12:48:24,785 INFO ...new text: MU
+2017-09-06 12:48:24,785 INFO ! done processing template
+2017-09-06 12:48:24,785 INFO ! process colors
+2017-09-06 12:48:24,785 INFO ! colcodes ['COLOR']
+2017-09-06 12:48:24,785 INFO ! colors xlat {} 
+2017-09-06 12:48:24,854 INFO ! export current to PDF
+2017-09-06 12:48:24,854 INFO ! done :D
+2017-09-06 12:48:24,854 INFO ! done processing command [CONVERT]
+2017-09-06 12:48:26,576 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22T%22%2C%22B%22%3A%22SA%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 12:48:26,576 INFO .commence command [CONVERT]
+2017-09-06 12:48:26,576 INFO ..decoding params...
+2017-09-06 12:48:26,576 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:48:26,576 INFO ..json: [{"A":"T","B":"SA","C":"01234M","D":"cmyk(12,84,60,48)"}]
+2017-09-06 12:48:26,576 INFO ..xlat: {u'A': u'T', u'C': u'01234M', u'B': u'SA', u'D': u'cmyk(12,84,60,48)'}
+2017-09-06 12:48:26,576 INFO ! process template
+2017-09-06 12:48:26,576 INFO .process page 1
+2017-09-06 12:48:26,577 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:48:26,577 INFO ...cur text: [01234M]
+2017-09-06 12:48:26,580 INFO ...new text: 01234M
+2017-09-06 12:48:26,580 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:48:26,580 INFO ...cur text: [SA]
+2017-09-06 12:48:26,583 INFO ...new text: SA
+2017-09-06 12:48:26,583 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:48:26,583 INFO ...cur text: [M]
+2017-09-06 12:48:26,585 INFO ...new text: T
+2017-09-06 12:48:26,585 INFO ! done processing template
+2017-09-06 12:48:26,585 INFO ! process colors
+2017-09-06 12:48:26,585 INFO ! colcodes ['COLOR']
+2017-09-06 12:48:26,585 INFO ! colors xlat {} 
+2017-09-06 12:48:26,655 INFO ! export current to PDF
+2017-09-06 12:48:26,655 INFO ! done :D
+2017-09-06 12:48:26,655 INFO ! done processing command [CONVERT]
+2017-09-06 12:48:30,210 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22t%22%2C%22B%22%3A%22SA%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 12:48:30,210 INFO .commence command [CONVERT]
+2017-09-06 12:48:30,210 INFO ..decoding params...
+2017-09-06 12:48:30,210 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:48:30,210 INFO ..json: [{"A":"t","B":"SA","C":"01234M","D":"cmyk(12,84,60,48)"}]
+2017-09-06 12:48:30,210 INFO ..xlat: {u'A': u't', u'C': u'01234M', u'B': u'SA', u'D': u'cmyk(12,84,60,48)'}
+2017-09-06 12:48:30,210 INFO ! process template
+2017-09-06 12:48:30,211 INFO .process page 1
+2017-09-06 12:48:30,211 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:48:30,211 INFO ...cur text: [01234M]
+2017-09-06 12:48:30,215 INFO ...new text: 01234M
+2017-09-06 12:48:30,215 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:48:30,215 INFO ...cur text: [SA]
+2017-09-06 12:48:30,218 INFO ...new text: SA
+2017-09-06 12:48:30,218 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:48:30,219 INFO ...cur text: []
+2017-09-06 12:48:30,220 INFO ...new text: t
+2017-09-06 12:48:30,220 INFO ! done processing template
+2017-09-06 12:48:30,221 INFO ! process colors
+2017-09-06 12:48:30,221 INFO ! colcodes ['COLOR']
+2017-09-06 12:48:30,221 INFO ! colors xlat {} 
+2017-09-06 12:48:30,288 INFO ! export current to PDF
+2017-09-06 12:48:30,288 INFO ! done :D
+2017-09-06 12:48:30,288 INFO ! done processing command [CONVERT]
+2017-09-06 12:48:31,873 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22tt%22%2C%22B%22%3A%22SA%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 12:48:31,873 INFO .commence command [CONVERT]
+2017-09-06 12:48:31,873 INFO ..decoding params...
+2017-09-06 12:48:31,873 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:48:31,874 INFO ..json: [{"A":"tt","B":"SA","C":"01234M","D":"cmyk(12,84,60,48)"}]
+2017-09-06 12:48:31,874 INFO ..xlat: {u'A': u'tt', u'C': u'01234M', u'B': u'SA', u'D': u'cmyk(12,84,60,48)'}
+2017-09-06 12:48:31,874 INFO ! process template
+2017-09-06 12:48:31,874 INFO .process page 1
+2017-09-06 12:48:31,874 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:48:31,875 INFO ...cur text: [01234M]
+2017-09-06 12:48:31,879 INFO ...new text: 01234M
+2017-09-06 12:48:31,879 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:48:31,879 INFO ...cur text: [SA]
+2017-09-06 12:48:31,882 INFO ...new text: SA
+2017-09-06 12:48:31,883 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:48:31,883 INFO ...cur text: []
+2017-09-06 12:48:31,884 INFO ...new text: tt
+2017-09-06 12:48:31,885 INFO ! done processing template
+2017-09-06 12:48:31,885 INFO ! process colors
+2017-09-06 12:48:31,885 INFO ! colcodes ['COLOR']
+2017-09-06 12:48:31,885 INFO ! colors xlat {} 
+2017-09-06 12:48:31,953 INFO ! export current to PDF
+2017-09-06 12:48:31,953 INFO ! done :D
+2017-09-06 12:48:31,953 INFO ! done processing command [CONVERT]
+2017-09-06 12:48:33,124 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22ttt%22%2C%22B%22%3A%22SA%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 12:48:33,124 INFO .commence command [CONVERT]
+2017-09-06 12:48:33,124 INFO ..decoding params...
+2017-09-06 12:48:33,124 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:48:33,124 INFO ..json: [{"A":"ttt","B":"SA","C":"01234M","D":"cmyk(12,84,60,48)"}]
+2017-09-06 12:48:33,124 INFO ..xlat: {u'A': u'ttt', u'C': u'01234M', u'B': u'SA', u'D': u'cmyk(12,84,60,48)'}
+2017-09-06 12:48:33,124 INFO ! process template
+2017-09-06 12:48:33,124 INFO .process page 1
+2017-09-06 12:48:33,125 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:48:33,125 INFO ...cur text: [01234M]
+2017-09-06 12:48:33,129 INFO ...new text: 01234M
+2017-09-06 12:48:33,129 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:48:33,129 INFO ...cur text: [SA]
+2017-09-06 12:48:33,133 INFO ...new text: SA
+2017-09-06 12:48:33,133 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:48:33,133 INFO ...cur text: [t]
+2017-09-06 12:48:33,135 INFO ...new text: ttt
+2017-09-06 12:48:33,136 INFO ! done processing template
+2017-09-06 12:48:33,136 INFO ! process colors
+2017-09-06 12:48:33,136 INFO ! colcodes ['COLOR']
+2017-09-06 12:48:33,136 INFO ! colors xlat {} 
+2017-09-06 12:48:33,202 INFO ! export current to PDF
+2017-09-06 12:48:33,202 INFO ! done :D
+2017-09-06 12:48:33,203 INFO ! done processing command [CONVERT]
+2017-09-06 12:48:35,043 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MU%22%2C%22B%22%3A%22SA%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 12:48:35,043 INFO .commence command [CONVERT]
+2017-09-06 12:48:35,043 INFO ..decoding params...
+2017-09-06 12:48:35,043 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:48:35,043 INFO ..json: [{"A":"MU","B":"SA","C":"01234M","D":"cmyk(12,84,60,48)"}]
+2017-09-06 12:48:35,043 INFO ..xlat: {u'A': u'MU', u'C': u'01234M', u'B': u'SA', u'D': u'cmyk(12,84,60,48)'}
+2017-09-06 12:48:35,043 INFO ! process template
+2017-09-06 12:48:35,043 INFO .process page 1
+2017-09-06 12:48:35,044 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:48:35,044 INFO ...cur text: [01234M]
+2017-09-06 12:48:35,048 INFO ...new text: 01234M
+2017-09-06 12:48:35,048 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:48:35,049 INFO ...cur text: [SA]
+2017-09-06 12:48:35,053 INFO ...new text: SA
+2017-09-06 12:48:35,053 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:48:35,053 INFO ...cur text: [tt]
+2017-09-06 12:48:35,057 INFO ...new text: MU
+2017-09-06 12:48:35,057 INFO ! done processing template
+2017-09-06 12:48:35,057 INFO ! process colors
+2017-09-06 12:48:35,057 INFO ! colcodes ['COLOR']
+2017-09-06 12:48:35,057 INFO ! colors xlat {} 
+2017-09-06 12:48:35,125 INFO ! export current to PDF
+2017-09-06 12:48:35,126 INFO ! done :D
+2017-09-06 12:48:35,126 INFO ! done processing command [CONVERT]
+2017-09-06 12:48:36,605 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MU%22%2C%22B%22%3A%22SA%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 12:48:36,605 INFO .commence command [CONVERT]
+2017-09-06 12:48:36,605 INFO ..decoding params...
+2017-09-06 12:48:36,605 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:48:36,605 INFO ..json: [{"A":"MU","B":"SA","C":"01234M","D":"cmyk(12,84,60,48)"}]
+2017-09-06 12:48:36,606 INFO ..xlat: {u'A': u'MU', u'C': u'01234M', u'B': u'SA', u'D': u'cmyk(12,84,60,48)'}
+2017-09-06 12:48:36,606 INFO ! process template
+2017-09-06 12:48:36,606 INFO .process page 1
+2017-09-06 12:48:36,606 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:48:36,606 INFO ...cur text: [01234M]
+2017-09-06 12:48:36,611 INFO ...new text: 01234M
+2017-09-06 12:48:36,611 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:48:36,611 INFO ...cur text: [SA]
+2017-09-06 12:48:36,616 INFO ...new text: SA
+2017-09-06 12:48:36,616 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:48:36,616 INFO ...cur text: [MU]
+2017-09-06 12:48:36,621 INFO ...new text: MU
+2017-09-06 12:48:36,621 INFO ! done processing template
+2017-09-06 12:48:36,621 INFO ! process colors
+2017-09-06 12:48:36,621 INFO ! colcodes ['COLOR']
+2017-09-06 12:48:36,621 INFO ! colors xlat {} 
+2017-09-06 12:48:36,690 INFO ! export current to PDF
+2017-09-06 12:48:36,690 INFO ! done :D
+2017-09-06 12:48:36,691 INFO ! done processing command [CONVERT]
+2017-09-06 12:48:51,618 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22SA%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C12%2C12%2C12)%22%7D]
+2017-09-06 12:48:51,618 INFO .commence command [CONVERT]
+2017-09-06 12:48:51,618 INFO ..decoding params...
+2017-09-06 12:48:51,618 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:48:51,618 INFO ..json: [{"A":"MUM","B":"SA","C":"01234M","D":"cmyk(12,12,12,12)"}]
+2017-09-06 12:48:51,619 INFO ..xlat: {u'A': u'MUM', u'C': u'01234M', u'B': u'SA', u'D': u'cmyk(12,12,12,12)'}
+2017-09-06 12:48:51,619 INFO ! process template
+2017-09-06 12:48:51,619 INFO .process page 1
+2017-09-06 12:48:51,619 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:48:51,619 INFO ...cur text: [01234M]
+2017-09-06 12:48:51,624 INFO ...new text: 01234M
+2017-09-06 12:48:51,624 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:48:51,625 INFO ...cur text: [SA]
+2017-09-06 12:48:51,630 INFO ...new text: SA
+2017-09-06 12:48:51,630 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:48:51,630 INFO ...cur text: [MU]
+2017-09-06 12:48:51,635 INFO ...new text: MUM
+2017-09-06 12:48:51,635 INFO ! done processing template
+2017-09-06 12:48:51,635 INFO ! process colors
+2017-09-06 12:48:51,635 INFO ! colcodes ['COLOR']
+2017-09-06 12:48:51,635 INFO ! colors xlat {} 
+2017-09-06 12:48:51,701 INFO ! export current to PDF
+2017-09-06 12:48:51,701 INFO ! done :D
+2017-09-06 12:48:51,701 INFO ! done processing command [CONVERT]
+2017-09-06 12:48:52,231 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22SA%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C12%2C12%2C12)%22%7D]
+2017-09-06 12:48:52,231 INFO .commence command [CONVERT]
+2017-09-06 12:48:52,231 INFO ..decoding params...
+2017-09-06 12:48:52,231 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:48:52,231 INFO ..json: [{"A":"MUM","B":"SA","C":"01234M","D":"cmyk(12,12,12,12)"}]
+2017-09-06 12:48:52,231 INFO ..xlat: {u'A': u'MUM', u'C': u'01234M', u'B': u'SA', u'D': u'cmyk(12,12,12,12)'}
+2017-09-06 12:48:52,232 INFO ! process template
+2017-09-06 12:48:52,232 INFO .process page 1
+2017-09-06 12:48:52,232 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:48:52,232 INFO ...cur text: [01234M]
+2017-09-06 12:48:52,238 INFO ...new text: 01234M
+2017-09-06 12:48:52,238 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:48:52,238 INFO ...cur text: [SA]
+2017-09-06 12:48:52,244 INFO ...new text: SA
+2017-09-06 12:48:52,244 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:48:52,244 INFO ...cur text: [MUM]
+2017-09-06 12:48:52,250 INFO ...new text: MUM
+2017-09-06 12:48:52,250 INFO ! done processing template
+2017-09-06 12:48:52,250 INFO ! process colors
+2017-09-06 12:48:52,250 INFO ! colcodes ['COLOR']
+2017-09-06 12:48:52,250 INFO ! colors xlat {} 
+2017-09-06 12:48:52,320 INFO ! export current to PDF
+2017-09-06 12:48:52,320 INFO ! done :D
+2017-09-06 12:48:52,320 INFO ! done processing command [CONVERT]
+2017-09-06 12:48:54,523 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22SA%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(22%2C22%2C22%2C22)%22%7D]
+2017-09-06 12:48:54,523 INFO .commence command [CONVERT]
+2017-09-06 12:48:54,523 INFO ..decoding params...
+2017-09-06 12:48:54,523 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:48:54,523 INFO ..json: [{"A":"MUM","B":"SA","C":"01234M","D":"cmyk(22,22,22,22)"}]
+2017-09-06 12:48:54,523 INFO ..xlat: {u'A': u'MUM', u'C': u'01234M', u'B': u'SA', u'D': u'cmyk(22,22,22,22)'}
+2017-09-06 12:48:54,523 INFO ! process template
+2017-09-06 12:48:54,524 INFO .process page 1
+2017-09-06 12:48:54,524 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:48:54,524 INFO ...cur text: [01234M]
+2017-09-06 12:48:54,530 INFO ...new text: 01234M
+2017-09-06 12:48:54,530 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:48:54,530 INFO ...cur text: [SA]
+2017-09-06 12:48:54,536 INFO ...new text: SA
+2017-09-06 12:48:54,536 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:48:54,536 INFO ...cur text: [MUM]
+2017-09-06 12:48:54,542 INFO ...new text: MUM
+2017-09-06 12:48:54,542 INFO ! done processing template
+2017-09-06 12:48:54,542 INFO ! process colors
+2017-09-06 12:48:54,542 INFO ! colcodes ['COLOR']
+2017-09-06 12:48:54,542 INFO ! colors xlat {} 
+2017-09-06 12:48:54,614 INFO ! export current to PDF
+2017-09-06 12:48:54,614 INFO ! done :D
+2017-09-06 12:48:54,614 INFO ! done processing command [CONVERT]
+2017-09-06 12:48:56,204 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22SA%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 12:48:56,204 INFO .commence command [CONVERT]
+2017-09-06 12:48:56,204 INFO ..decoding params...
+2017-09-06 12:48:56,204 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 12:48:56,204 INFO ..json: [{"A":"MUM","B":"SA","C":"01234M","D":"cmyk(12,84,60,48)"}]
+2017-09-06 12:48:56,205 INFO ..xlat: {u'A': u'MUM', u'C': u'01234M', u'B': u'SA', u'D': u'cmyk(12,84,60,48)'}
+2017-09-06 12:48:56,205 INFO ! process template
+2017-09-06 12:48:56,205 INFO .process page 1
+2017-09-06 12:48:56,205 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 12:48:56,206 INFO ...cur text: [01234M]
+2017-09-06 12:48:56,213 INFO ...new text: 01234M
+2017-09-06 12:48:56,213 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 12:48:56,213 INFO ...cur text: [SA]
+2017-09-06 12:48:56,219 INFO ...new text: SA
+2017-09-06 12:48:56,219 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 12:48:56,219 INFO ...cur text: [MUM]
+2017-09-06 12:48:56,226 INFO ...new text: MUM
+2017-09-06 12:48:56,226 INFO ! done processing template
+2017-09-06 12:48:56,226 INFO ! process colors
+2017-09-06 12:48:56,226 INFO ! colcodes ['COLOR']
+2017-09-06 12:48:56,226 INFO ! colors xlat {} 
+2017-09-06 12:48:56,293 INFO ! export current to PDF
+2017-09-06 12:48:56,293 INFO ! done :D
+2017-09-06 12:48:56,294 INFO ! done processing command [CONVERT]
+2017-09-06 12:51:56,290 INFO ! timeout waiting for input
+2017-09-06 12:51:56,290 WARNING ! shutdown system.
+2017-09-06 12:51:56,290 WARNING could not import PyQt4.QtGui. just close all
+2017-09-06 13:44:47,221 INFO ! starting automation on port 16648, timeout in 30 secs
+2017-09-06 13:44:47,252 INFO ! handle request. initiate dialogue.
+2017-09-06 13:44:47,252 INFO ! adapter v7.4 - timeouts
+2017-09-06 13:44:47,253 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-4099/result.pdf:%7B%22%7B%7BDESC%7D%7D%22%3A%22BDZ%22%2C%22%7B%7BNAME1%7D%7D%22%3A%22John%20Doe%22%2C%22%7B%7BNAME2%7D%7D%22%3A%22John%20Doe%22%2C%22%7B%7BHOME%7D%7D%22%3A%22Kolio%20Ganchev%201%22%2C%22%7B%7BEMAIL%7D%7D%22%3A%22john%40yahoo.com%22%2C%22%7B%7B%7BMOBILE%7D%7D%22%3A%220888%2077665%22%2C%22%7B%7BWEBPAGE%7D%7D%22%3A%22www.google.com%22%7D]
+2017-09-06 13:44:47,253 INFO .commence command [CONVERT]
+2017-09-06 13:44:47,253 INFO ..decoding params...
+2017-09-06 13:44:47,253 INFO ..opath: [./work/tmp/web_tmp//rndr-4099/result.pdf]
+2017-09-06 13:44:47,253 INFO ..json: [{"{{DESC}}":"BDZ","{{NAME1}}":"John Doe","{{NAME2}}":"John Doe","{{HOME}}":"Kolio Ganchev 1","{{EMAIL}}":"john@yahoo.com","{{{MOBILE}}":"0888 77665","{{WEBPAGE}}":"www.google.com"}]
+2017-09-06 13:44:47,253 INFO ..xlat: {u'{{NAME2}}': u'John Doe', u'{{EMAIL}}': u'john@yahoo.com', u'{{HOME}}': u'Kolio Ganchev 1', u'{{{MOBILE}}': u'0888 77665', u'{{DESC}}': u'BDZ', u'{{WEBPAGE}}': u'www.google.com', u'{{NAME1}}': u'John Doe'}
+2017-09-06 13:44:47,253 INFO ! process template
+2017-09-06 13:44:47,253 INFO .process page 1
+2017-09-06 13:44:47,254 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 13:44:47,254 INFO ...cur text: [{{DESC}}]
+2017-09-06 13:44:47,256 INFO ...new text: {{DESC}}
+2017-09-06 13:44:47,256 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 13:44:47,256 INFO ...cur text: [{{HOME}}]
+2017-09-06 13:44:47,257 INFO ...new text: {{HOME}}
+2017-09-06 13:44:47,257 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 13:44:47,257 INFO ...cur text: [{{EMAIL}}]
+2017-09-06 13:44:47,258 INFO ...new text: {{EMAIL}}
+2017-09-06 13:44:47,258 INFO ..process item: [('Text6', 4, 6)] 
+2017-09-06 13:44:47,258 INFO ...cur text: [{{MOBILE}}]
+2017-09-06 13:44:47,259 INFO ...new text: {{MOBILE}}
+2017-09-06 13:44:47,259 INFO ..process item: [('Text7', 4, 7)] 
+2017-09-06 13:44:47,259 INFO ...cur text: [{{WEBPAGE}}]
+2017-09-06 13:44:47,261 INFO ...new text: {{WEBPAGE}}
+2017-09-06 13:44:47,261 INFO ..process item: [('Text8', 4, 8)] 
+2017-09-06 13:44:47,261 INFO ...cur text: [{{NAME2}}]
+2017-09-06 13:44:47,262 INFO ...new text: {{NAME2}}
+2017-09-06 13:44:47,262 INFO ..process item: [('Text9', 4, 9)] 
+2017-09-06 13:44:47,262 INFO ...cur text: [{{NAME1}}]
+2017-09-06 13:44:47,264 INFO ...new text: {{NAME1}}
+2017-09-06 13:44:47,264 INFO ! done processing template
+2017-09-06 13:44:47,264 INFO ! process colors
+2017-09-06 13:44:47,264 INFO ! colcodes []
+2017-09-06 13:44:47,264 INFO ! colors xlat {} 
+2017-09-06 13:44:47,405 INFO ! export current to PDF
+2017-09-06 13:44:47,406 INFO ! done :D
+2017-09-06 13:44:47,406 INFO ! done processing command [CONVERT]
+2017-09-06 13:44:48,393 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-4099/result.pdf:%7B%22%7B%7BDESC%7D%7D%22%3A%22BDZ%22%2C%22%7B%7BNAME1%7D%7D%22%3A%22John%20Doe%22%2C%22%7B%7BNAME2%7D%7D%22%3A%22John%20Doe%22%2C%22%7B%7BHOME%7D%7D%22%3A%22Kolio%20Ganchev%201%22%2C%22%7B%7BEMAIL%7D%7D%22%3A%22john%40yahoo.com%22%2C%22%7B%7B%7BMOBILE%7D%7D%22%3A%220888%2077665%22%2C%22%7B%7BWEBPAGE%7D%7D%22%3A%22www.google.com%22%7D]
+2017-09-06 13:44:48,394 INFO .commence command [CONVERT]
+2017-09-06 13:44:48,394 INFO ..decoding params...
+2017-09-06 13:44:48,394 INFO ..opath: [./work/tmp/web_tmp//rndr-4099/result.pdf]
+2017-09-06 13:44:48,394 INFO ..json: [{"{{DESC}}":"BDZ","{{NAME1}}":"John Doe","{{NAME2}}":"John Doe","{{HOME}}":"Kolio Ganchev 1","{{EMAIL}}":"john@yahoo.com","{{{MOBILE}}":"0888 77665","{{WEBPAGE}}":"www.google.com"}]
+2017-09-06 13:44:48,394 INFO ..xlat: {u'{{NAME2}}': u'John Doe', u'{{EMAIL}}': u'john@yahoo.com', u'{{HOME}}': u'Kolio Ganchev 1', u'{{{MOBILE}}': u'0888 77665', u'{{DESC}}': u'BDZ', u'{{WEBPAGE}}': u'www.google.com', u'{{NAME1}}': u'John Doe'}
+2017-09-06 13:44:48,394 INFO ! process template
+2017-09-06 13:44:48,394 INFO .process page 1
+2017-09-06 13:44:48,395 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 13:44:48,395 INFO ...cur text: [{{DESC}}]
+2017-09-06 13:44:48,397 INFO ...new text: {{DESC}}
+2017-09-06 13:44:48,397 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 13:44:48,397 INFO ...cur text: [{{HOME}}]
+2017-09-06 13:44:48,399 INFO ...new text: {{HOME}}
+2017-09-06 13:44:48,399 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 13:44:48,399 INFO ...cur text: [{{EMAIL}}]
+2017-09-06 13:44:48,401 INFO ...new text: {{EMAIL}}
+2017-09-06 13:44:48,401 INFO ..process item: [('Text6', 4, 6)] 
+2017-09-06 13:44:48,401 INFO ...cur text: [{{MOBILE}}]
+2017-09-06 13:44:48,403 INFO ...new text: {{MOBILE}}
+2017-09-06 13:44:48,403 INFO ..process item: [('Text7', 4, 7)] 
+2017-09-06 13:44:48,403 INFO ...cur text: [{{WEBPAGE}}]
+2017-09-06 13:44:48,405 INFO ...new text: {{WEBPAGE}}
+2017-09-06 13:44:48,406 INFO ..process item: [('Text8', 4, 8)] 
+2017-09-06 13:44:48,406 INFO ...cur text: [{{NAME2}}]
+2017-09-06 13:44:48,408 INFO ...new text: {{NAME2}}
+2017-09-06 13:44:48,408 INFO ..process item: [('Text9', 4, 9)] 
+2017-09-06 13:44:48,408 INFO ...cur text: [{{NAME1}}]
+2017-09-06 13:44:48,410 INFO ...new text: {{NAME1}}
+2017-09-06 13:44:48,410 INFO ! done processing template
+2017-09-06 13:44:48,410 INFO ! process colors
+2017-09-06 13:44:48,410 INFO ! colcodes []
+2017-09-06 13:44:48,411 INFO ! colors xlat {} 
+2017-09-06 13:44:48,512 INFO ! export current to PDF
+2017-09-06 13:44:48,513 INFO ! done :D
+2017-09-06 13:44:48,513 INFO ! done processing command [CONVERT]
+2017-09-06 13:45:00,839 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-4099/result.pdf:%7B%22%7B%7BDESC%7D%7D%22%3A%22BDZ%22%2C%22%7B%7BNAME1%7D%7D%22%3A%22John%20Doe%22%2C%22%7B%7BNAME2%7D%7D%22%3A%22John%20Doe%22%2C%22%7B%7BHOME%7D%7D%22%3A%22Kolio%20Ganchev%2012%22%2C%22%7B%7BEMAIL%7D%7D%22%3A%22john%40yahoo.com%22%2C%22%7B%7B%7BMOBILE%7D%7D%22%3A%220888%2077665%22%2C%22%7B%7BWEBPAGE%7D%7D%22%3A%22www.google.com%22%7D]
+2017-09-06 13:45:00,841 INFO .commence command [CONVERT]
+2017-09-06 13:45:00,841 INFO ..decoding params...
+2017-09-06 13:45:00,841 INFO ..opath: [./work/tmp/web_tmp//rndr-4099/result.pdf]
+2017-09-06 13:45:00,841 INFO ..json: [{"{{DESC}}":"BDZ","{{NAME1}}":"John Doe","{{NAME2}}":"John Doe","{{HOME}}":"Kolio Ganchev 12","{{EMAIL}}":"john@yahoo.com","{{{MOBILE}}":"0888 77665","{{WEBPAGE}}":"www.google.com"}]
+2017-09-06 13:45:00,842 INFO ..xlat: {u'{{NAME2}}': u'John Doe', u'{{EMAIL}}': u'john@yahoo.com', u'{{HOME}}': u'Kolio Ganchev 12', u'{{{MOBILE}}': u'0888 77665', u'{{DESC}}': u'BDZ', u'{{WEBPAGE}}': u'www.google.com', u'{{NAME1}}': u'John Doe'}
+2017-09-06 13:45:00,842 INFO ! process template
+2017-09-06 13:45:00,842 INFO .process page 1
+2017-09-06 13:45:00,842 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 13:45:00,842 INFO ...cur text: [{{DESC}}]
+2017-09-06 13:45:00,845 INFO ...new text: {{DESC}}
+2017-09-06 13:45:00,845 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 13:45:00,845 INFO ...cur text: [{{HOME}}]
+2017-09-06 13:45:00,848 INFO ...new text: {{HOME}}
+2017-09-06 13:45:00,848 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 13:45:00,848 INFO ...cur text: [{{EMAIL}}]
+2017-09-06 13:45:00,852 INFO ...new text: {{EMAIL}}
+2017-09-06 13:45:00,852 INFO ..process item: [('Text6', 4, 6)] 
+2017-09-06 13:45:00,852 INFO ...cur text: [{{MOBILE}}]
+2017-09-06 13:45:00,855 INFO ...new text: {{MOBILE}}
+2017-09-06 13:45:00,855 INFO ..process item: [('Text7', 4, 7)] 
+2017-09-06 13:45:00,855 INFO ...cur text: [{{WEBPAGE}}]
+2017-09-06 13:45:00,859 INFO ...new text: {{WEBPAGE}}
+2017-09-06 13:45:00,859 INFO ..process item: [('Text8', 4, 8)] 
+2017-09-06 13:45:00,859 INFO ...cur text: [{{NAME2}}]
+2017-09-06 13:45:00,863 INFO ...new text: {{NAME2}}
+2017-09-06 13:45:00,863 INFO ..process item: [('Text9', 4, 9)] 
+2017-09-06 13:45:00,863 INFO ...cur text: [{{NAME1}}]
+2017-09-06 13:45:00,866 INFO ...new text: {{NAME1}}
+2017-09-06 13:45:00,866 INFO ! done processing template
+2017-09-06 13:45:00,866 INFO ! process colors
+2017-09-06 13:45:00,866 INFO ! colcodes []
+2017-09-06 13:45:00,866 INFO ! colors xlat {} 
+2017-09-06 13:45:01,038 INFO ! export current to PDF
+2017-09-06 13:45:01,038 INFO ! done :D
+2017-09-06 13:45:01,038 INFO ! done processing command [CONVERT]
+2017-09-06 13:46:08,225 INFO ! starting automation on port 14478, timeout in 30 secs
+2017-09-06 13:46:08,419 INFO ! handle request. initiate dialogue.
+2017-09-06 13:46:08,419 INFO ! adapter v7.4 - timeouts
+2017-09-06 13:46:08,420 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-4099/result.pdf:%7B%22%7B%7BDESC%7D%7D%22%3A%22BDZ%22%2C%22%7B%7BNAME1%7D%7D%22%3A%22John%20Doe%22%2C%22NAME2%22%3A%22John%20Doe%22%2C%22%7B%7BHOME%7D%7D%22%3A%22Kolio%20Ganchev%2012%22%2C%22%7B%7BEMAIL%7D%7D%22%3A%22john%40yahoo.com%22%2C%22%7B%7B%7BMOBILE%7D%7D%22%3A%220888%20776655%22%2C%22%7B%7BWEBPAGE%7D%7D%22%3A%22www.google.com%22%7D]
+2017-09-06 13:46:08,420 INFO .commence command [CONVERT]
+2017-09-06 13:46:08,420 INFO ..decoding params...
+2017-09-06 13:46:08,420 INFO ..opath: [./work/tmp/web_tmp//rndr-4099/result.pdf]
+2017-09-06 13:46:08,420 INFO ..json: [{"{{DESC}}":"BDZ","{{NAME1}}":"John Doe","NAME2":"John Doe","{{HOME}}":"Kolio Ganchev 12","{{EMAIL}}":"john@yahoo.com","{{{MOBILE}}":"0888 776655","{{WEBPAGE}}":"www.google.com"}]
+2017-09-06 13:46:08,420 INFO ..xlat: {u'{{EMAIL}}': u'john@yahoo.com', u'{{HOME}}': u'Kolio Ganchev 12', u'{{{MOBILE}}': u'0888 776655', u'{{DESC}}': u'BDZ', u'NAME2': u'John Doe', u'{{WEBPAGE}}': u'www.google.com', u'{{NAME1}}': u'John Doe'}
+2017-09-06 13:46:08,420 INFO ! process template
+2017-09-06 13:46:08,420 INFO .process page 1
+2017-09-06 13:46:08,421 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 13:46:08,421 INFO ...cur text: [{{DESC}}]
+2017-09-06 13:46:08,424 INFO ...new text: {{DESC}}
+2017-09-06 13:46:08,424 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 13:46:08,424 INFO ...cur text: [{{HOME}}]
+2017-09-06 13:46:08,425 INFO ...new text: {{HOME}}
+2017-09-06 13:46:08,425 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 13:46:08,425 INFO ...cur text: [{{EMAIL}}]
+2017-09-06 13:46:08,426 INFO ...new text: {{EMAIL}}
+2017-09-06 13:46:08,426 INFO ..process item: [('Text6', 4, 6)] 
+2017-09-06 13:46:08,427 INFO ...cur text: [{{MOBILE}}]
+2017-09-06 13:46:08,428 INFO ...new text: {{MOBILE}}
+2017-09-06 13:46:08,428 INFO ..process item: [('Text7', 4, 7)] 
+2017-09-06 13:46:08,428 INFO ...cur text: [{{WEBPAGE}}]
+2017-09-06 13:46:08,429 INFO ...new text: {{WEBPAGE}}
+2017-09-06 13:46:08,429 INFO ..process item: [('Text8', 4, 8)] 
+2017-09-06 13:46:08,430 INFO ...cur text: [{{NAME2}}]
+2017-09-06 13:46:08,431 INFO ...new text: John Doe
+2017-09-06 13:46:08,431 INFO ..process item: [('Text9', 4, 9)] 
+2017-09-06 13:46:08,431 INFO ...cur text: [{{NAME1}}]
+2017-09-06 13:46:08,433 INFO ...new text: {{NAME1}}
+2017-09-06 13:46:08,433 INFO ! done processing template
+2017-09-06 13:46:08,433 INFO ! process colors
+2017-09-06 13:46:08,433 INFO ! colcodes []
+2017-09-06 13:46:08,433 INFO ! colors xlat {} 
+2017-09-06 13:46:08,587 INFO ! export current to PDF
+2017-09-06 13:46:08,587 INFO ! done :D
+2017-09-06 13:46:08,587 INFO ! done processing command [CONVERT]
+2017-09-06 13:46:24,569 INFO ! starting automation on port 23311, timeout in 30 secs
+2017-09-06 13:46:24,990 INFO ! handle request. initiate dialogue.
+2017-09-06 13:46:24,990 INFO ! adapter v7.4 - timeouts
+2017-09-06 13:46:24,991 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-4099/result.pdf:%7B%22DESC%22%3A%22BDZ%22%2C%22%7B%7BNAME1%7D%7D%22%3A%22John%20Doe%22%2C%22NAME2%22%3A%22John%20Doe%22%2C%22%7B%7BHOME%7D%7D%22%3A%22Kolio%20Ganchev%2012%22%2C%22%7B%7BEMAIL%7D%7D%22%3A%22john%40yahoo.com%22%2C%22%7B%7B%7BMOBILE%7D%7D%22%3A%220888%20776655%22%2C%22%7B%7BWEBPAGE%7D%7D%22%3A%22www.google.com%22%7D]
+2017-09-06 13:46:24,991 INFO .commence command [CONVERT]
+2017-09-06 13:46:24,991 INFO ..decoding params...
+2017-09-06 13:46:24,991 INFO ..opath: [./work/tmp/web_tmp//rndr-4099/result.pdf]
+2017-09-06 13:46:24,991 INFO ..json: [{"DESC":"BDZ","{{NAME1}}":"John Doe","NAME2":"John Doe","{{HOME}}":"Kolio Ganchev 12","{{EMAIL}}":"john@yahoo.com","{{{MOBILE}}":"0888 776655","{{WEBPAGE}}":"www.google.com"}]
+2017-09-06 13:46:24,991 INFO ..xlat: {u'{{EMAIL}}': u'john@yahoo.com', u'{{HOME}}': u'Kolio Ganchev 12', u'{{{MOBILE}}': u'0888 776655', u'NAME2': u'John Doe', u'DESC': u'BDZ', u'{{WEBPAGE}}': u'www.google.com', u'{{NAME1}}': u'John Doe'}
+2017-09-06 13:46:24,991 INFO ! process template
+2017-09-06 13:46:24,992 INFO .process page 1
+2017-09-06 13:46:24,992 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 13:46:24,993 INFO ...cur text: [{{DESC}}]
+2017-09-06 13:46:24,995 INFO ...new text: BDZ
+2017-09-06 13:46:24,995 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 13:46:24,995 INFO ...cur text: [{{HOME}}]
+2017-09-06 13:46:24,996 INFO ...new text: {{HOME}}
+2017-09-06 13:46:24,996 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 13:46:24,996 INFO ...cur text: [{{EMAIL}}]
+2017-09-06 13:46:24,997 INFO ...new text: {{EMAIL}}
+2017-09-06 13:46:24,997 INFO ..process item: [('Text6', 4, 6)] 
+2017-09-06 13:46:24,998 INFO ...cur text: [{{MOBILE}}]
+2017-09-06 13:46:24,999 INFO ...new text: {{MOBILE}}
+2017-09-06 13:46:24,999 INFO ..process item: [('Text7', 4, 7)] 
+2017-09-06 13:46:24,999 INFO ...cur text: [{{WEBPAGE}}]
+2017-09-06 13:46:25,000 INFO ...new text: {{WEBPAGE}}
+2017-09-06 13:46:25,000 INFO ..process item: [('Text8', 4, 8)] 
+2017-09-06 13:46:25,000 INFO ...cur text: [{{NAME2}}]
+2017-09-06 13:46:25,002 INFO ...new text: John Doe
+2017-09-06 13:46:25,002 INFO ..process item: [('Text9', 4, 9)] 
+2017-09-06 13:46:25,002 INFO ...cur text: [{{NAME1}}]
+2017-09-06 13:46:25,003 INFO ...new text: {{NAME1}}
+2017-09-06 13:46:25,003 INFO ! done processing template
+2017-09-06 13:46:25,004 INFO ! process colors
+2017-09-06 13:46:25,004 INFO ! colcodes []
+2017-09-06 13:46:25,004 INFO ! colors xlat {} 
+2017-09-06 13:46:25,165 INFO ! export current to PDF
+2017-09-06 13:46:25,165 INFO ! done :D
+2017-09-06 13:46:25,165 INFO ! done processing command [CONVERT]
+2017-09-06 13:46:45,617 INFO ! starting automation on port 15572, timeout in 30 secs
+2017-09-06 13:46:46,068 INFO ! handle request. initiate dialogue.
+2017-09-06 13:46:46,068 INFO ! adapter v7.4 - timeouts
+2017-09-06 13:46:46,069 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-4099/result.pdf:%7B%22DESC%22%3A%22BDZ%22%2C%22NAME1%22%3A%22John%20Doe%22%2C%22NAME2%22%3A%22John%20Doe%22%2C%22%7B%7BHOME%7D%7D%22%3A%22Kolio%20Ganchev%2012%22%2C%22%7B%7BEMAIL%7D%7D%22%3A%22john%40yahoo.com%22%2C%22%7B%7B%7BMOBILE%7D%7D%22%3A%220888%20776655%22%2C%22%7B%7BWEBPAGE%7D%7D%22%3A%22www.google.com%22%7D]
+2017-09-06 13:46:46,069 INFO .commence command [CONVERT]
+2017-09-06 13:46:46,069 INFO ..decoding params...
+2017-09-06 13:46:46,069 INFO ..opath: [./work/tmp/web_tmp//rndr-4099/result.pdf]
+2017-09-06 13:46:46,069 INFO ..json: [{"DESC":"BDZ","NAME1":"John Doe","NAME2":"John Doe","{{HOME}}":"Kolio Ganchev 12","{{EMAIL}}":"john@yahoo.com","{{{MOBILE}}":"0888 776655","{{WEBPAGE}}":"www.google.com"}]
+2017-09-06 13:46:46,069 INFO ..xlat: {u'{{EMAIL}}': u'john@yahoo.com', u'{{HOME}}': u'Kolio Ganchev 12', u'{{{MOBILE}}': u'0888 776655', u'NAME2': u'John Doe', u'NAME1': u'John Doe', u'{{WEBPAGE}}': u'www.google.com', u'DESC': u'BDZ'}
+2017-09-06 13:46:46,069 INFO ! process template
+2017-09-06 13:46:46,070 INFO .process page 1
+2017-09-06 13:46:46,070 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 13:46:46,071 INFO ...cur text: [{{DESC}}]
+2017-09-06 13:46:46,073 INFO ...new text: BDZ
+2017-09-06 13:46:46,073 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 13:46:46,073 INFO ...cur text: [{{HOME}}]
+2017-09-06 13:46:46,074 INFO ...new text: {{HOME}}
+2017-09-06 13:46:46,074 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 13:46:46,074 INFO ...cur text: [{{EMAIL}}]
+2017-09-06 13:46:46,076 INFO ...new text: {{EMAIL}}
+2017-09-06 13:46:46,076 INFO ..process item: [('Text6', 4, 6)] 
+2017-09-06 13:46:46,076 INFO ...cur text: [{{MOBILE}}]
+2017-09-06 13:46:46,077 INFO ...new text: {{MOBILE}}
+2017-09-06 13:46:46,077 INFO ..process item: [('Text7', 4, 7)] 
+2017-09-06 13:46:46,077 INFO ...cur text: [{{WEBPAGE}}]
+2017-09-06 13:46:46,079 INFO ...new text: {{WEBPAGE}}
+2017-09-06 13:46:46,079 INFO ..process item: [('Text8', 4, 8)] 
+2017-09-06 13:46:46,079 INFO ...cur text: [{{NAME2}}]
+2017-09-06 13:46:46,081 INFO ...new text: John Doe
+2017-09-06 13:46:46,081 INFO ..process item: [('Text9', 4, 9)] 
+2017-09-06 13:46:46,081 INFO ...cur text: [{{NAME1}}]
+2017-09-06 13:46:46,082 INFO ...new text: John Doe
+2017-09-06 13:46:46,082 INFO ! done processing template
+2017-09-06 13:46:46,082 INFO ! process colors
+2017-09-06 13:46:46,083 INFO ! colcodes []
+2017-09-06 13:46:46,083 INFO ! colors xlat {} 
+2017-09-06 13:46:46,238 INFO ! export current to PDF
+2017-09-06 13:46:46,238 INFO ! done :D
+2017-09-06 13:46:46,238 INFO ! done processing command [CONVERT]
+2017-09-06 13:47:03,033 INFO ! starting automation on port 18598, timeout in 30 secs
+2017-09-06 13:47:03,420 INFO ! handle request. initiate dialogue.
+2017-09-06 13:47:03,420 INFO ! adapter v7.4 - timeouts
+2017-09-06 13:47:03,421 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-4099/result.pdf:%7B%22DESC%22%3A%22BDZ%22%2C%22NAME1%22%3A%22John%20Doe%22%2C%22NAME2%22%3A%22John%20Doe%22%2C%22HOME%22%3A%22Kolio%20Ganchev%2012%22%2C%22%7B%7BEMAIL%7D%7D%22%3A%22john%40yahoo.com%22%2C%22%7B%7B%7BMOBILE%7D%7D%22%3A%220888%20776655%22%2C%22%7B%7BWEBPAGE%7D%7D%22%3A%22www.google.com%22%7D]
+2017-09-06 13:47:03,421 INFO .commence command [CONVERT]
+2017-09-06 13:47:03,421 INFO ..decoding params...
+2017-09-06 13:47:03,421 INFO ..opath: [./work/tmp/web_tmp//rndr-4099/result.pdf]
+2017-09-06 13:47:03,421 INFO ..json: [{"DESC":"BDZ","NAME1":"John Doe","NAME2":"John Doe","HOME":"Kolio Ganchev 12","{{EMAIL}}":"john@yahoo.com","{{{MOBILE}}":"0888 776655","{{WEBPAGE}}":"www.google.com"}]
+2017-09-06 13:47:03,421 INFO ..xlat: {u'{{EMAIL}}': u'john@yahoo.com', u'{{{MOBILE}}': u'0888 776655', u'NAME2': u'John Doe', u'NAME1': u'John Doe', u'HOME': u'Kolio Ganchev 12', u'{{WEBPAGE}}': u'www.google.com', u'DESC': u'BDZ'}
+2017-09-06 13:47:03,421 INFO ! process template
+2017-09-06 13:47:03,421 INFO .process page 1
+2017-09-06 13:47:03,422 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 13:47:03,422 INFO ...cur text: [{{DESC}}]
+2017-09-06 13:47:03,424 INFO ...new text: BDZ
+2017-09-06 13:47:03,424 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 13:47:03,424 INFO ...cur text: [{{HOME}}]
+2017-09-06 13:47:03,425 INFO ...new text: Kolio Ganchev 12
+2017-09-06 13:47:03,425 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 13:47:03,425 INFO ...cur text: [{{EMAIL}}]
+2017-09-06 13:47:03,426 INFO ...new text: {{EMAIL}}
+2017-09-06 13:47:03,427 INFO ..process item: [('Text6', 4, 6)] 
+2017-09-06 13:47:03,427 INFO ...cur text: [{{MOBILE}}]
+2017-09-06 13:47:03,428 INFO ...new text: {{MOBILE}}
+2017-09-06 13:47:03,428 INFO ..process item: [('Text7', 4, 7)] 
+2017-09-06 13:47:03,428 INFO ...cur text: [{{WEBPAGE}}]
+2017-09-06 13:47:03,429 INFO ...new text: {{WEBPAGE}}
+2017-09-06 13:47:03,429 INFO ..process item: [('Text8', 4, 8)] 
+2017-09-06 13:47:03,429 INFO ...cur text: [{{NAME2}}]
+2017-09-06 13:47:03,431 INFO ...new text: John Doe
+2017-09-06 13:47:03,431 INFO ..process item: [('Text9', 4, 9)] 
+2017-09-06 13:47:03,431 INFO ...cur text: [{{NAME1}}]
+2017-09-06 13:47:03,432 INFO ...new text: John Doe
+2017-09-06 13:47:03,432 INFO ! done processing template
+2017-09-06 13:47:03,432 INFO ! process colors
+2017-09-06 13:47:03,432 INFO ! colcodes []
+2017-09-06 13:47:03,432 INFO ! colors xlat {} 
+2017-09-06 13:47:03,594 INFO ! export current to PDF
+2017-09-06 13:47:03,594 INFO ! done :D
+2017-09-06 13:47:03,594 INFO ! done processing command [CONVERT]
+2017-09-06 13:47:17,124 INFO ! starting automation on port 16221, timeout in 30 secs
+2017-09-06 13:47:17,546 INFO ! handle request. initiate dialogue.
+2017-09-06 13:47:17,547 INFO ! adapter v7.4 - timeouts
+2017-09-06 13:47:17,547 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-4099/result.pdf:%7B%22DESC%22%3A%22BDZ%22%2C%22NAME1%22%3A%22John%20Doe%22%2C%22NAME2%22%3A%22John%20Doe%22%2C%22HOME%22%3A%22Kolio%20Ganchev%2012%22%2C%22EMAIL%22%3A%22john%40yahoo.com%22%2C%22%7B%7B%7BMOBILE%7D%7D%22%3A%220888%20776655%22%2C%22%7B%7BWEBPAGE%7D%7D%22%3A%22www.google.com%22%7D]
+2017-09-06 13:47:17,547 INFO .commence command [CONVERT]
+2017-09-06 13:47:17,547 INFO ..decoding params...
+2017-09-06 13:47:17,547 INFO ..opath: [./work/tmp/web_tmp//rndr-4099/result.pdf]
+2017-09-06 13:47:17,547 INFO ..json: [{"DESC":"BDZ","NAME1":"John Doe","NAME2":"John Doe","HOME":"Kolio Ganchev 12","EMAIL":"john@yahoo.com","{{{MOBILE}}":"0888 776655","{{WEBPAGE}}":"www.google.com"}]
+2017-09-06 13:47:17,548 INFO ..xlat: {u'{{{MOBILE}}': u'0888 776655', u'NAME2': u'John Doe', u'NAME1': u'John Doe', u'HOME': u'Kolio Ganchev 12', u'{{WEBPAGE}}': u'www.google.com', u'EMAIL': u'john@yahoo.com', u'DESC': u'BDZ'}
+2017-09-06 13:47:17,548 INFO ! process template
+2017-09-06 13:47:17,548 INFO .process page 1
+2017-09-06 13:47:17,549 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 13:47:17,549 INFO ...cur text: [{{DESC}}]
+2017-09-06 13:47:17,551 INFO ...new text: BDZ
+2017-09-06 13:47:17,551 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 13:47:17,551 INFO ...cur text: [{{HOME}}]
+2017-09-06 13:47:17,553 INFO ...new text: Kolio Ganchev 12
+2017-09-06 13:47:17,553 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 13:47:17,553 INFO ...cur text: [{{EMAIL}}]
+2017-09-06 13:47:17,554 INFO ...new text: john@yahoo.com
+2017-09-06 13:47:17,554 INFO ..process item: [('Text6', 4, 6)] 
+2017-09-06 13:47:17,554 INFO ...cur text: [{{MOBILE}}]
+2017-09-06 13:47:17,555 INFO ...new text: {{MOBILE}}
+2017-09-06 13:47:17,555 INFO ..process item: [('Text7', 4, 7)] 
+2017-09-06 13:47:17,556 INFO ...cur text: [{{WEBPAGE}}]
+2017-09-06 13:47:17,557 INFO ...new text: {{WEBPAGE}}
+2017-09-06 13:47:17,557 INFO ..process item: [('Text8', 4, 8)] 
+2017-09-06 13:47:17,557 INFO ...cur text: [{{NAME2}}]
+2017-09-06 13:47:17,558 INFO ...new text: John Doe
+2017-09-06 13:47:17,558 INFO ..process item: [('Text9', 4, 9)] 
+2017-09-06 13:47:17,559 INFO ...cur text: [{{NAME1}}]
+2017-09-06 13:47:17,560 INFO ...new text: John Doe
+2017-09-06 13:47:17,560 INFO ! done processing template
+2017-09-06 13:47:17,560 INFO ! process colors
+2017-09-06 13:47:17,560 INFO ! colcodes []
+2017-09-06 13:47:17,560 INFO ! colors xlat {} 
+2017-09-06 13:47:17,722 INFO ! export current to PDF
+2017-09-06 13:47:17,722 INFO ! done :D
+2017-09-06 13:47:17,723 INFO ! done processing command [CONVERT]
+2017-09-06 13:47:33,152 INFO ! starting automation on port 17110, timeout in 30 secs
+2017-09-06 13:47:33,571 INFO ! handle request. initiate dialogue.
+2017-09-06 13:47:33,571 INFO ! adapter v7.4 - timeouts
+2017-09-06 13:47:33,571 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-4099/result.pdf:%7B%22DESC%22%3A%22BDZ%22%2C%22NAME1%22%3A%22John%20Doe%22%2C%22NAME2%22%3A%22John%20Doe%22%2C%22HOME%22%3A%22Kolio%20Ganchev%2012%22%2C%22EMAIL%22%3A%22john%40yahoo.com%22%2C%22MOBILE%22%3A%220888%20776655%22%2C%22%7B%7BWEBPAGE%7D%7D%22%3A%22www.google.com%22%7D]
+2017-09-06 13:47:33,572 INFO .commence command [CONVERT]
+2017-09-06 13:47:33,572 INFO ..decoding params...
+2017-09-06 13:47:33,572 INFO ..opath: [./work/tmp/web_tmp//rndr-4099/result.pdf]
+2017-09-06 13:47:33,572 INFO ..json: [{"DESC":"BDZ","NAME1":"John Doe","NAME2":"John Doe","HOME":"Kolio Ganchev 12","EMAIL":"john@yahoo.com","MOBILE":"0888 776655","{{WEBPAGE}}":"www.google.com"}]
+2017-09-06 13:47:33,572 INFO ..xlat: {u'MOBILE': u'0888 776655', u'NAME2': u'John Doe', u'NAME1': u'John Doe', u'HOME': u'Kolio Ganchev 12', u'{{WEBPAGE}}': u'www.google.com', u'EMAIL': u'john@yahoo.com', u'DESC': u'BDZ'}
+2017-09-06 13:47:33,572 INFO ! process template
+2017-09-06 13:47:33,572 INFO .process page 1
+2017-09-06 13:47:33,573 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 13:47:33,573 INFO ...cur text: [{{DESC}}]
+2017-09-06 13:47:33,575 INFO ...new text: BDZ
+2017-09-06 13:47:33,575 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 13:47:33,575 INFO ...cur text: [{{HOME}}]
+2017-09-06 13:47:33,576 INFO ...new text: Kolio Ganchev 12
+2017-09-06 13:47:33,576 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 13:47:33,576 INFO ...cur text: [{{EMAIL}}]
+2017-09-06 13:47:33,577 INFO ...new text: john@yahoo.com
+2017-09-06 13:47:33,577 INFO ..process item: [('Text6', 4, 6)] 
+2017-09-06 13:47:33,577 INFO ...cur text: [{{MOBILE}}]
+2017-09-06 13:47:33,579 INFO ...new text: 0888 776655
+2017-09-06 13:47:33,579 INFO ..process item: [('Text7', 4, 7)] 
+2017-09-06 13:47:33,579 INFO ...cur text: [{{WEBPAGE}}]
+2017-09-06 13:47:33,580 INFO ...new text: {{WEBPAGE}}
+2017-09-06 13:47:33,580 INFO ..process item: [('Text8', 4, 8)] 
+2017-09-06 13:47:33,580 INFO ...cur text: [{{NAME2}}]
+2017-09-06 13:47:33,582 INFO ...new text: John Doe
+2017-09-06 13:47:33,582 INFO ..process item: [('Text9', 4, 9)] 
+2017-09-06 13:47:33,582 INFO ...cur text: [{{NAME1}}]
+2017-09-06 13:47:33,583 INFO ...new text: John Doe
+2017-09-06 13:47:33,583 INFO ! done processing template
+2017-09-06 13:47:33,584 INFO ! process colors
+2017-09-06 13:47:33,584 INFO ! colcodes []
+2017-09-06 13:47:33,584 INFO ! colors xlat {} 
+2017-09-06 13:47:33,755 INFO ! export current to PDF
+2017-09-06 13:47:33,755 INFO ! done :D
+2017-09-06 13:47:33,755 INFO ! done processing command [CONVERT]
+2017-09-06 13:47:45,776 INFO ! starting automation on port 23158, timeout in 30 secs
+2017-09-06 13:47:46,211 INFO ! handle request. initiate dialogue.
+2017-09-06 13:47:46,212 INFO ! adapter v7.4 - timeouts
+2017-09-06 13:47:46,212 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-4099/result.pdf:%7B%22DESC%22%3A%22BDZ%22%2C%22NAME1%22%3A%22John%20Doe%22%2C%22NAME2%22%3A%22John%20Doe%22%2C%22HOME%22%3A%22Kolio%20Ganchev%2012%22%2C%22EMAIL%22%3A%22john%40yahoo.com%22%2C%22MOBILE%22%3A%220888%20776655%22%2C%22WEBPAGE%22%3A%22www.google.com%22%7D]
+2017-09-06 13:47:46,212 INFO .commence command [CONVERT]
+2017-09-06 13:47:46,212 INFO ..decoding params...
+2017-09-06 13:47:46,212 INFO ..opath: [./work/tmp/web_tmp//rndr-4099/result.pdf]
+2017-09-06 13:47:46,212 INFO ..json: [{"DESC":"BDZ","NAME1":"John Doe","NAME2":"John Doe","HOME":"Kolio Ganchev 12","EMAIL":"john@yahoo.com","MOBILE":"0888 776655","WEBPAGE":"www.google.com"}]
+2017-09-06 13:47:46,212 INFO ..xlat: {u'MOBILE': u'0888 776655', u'WEBPAGE': u'www.google.com', u'NAME2': u'John Doe', u'NAME1': u'John Doe', u'HOME': u'Kolio Ganchev 12', u'EMAIL': u'john@yahoo.com', u'DESC': u'BDZ'}
+2017-09-06 13:47:46,212 INFO ! process template
+2017-09-06 13:47:46,212 INFO .process page 1
+2017-09-06 13:47:46,213 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 13:47:46,213 INFO ...cur text: [{{DESC}}]
+2017-09-06 13:47:46,215 INFO ...new text: BDZ
+2017-09-06 13:47:46,215 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 13:47:46,215 INFO ...cur text: [{{HOME}}]
+2017-09-06 13:47:46,216 INFO ...new text: Kolio Ganchev 12
+2017-09-06 13:47:46,216 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 13:47:46,216 INFO ...cur text: [{{EMAIL}}]
+2017-09-06 13:47:46,217 INFO ...new text: john@yahoo.com
+2017-09-06 13:47:46,217 INFO ..process item: [('Text6', 4, 6)] 
+2017-09-06 13:47:46,218 INFO ...cur text: [{{MOBILE}}]
+2017-09-06 13:47:46,219 INFO ...new text: 0888 776655
+2017-09-06 13:47:46,219 INFO ..process item: [('Text7', 4, 7)] 
+2017-09-06 13:47:46,219 INFO ...cur text: [{{WEBPAGE}}]
+2017-09-06 13:47:46,220 INFO ...new text: www.google.com
+2017-09-06 13:47:46,220 INFO ..process item: [('Text8', 4, 8)] 
+2017-09-06 13:47:46,220 INFO ...cur text: [{{NAME2}}]
+2017-09-06 13:47:46,222 INFO ...new text: John Doe
+2017-09-06 13:47:46,222 INFO ..process item: [('Text9', 4, 9)] 
+2017-09-06 13:47:46,222 INFO ...cur text: [{{NAME1}}]
+2017-09-06 13:47:46,223 INFO ...new text: John Doe
+2017-09-06 13:47:46,223 INFO ! done processing template
+2017-09-06 13:47:46,223 INFO ! process colors
+2017-09-06 13:47:46,223 INFO ! colcodes []
+2017-09-06 13:47:46,223 INFO ! colors xlat {} 
+2017-09-06 13:47:46,381 INFO ! export current to PDF
+2017-09-06 13:47:46,382 INFO ! done :D
+2017-09-06 13:47:46,382 INFO ! done processing command [CONVERT]
+2017-09-06 13:50:46,378 INFO ! timeout waiting for input
+2017-09-06 13:50:46,378 WARNING ! shutdown system.
+2017-09-06 13:50:46,379 WARNING could not import PyQt4.QtGui. just close all
+2017-09-06 13:51:50,347 INFO ! starting automation on port 19873, timeout in 30 secs
+2017-09-06 13:51:50,830 INFO ! handle request. initiate dialogue.
+2017-09-06 13:51:50,830 INFO ! adapter v7.4 - timeouts
+2017-09-06 13:51:50,831 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22SA%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C12%2C12%2C12)%22%7D]
+2017-09-06 13:51:50,831 INFO .commence command [CONVERT]
+2017-09-06 13:51:50,831 INFO ..decoding params...
+2017-09-06 13:51:50,831 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 13:51:50,831 INFO ..json: [{"A":"MUM","B":"SA","C":"01234M","D":"cmyk(12,12,12,12)"}]
+2017-09-06 13:51:50,831 INFO ..xlat: {u'A': u'MUM', u'C': u'01234M', u'B': u'SA', u'D': u'cmyk(12,12,12,12)'}
+2017-09-06 13:51:50,831 INFO ! process template
+2017-09-06 13:51:50,831 INFO .process page 1
+2017-09-06 13:51:50,832 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 13:51:50,832 INFO ...cur text: [{{C}}]
+2017-09-06 13:51:50,834 INFO ...new text: 01234M
+2017-09-06 13:51:50,834 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 13:51:50,834 INFO ...cur text: [ {{B}}]
+2017-09-06 13:51:50,835 INFO ...new text: SA
+2017-09-06 13:51:50,835 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 13:51:50,835 INFO ...cur text: [{{A}}]
+2017-09-06 13:51:50,836 INFO ...new text: MUM
+2017-09-06 13:51:50,836 INFO ! done processing template
+2017-09-06 13:51:50,836 INFO ! process colors
+2017-09-06 13:51:50,836 INFO ! colcodes ['COLOR']
+2017-09-06 13:51:50,836 INFO ! colors xlat {} 
+2017-09-06 13:51:50,967 INFO ! export current to PDF
+2017-09-06 13:51:50,967 INFO ! done :D
+2017-09-06 13:51:50,967 INFO ! done processing command [CONVERT]
+2017-09-06 13:51:51,607 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22SA%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C12%2C12%2C12)%22%7D]
+2017-09-06 13:51:51,607 INFO .commence command [CONVERT]
+2017-09-06 13:51:51,607 INFO ..decoding params...
+2017-09-06 13:51:51,607 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 13:51:51,607 INFO ..json: [{"A":"MUM","B":"SA","C":"01234M","D":"cmyk(12,12,12,12)"}]
+2017-09-06 13:51:51,607 INFO ..xlat: {u'A': u'MUM', u'C': u'01234M', u'B': u'SA', u'D': u'cmyk(12,12,12,12)'}
+2017-09-06 13:51:51,607 INFO ! process template
+2017-09-06 13:51:51,607 INFO .process page 1
+2017-09-06 13:51:51,608 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 13:51:51,608 INFO ...cur text: [01234M]
+2017-09-06 13:51:51,610 INFO ...new text: 01234M
+2017-09-06 13:51:51,610 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 13:51:51,610 INFO ...cur text: [SA]
+2017-09-06 13:51:51,611 INFO ...new text: SA
+2017-09-06 13:51:51,612 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 13:51:51,612 INFO ...cur text: [MUM]
+2017-09-06 13:51:51,613 INFO ...new text: MUM
+2017-09-06 13:51:51,613 INFO ! done processing template
+2017-09-06 13:51:51,613 INFO ! process colors
+2017-09-06 13:51:51,613 INFO ! colcodes ['COLOR']
+2017-09-06 13:51:51,613 INFO ! colors xlat {} 
+2017-09-06 13:51:51,705 INFO ! export current to PDF
+2017-09-06 13:51:51,705 INFO ! done :D
+2017-09-06 13:51:51,705 INFO ! done processing command [CONVERT]
+2017-09-06 13:51:56,698 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3798/result.pdf:%7B%22A%22%3A%22MUM%22%2C%22B%22%3A%22SA%22%2C%22C%22%3A%2201234M%22%2C%22D%22%3A%22cmyk(12%2C84%2C60%2C48)%22%7D]
+2017-09-06 13:51:56,698 INFO .commence command [CONVERT]
+2017-09-06 13:51:56,698 INFO ..decoding params...
+2017-09-06 13:51:56,698 INFO ..opath: [./work/tmp/web_tmp//rndr-3798/result.pdf]
+2017-09-06 13:51:56,698 INFO ..json: [{"A":"MUM","B":"SA","C":"01234M","D":"cmyk(12,84,60,48)"}]
+2017-09-06 13:51:56,699 INFO ..xlat: {u'A': u'MUM', u'C': u'01234M', u'B': u'SA', u'D': u'cmyk(12,84,60,48)'}
+2017-09-06 13:51:56,699 INFO ! process template
+2017-09-06 13:51:56,699 INFO .process page 1
+2017-09-06 13:51:56,699 INFO ..process item: [('Text469', 4, 469)] 
+2017-09-06 13:51:56,699 INFO ...cur text: [01234M]
+2017-09-06 13:51:56,701 INFO ...new text: 01234M
+2017-09-06 13:51:56,701 INFO ..process item: [('Text470', 4, 470)] 
+2017-09-06 13:51:56,701 INFO ...cur text: [SA]
+2017-09-06 13:51:56,703 INFO ...new text: SA
+2017-09-06 13:51:56,703 INFO ..process item: [('Text471', 4, 471)] 
+2017-09-06 13:51:56,703 INFO ...cur text: [MUM]
+2017-09-06 13:51:56,705 INFO ...new text: MUM
+2017-09-06 13:51:56,705 INFO ! done processing template
+2017-09-06 13:51:56,705 INFO ! process colors
+2017-09-06 13:51:56,705 INFO ! colcodes ['COLOR']
+2017-09-06 13:51:56,705 INFO ! colors xlat {} 
+2017-09-06 13:51:56,763 INFO ! export current to PDF
+2017-09-06 13:51:56,763 INFO ! done :D
+2017-09-06 13:51:56,764 INFO ! done processing command [CONVERT]
+2017-09-06 13:52:16,683 INFO ! starting automation on port 16824, timeout in 30 secs
+2017-09-06 13:52:17,165 INFO ! handle request. initiate dialogue.
+2017-09-06 13:52:17,165 INFO ! adapter v7.4 - timeouts
+2017-09-06 13:52:17,165 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3649/result.pdf:%7B%22CAPT%22%3A%22kfhgms%2Ffgkmh%2Ffklg%22%2C%22DESC1%22%3A%22BLAH%20%D0%91%D0%9B%D0%AF%20111%22%2C%22DESC2%22%3A%22BLAH%20%D0%91%D0%9B%D0%AF%202%22%2C%22COLOR%22%3A%22cmyk(32%2C45%2C44%2C12)%22%7D]
+2017-09-06 13:52:17,165 INFO .commence command [CONVERT]
+2017-09-06 13:52:17,165 INFO ..decoding params...
+2017-09-06 13:52:17,165 INFO ..opath: [./work/tmp/web_tmp//rndr-3649/result.pdf]
+2017-09-06 13:52:17,165 INFO ..json: [{"CAPT":"kfhgms/fgkmh/fklg","DESC1":"BLAH БЛЯ 111","DESC2":"BLAH БЛЯ 2","COLOR":"cmyk(32,45,44,12)"}]
+2017-09-06 13:52:17,166 INFO ..xlat: {u'CAPT': u'kfhgms/fgkmh/fklg', u'COLOR': u'cmyk(32,45,44,12)', u'DESC1': u'BLAH \u0411\u041b\u042f 111', u'DESC2': u'BLAH \u0411\u041b\u042f 2'}
+2017-09-06 13:52:17,166 INFO ! process template
+2017-09-06 13:52:17,166 INFO .process page 1
+2017-09-06 13:52:17,167 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 13:52:17,167 INFO ...cur text: [{{CAPT}}]
+2017-09-06 13:52:17,169 INFO ...new text: kfhgms/fgkmh/fklg
+2017-09-06 13:52:17,169 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 13:52:17,169 INFO ...cur text: [{{DESC1}}]
+2017-09-06 13:52:17,170 INFO ...new text: BLAH БЛЯ 111
+2017-09-06 13:52:17,170 INFO .process page 2
+2017-09-06 13:52:17,170 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 13:52:17,171 INFO ...cur text: [{{DESC2}}]
+2017-09-06 13:52:17,172 INFO ...new text: BLAH БЛЯ 2
+2017-09-06 13:52:17,172 INFO ! done processing template
+2017-09-06 13:52:17,172 INFO ! process colors
+2017-09-06 13:52:17,172 INFO ! colcodes ['COLOR']
+2017-09-06 13:52:17,172 ERROR ..standard error: invalid literal for int() with base 10: '32,45,44,12'
+2017-09-06 13:52:33,314 INFO ! export current to PDF
+2017-09-06 13:52:33,314 INFO ! done :D
+2017-09-06 13:52:33,314 INFO ! done processing command [CONVERT]
+2017-09-06 13:52:33,932 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3649/result.pdf:%7B%22CAPT%22%3A%22kfhgms%2Ffgkmh%2Ffklg%22%2C%22DESC1%22%3A%22BLAH%20%D0%91%D0%9B%D0%AF%20111%22%2C%22DESC2%22%3A%22BLAH%20%D0%91%D0%9B%D0%AF%202%22%2C%22COLOR%22%3A%22cmyk(32%2C45%2C44%2C12)%22%7D]
+2017-09-06 13:52:33,932 INFO .commence command [CONVERT]
+2017-09-06 13:52:33,932 INFO ..decoding params...
+2017-09-06 13:52:33,933 INFO ..opath: [./work/tmp/web_tmp//rndr-3649/result.pdf]
+2017-09-06 13:52:33,933 INFO ..json: [{"CAPT":"kfhgms/fgkmh/fklg","DESC1":"BLAH БЛЯ 111","DESC2":"BLAH БЛЯ 2","COLOR":"cmyk(32,45,44,12)"}]
+2017-09-06 13:52:33,933 INFO ..xlat: {u'CAPT': u'kfhgms/fgkmh/fklg', u'COLOR': u'cmyk(32,45,44,12)', u'DESC1': u'BLAH \u0411\u041b\u042f 111', u'DESC2': u'BLAH \u0411\u041b\u042f 2'}
+2017-09-06 13:52:33,933 INFO ! process template
+2017-09-06 13:52:33,933 INFO .process page 1
+2017-09-06 13:52:33,934 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 13:52:33,934 INFO ...cur text: [kfhgms/fgkmh/fklg]
+2017-09-06 13:52:33,935 INFO ...new text: kfhgms/fgkmh/fklg
+2017-09-06 13:52:33,935 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 13:52:33,935 INFO ...cur text: [BLAH БЛЯ 111]
+2017-09-06 13:52:33,937 INFO ...new text: BLAH БЛЯ 111
+2017-09-06 13:52:33,937 INFO .process page 2
+2017-09-06 13:52:33,937 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 13:52:33,937 INFO ...cur text: [BLAH БЛЯ 2]
+2017-09-06 13:52:33,939 INFO ...new text: BLAH БЛЯ 2
+2017-09-06 13:52:33,939 INFO ! done processing template
+2017-09-06 13:52:33,939 INFO ! process colors
+2017-09-06 13:52:33,939 INFO ! colcodes ['COLOR']
+2017-09-06 13:52:33,939 ERROR ..standard error: invalid literal for int() with base 10: '32,45,44,12'
+2017-09-06 13:52:50,099 INFO ! export current to PDF
+2017-09-06 13:52:50,099 INFO ! done :D
+2017-09-06 13:52:50,099 INFO ! done processing command [CONVERT]
+2017-09-06 13:53:03,903 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3649/result.pdf:%7B%22CAPT%22%3A%22kfhgms%2Ffgkmh%2Ffklg%22%2C%22DESC1%22%3A%22BLAH%20%D0%91%D0%9B%D0%AF%20111%22%2C%22DESC2%22%3A%22BLAH%20%D0%91%D0%9B%D0%AF%202%22%2C%22COLOR%22%3A%22cmyk(45%2C67%2C34%2C23)%22%7D]
+2017-09-06 13:53:03,903 INFO .commence command [CONVERT]
+2017-09-06 13:53:03,903 INFO ..decoding params...
+2017-09-06 13:53:03,903 INFO ..opath: [./work/tmp/web_tmp//rndr-3649/result.pdf]
+2017-09-06 13:53:03,903 INFO ..json: [{"CAPT":"kfhgms/fgkmh/fklg","DESC1":"BLAH БЛЯ 111","DESC2":"BLAH БЛЯ 2","COLOR":"cmyk(45,67,34,23)"}]
+2017-09-06 13:53:03,903 INFO ..xlat: {u'CAPT': u'kfhgms/fgkmh/fklg', u'COLOR': u'cmyk(45,67,34,23)', u'DESC1': u'BLAH \u0411\u041b\u042f 111', u'DESC2': u'BLAH \u0411\u041b\u042f 2'}
+2017-09-06 13:53:03,903 INFO ! process template
+2017-09-06 13:53:03,903 INFO .process page 1
+2017-09-06 13:53:03,904 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 13:53:03,904 INFO ...cur text: [kfhgms/fgkmh/fklg]
+2017-09-06 13:53:03,906 INFO ...new text: kfhgms/fgkmh/fklg
+2017-09-06 13:53:03,906 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 13:53:03,906 INFO ...cur text: [BLAH БЛЯ 111]
+2017-09-06 13:53:03,908 INFO ...new text: BLAH БЛЯ 111
+2017-09-06 13:53:03,908 INFO .process page 2
+2017-09-06 13:53:03,909 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 13:53:03,909 INFO ...cur text: [BLAH БЛЯ 2]
+2017-09-06 13:53:03,910 INFO ...new text: BLAH БЛЯ 2
+2017-09-06 13:53:03,911 INFO ! done processing template
+2017-09-06 13:53:03,911 INFO ! process colors
+2017-09-06 13:53:03,911 INFO ! colcodes ['COLOR']
+2017-09-06 13:53:03,911 ERROR ..standard error: invalid literal for int() with base 10: '45,67,34,23'
+2017-09-06 13:53:20,130 INFO ! export current to PDF
+2017-09-06 13:53:20,130 INFO ! done :D
+2017-09-06 13:53:20,130 INFO ! done processing command [CONVERT]
+2017-09-06 13:54:56,759 INFO ! timeout waiting for input
+2017-09-06 13:54:56,759 WARNING ! shutdown system.
+2017-09-06 13:54:56,760 WARNING could not import PyQt4.QtGui. just close all
+2017-09-06 13:56:20,127 INFO ! timeout waiting for input
+2017-09-06 13:56:20,127 WARNING ! shutdown system.
+2017-09-06 13:56:20,127 WARNING could not import PyQt4.QtGui. just close all
+2017-09-06 16:35:15,172 INFO ! starting automation on port 20095, timeout in 30 secs
+2017-09-06 16:35:15,224 INFO ! handle request. initiate dialogue.
+2017-09-06 16:35:15,224 INFO ! adapter v7.4 - timeouts
+2017-09-06 16:35:15,225 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3649/result.pdf:%7B%22CAPT%22%3A%22kfhgms%2Ffgkmh%2Ffklg%22%2C%22DESC1%22%3A%22BLAH%20%D0%91%D0%9B%D0%AF%20111%22%2C%22DESC2%22%3A%22BLAH%20%D0%91%D0%9B%D0%AF%202%22%2C%22COLOR%22%3A%22cmyk(32%2C45%2C44%2C12)%22%7D]
+2017-09-06 16:35:15,225 INFO .commence command [CONVERT]
+2017-09-06 16:35:15,225 INFO ..decoding params...
+2017-09-06 16:35:15,225 INFO ..opath: [./work/tmp/web_tmp//rndr-3649/result.pdf]
+2017-09-06 16:35:15,225 INFO ..json: [{"CAPT":"kfhgms/fgkmh/fklg","DESC1":"BLAH БЛЯ 111","DESC2":"BLAH БЛЯ 2","COLOR":"cmyk(32,45,44,12)"}]
+2017-09-06 16:35:15,225 INFO ..xlat: {u'CAPT': u'kfhgms/fgkmh/fklg', u'COLOR': u'cmyk(32,45,44,12)', u'DESC1': u'BLAH \u0411\u041b\u042f 111', u'DESC2': u'BLAH \u0411\u041b\u042f 2'}
+2017-09-06 16:35:15,226 INFO ! process template
+2017-09-06 16:35:15,226 INFO .process page 1
+2017-09-06 16:35:15,226 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 16:35:15,227 INFO ...cur text: [{{CAPT}}]
+2017-09-06 16:35:15,229 INFO ...new text: kfhgms/fgkmh/fklg
+2017-09-06 16:35:15,229 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 16:35:15,229 INFO ...cur text: [{{DESC1}}]
+2017-09-06 16:35:15,230 INFO ...new text: BLAH БЛЯ 111
+2017-09-06 16:35:15,230 INFO .process page 2
+2017-09-06 16:35:15,230 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 16:35:15,230 INFO ...cur text: [{{DESC2}}]
+2017-09-06 16:35:15,231 INFO ...new text: BLAH БЛЯ 2
+2017-09-06 16:35:15,231 INFO ! done processing template
+2017-09-06 16:35:15,232 INFO ! process colors
+2017-09-06 16:35:15,232 INFO ! colcodes ['COLOR']
+2017-09-06 16:35:15,232 ERROR ..standard error: invalid literal for int() with base 10: '32,45,44,12'
+2017-09-06 16:35:32,685 INFO ! export current to PDF
+2017-09-06 16:35:32,686 INFO ! done :D
+2017-09-06 16:35:32,686 INFO ! done processing command [CONVERT]
+2017-09-06 16:35:33,287 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3649/result.pdf:%7B%22CAPT%22%3A%22kfhgms%2Ffgkmh%2Ffklg%22%2C%22DESC1%22%3A%22BLAH%20%D0%91%D0%9B%D0%AF%20111%22%2C%22DESC2%22%3A%22BLAH%20%D0%91%D0%9B%D0%AF%202%22%2C%22COLOR%22%3A%22cmyk(32%2C45%2C44%2C12)%22%7D]
+2017-09-06 16:35:33,287 INFO .commence command [CONVERT]
+2017-09-06 16:35:33,287 INFO ..decoding params...
+2017-09-06 16:35:33,287 INFO ..opath: [./work/tmp/web_tmp//rndr-3649/result.pdf]
+2017-09-06 16:35:33,287 INFO ..json: [{"CAPT":"kfhgms/fgkmh/fklg","DESC1":"BLAH БЛЯ 111","DESC2":"BLAH БЛЯ 2","COLOR":"cmyk(32,45,44,12)"}]
+2017-09-06 16:35:33,288 INFO ..xlat: {u'CAPT': u'kfhgms/fgkmh/fklg', u'COLOR': u'cmyk(32,45,44,12)', u'DESC1': u'BLAH \u0411\u041b\u042f 111', u'DESC2': u'BLAH \u0411\u041b\u042f 2'}
+2017-09-06 16:35:33,288 INFO ! process template
+2017-09-06 16:35:33,288 INFO .process page 1
+2017-09-06 16:35:33,289 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 16:35:33,289 INFO ...cur text: [kfhgms/fgkmh/fklg]
+2017-09-06 16:35:33,290 INFO ...new text: kfhgms/fgkmh/fklg
+2017-09-06 16:35:33,290 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 16:35:33,290 INFO ...cur text: [BLAH БЛЯ 111]
+2017-09-06 16:35:33,291 INFO ...new text: BLAH БЛЯ 111
+2017-09-06 16:35:33,291 INFO .process page 2
+2017-09-06 16:35:33,292 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 16:35:33,292 INFO ...cur text: [BLAH БЛЯ 2]
+2017-09-06 16:35:33,293 INFO ...new text: BLAH БЛЯ 2
+2017-09-06 16:35:33,293 INFO ! done processing template
+2017-09-06 16:35:33,293 INFO ! process colors
+2017-09-06 16:35:33,294 INFO ! colcodes ['COLOR']
+2017-09-06 16:35:33,294 ERROR ..standard error: invalid literal for int() with base 10: '32,45,44,12'
+2017-09-06 16:35:50,060 INFO ! export current to PDF
+2017-09-06 16:35:50,060 INFO ! done :D
+2017-09-06 16:35:50,061 INFO ! done processing command [CONVERT]
+2017-09-06 16:36:10,553 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-3649/result.pdf:%7B%22CAPT%22%3A%22kfhgms%2Ffgkmh%2Ffklg%22%2C%22DESC1%22%3A%22BLAH%20%D0%91%D0%9B%D0%AF%20111%22%2C%22DESC2%22%3A%22BLAH%20%D0%91%D0%9B%D0%AF%202%22%2C%22COLOR%22%3A%22cmyk(24%2C24%2C24%2C24)%22%7D]
+2017-09-06 16:36:10,553 INFO .commence command [CONVERT]
+2017-09-06 16:36:10,553 INFO ..decoding params...
+2017-09-06 16:36:10,553 INFO ..opath: [./work/tmp/web_tmp//rndr-3649/result.pdf]
+2017-09-06 16:36:10,553 INFO ..json: [{"CAPT":"kfhgms/fgkmh/fklg","DESC1":"BLAH БЛЯ 111","DESC2":"BLAH БЛЯ 2","COLOR":"cmyk(24,24,24,24)"}]
+2017-09-06 16:36:10,553 INFO ..xlat: {u'CAPT': u'kfhgms/fgkmh/fklg', u'COLOR': u'cmyk(24,24,24,24)', u'DESC1': u'BLAH \u0411\u041b\u042f 111', u'DESC2': u'BLAH \u0411\u041b\u042f 2'}
+2017-09-06 16:36:10,553 INFO ! process template
+2017-09-06 16:36:10,554 INFO .process page 1
+2017-09-06 16:36:10,554 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 16:36:10,554 INFO ...cur text: [kfhgms/fgkmh/fklg]
+2017-09-06 16:36:10,556 INFO ...new text: kfhgms/fgkmh/fklg
+2017-09-06 16:36:10,556 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 16:36:10,556 INFO ...cur text: [BLAH БЛЯ 111]
+2017-09-06 16:36:10,558 INFO ...new text: BLAH БЛЯ 111
+2017-09-06 16:36:10,558 INFO .process page 2
+2017-09-06 16:36:10,558 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 16:36:10,558 INFO ...cur text: [BLAH БЛЯ 2]
+2017-09-06 16:36:10,560 INFO ...new text: BLAH БЛЯ 2
+2017-09-06 16:36:10,560 INFO ! done processing template
+2017-09-06 16:36:10,560 INFO ! process colors
+2017-09-06 16:36:10,560 INFO ! colcodes ['COLOR']
+2017-09-06 16:36:10,561 ERROR ..standard error: invalid literal for int() with base 10: '24,24,24,24'
+2017-09-06 16:36:27,099 INFO ! export current to PDF
+2017-09-06 16:36:27,099 INFO ! done :D
+2017-09-06 16:36:27,099 INFO ! done processing command [CONVERT]
+2017-09-06 16:39:27,095 INFO ! timeout waiting for input
+2017-09-06 16:39:27,098 WARNING ! shutdown system.
+2017-09-06 16:39:27,098 WARNING could not import PyQt4.QtGui. just close all
+2017-09-06 17:10:23,478 INFO ! starting automation on port 19562, timeout in 30 secs
+2017-09-06 17:10:23,517 INFO ! handle request. initiate dialogue.
+2017-09-06 17:10:23,518 INFO ! adapter v7.4 - timeouts
+2017-09-06 17:10:23,518 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-4099/result.pdf:%7B%22DESC%22%3A%22BDZZ%22%2C%22NAME1%22%3A%22John%20Doe%22%2C%22NAME2%22%3A%22John%20Doe%22%2C%22HOME%22%3A%22Kolio%20Ganchev%2012%22%2C%22EMAIL%22%3A%22john%40yahoo.com%22%2C%22MOBILE%22%3A%220888%20776655%22%2C%22WEBPAGE%22%3A%22www.google.com%22%7D]
+2017-09-06 17:10:23,518 INFO .commence command [CONVERT]
+2017-09-06 17:10:23,518 INFO ..decoding params...
+2017-09-06 17:10:23,518 INFO ..opath: [./work/tmp/web_tmp//rndr-4099/result.pdf]
+2017-09-06 17:10:23,518 INFO ..json: [{"DESC":"BDZZ","NAME1":"John Doe","NAME2":"John Doe","HOME":"Kolio Ganchev 12","EMAIL":"john@yahoo.com","MOBILE":"0888 776655","WEBPAGE":"www.google.com"}]
+2017-09-06 17:10:23,518 INFO ..xlat: {u'MOBILE': u'0888 776655', u'WEBPAGE': u'www.google.com', u'NAME2': u'John Doe', u'NAME1': u'John Doe', u'HOME': u'Kolio Ganchev 12', u'EMAIL': u'john@yahoo.com', u'DESC': u'BDZZ'}
+2017-09-06 17:10:23,518 INFO ! process template
+2017-09-06 17:10:23,519 INFO .process page 1
+2017-09-06 17:10:23,519 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 17:10:23,519 INFO ...cur text: [{{DESC}}]
+2017-09-06 17:10:23,521 INFO ...new text: BDZZ
+2017-09-06 17:10:23,521 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 17:10:23,521 INFO ...cur text: [{{HOME}}]
+2017-09-06 17:10:23,522 INFO ...new text: Kolio Ganchev 12
+2017-09-06 17:10:23,522 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 17:10:23,523 INFO ...cur text: [{{EMAIL}}]
+2017-09-06 17:10:23,524 INFO ...new text: john@yahoo.com
+2017-09-06 17:10:23,524 INFO ..process item: [('Text6', 4, 6)] 
+2017-09-06 17:10:23,524 INFO ...cur text: [{{MOBILE}}]
+2017-09-06 17:10:23,525 INFO ...new text: 0888 776655
+2017-09-06 17:10:23,525 INFO ..process item: [('Text7', 4, 7)] 
+2017-09-06 17:10:23,525 INFO ...cur text: [{{WEBPAGE}}]
+2017-09-06 17:10:23,526 INFO ...new text: www.google.com
+2017-09-06 17:10:23,526 INFO ..process item: [('Text8', 4, 8)] 
+2017-09-06 17:10:23,526 INFO ...cur text: [{{NAME2}}]
+2017-09-06 17:10:23,528 INFO ...new text: John Doe
+2017-09-06 17:10:23,528 INFO ..process item: [('Text9', 4, 9)] 
+2017-09-06 17:10:23,528 INFO ...cur text: [{{NAME1}}]
+2017-09-06 17:10:23,529 INFO ...new text: John Doe
+2017-09-06 17:10:23,529 INFO ! done processing template
+2017-09-06 17:10:23,530 INFO ! process colors
+2017-09-06 17:10:23,530 INFO ! colcodes []
+2017-09-06 17:10:23,530 INFO ! colors xlat {} 
+2017-09-06 17:10:23,693 INFO ! export current to PDF
+2017-09-06 17:10:23,693 INFO ! done :D
+2017-09-06 17:10:23,693 INFO ! done processing command [CONVERT]
+2017-09-06 17:10:24,296 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-4099/result.pdf:%7B%22DESC%22%3A%22BDZZ%22%2C%22NAME1%22%3A%22John%20Doe%22%2C%22NAME2%22%3A%22John%20Doe%22%2C%22HOME%22%3A%22Kolio%20Ganchev%2012%22%2C%22EMAIL%22%3A%22john%40yahoo.com%22%2C%22MOBILE%22%3A%220888%20776655%22%2C%22WEBPAGE%22%3A%22www.google.com%22%7D]
+2017-09-06 17:10:24,296 INFO .commence command [CONVERT]
+2017-09-06 17:10:24,296 INFO ..decoding params...
+2017-09-06 17:10:24,296 INFO ..opath: [./work/tmp/web_tmp//rndr-4099/result.pdf]
+2017-09-06 17:10:24,296 INFO ..json: [{"DESC":"BDZZ","NAME1":"John Doe","NAME2":"John Doe","HOME":"Kolio Ganchev 12","EMAIL":"john@yahoo.com","MOBILE":"0888 776655","WEBPAGE":"www.google.com"}]
+2017-09-06 17:10:24,296 INFO ..xlat: {u'MOBILE': u'0888 776655', u'WEBPAGE': u'www.google.com', u'NAME2': u'John Doe', u'NAME1': u'John Doe', u'HOME': u'Kolio Ganchev 12', u'EMAIL': u'john@yahoo.com', u'DESC': u'BDZZ'}
+2017-09-06 17:10:24,296 INFO ! process template
+2017-09-06 17:10:24,296 INFO .process page 1
+2017-09-06 17:10:24,297 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 17:10:24,297 INFO ...cur text: [BDZZ]
+2017-09-06 17:10:24,299 INFO ...new text: BDZZ
+2017-09-06 17:10:24,299 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 17:10:24,299 INFO ...cur text: [Kolio Ganchev 12]
+2017-09-06 17:10:24,301 INFO ...new text: Kolio Ganchev 12
+2017-09-06 17:10:24,301 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 17:10:24,301 INFO ...cur text: [john@yahoo.com]
+2017-09-06 17:10:24,304 INFO ...new text: john@yahoo.com
+2017-09-06 17:10:24,304 INFO ..process item: [('Text6', 4, 6)] 
+2017-09-06 17:10:24,304 INFO ...cur text: [0888 776655]
+2017-09-06 17:10:24,306 INFO ...new text: 0888 776655
+2017-09-06 17:10:24,306 INFO ..process item: [('Text7', 4, 7)] 
+2017-09-06 17:10:24,306 INFO ...cur text: [www.google.com]
+2017-09-06 17:10:24,308 INFO ...new text: www.google.com
+2017-09-06 17:10:24,308 INFO ..process item: [('Text8', 4, 8)] 
+2017-09-06 17:10:24,308 INFO ...cur text: [John Doe]
+2017-09-06 17:10:24,310 INFO ...new text: John Doe
+2017-09-06 17:10:24,310 INFO ..process item: [('Text9', 4, 9)] 
+2017-09-06 17:10:24,310 INFO ...cur text: [John Doe]
+2017-09-06 17:10:24,313 INFO ...new text: John Doe
+2017-09-06 17:10:24,313 INFO ! done processing template
+2017-09-06 17:10:24,313 INFO ! process colors
+2017-09-06 17:10:24,313 INFO ! colcodes []
+2017-09-06 17:10:24,313 INFO ! colors xlat {} 
+2017-09-06 17:10:24,435 INFO ! export current to PDF
+2017-09-06 17:10:24,435 INFO ! done :D
+2017-09-06 17:10:24,435 INFO ! done processing command [CONVERT]
+2017-09-06 17:10:28,313 INFO .cmd [CONVERT] && arg [./work/tmp/web_tmp//rndr-4099/result.pdf:%7B%22DESC%22%3A%22BDZ%22%2C%22NAME1%22%3A%22John%20Doe%22%2C%22NAME2%22%3A%22John%20Doe%22%2C%22HOME%22%3A%22Kolio%20Ganchev%2012%22%2C%22EMAIL%22%3A%22john%40yahoo.com%22%2C%22MOBILE%22%3A%220888%20776655%22%2C%22WEBPAGE%22%3A%22www.google.com%22%7D]
+2017-09-06 17:10:28,314 INFO .commence command [CONVERT]
+2017-09-06 17:10:28,314 INFO ..decoding params...
+2017-09-06 17:10:28,314 INFO ..opath: [./work/tmp/web_tmp//rndr-4099/result.pdf]
+2017-09-06 17:10:28,314 INFO ..json: [{"DESC":"BDZ","NAME1":"John Doe","NAME2":"John Doe","HOME":"Kolio Ganchev 12","EMAIL":"john@yahoo.com","MOBILE":"0888 776655","WEBPAGE":"www.google.com"}]
+2017-09-06 17:10:28,314 INFO ..xlat: {u'MOBILE': u'0888 776655', u'WEBPAGE': u'www.google.com', u'NAME2': u'John Doe', u'NAME1': u'John Doe', u'HOME': u'Kolio Ganchev 12', u'EMAIL': u'john@yahoo.com', u'DESC': u'BDZ'}
+2017-09-06 17:10:28,314 INFO ! process template
+2017-09-06 17:10:28,314 INFO .process page 1
+2017-09-06 17:10:28,315 INFO ..process item: [('Text3', 4, 3)] 
+2017-09-06 17:10:28,315 INFO ...cur text: [BDZZ]
+2017-09-06 17:10:28,318 INFO ...new text: BDZ
+2017-09-06 17:10:28,318 INFO ..process item: [('Text4', 4, 4)] 
+2017-09-06 17:10:28,318 INFO ...cur text: [Kolio Ganchev 12]
+2017-09-06 17:10:28,320 INFO ...new text: Kolio Ganchev 12
+2017-09-06 17:10:28,320 INFO ..process item: [('Text5', 4, 5)] 
+2017-09-06 17:10:28,320 INFO ...cur text: [john@yahoo.com]
+2017-09-06 17:10:28,323 INFO ...new text: john@yahoo.com
+2017-09-06 17:10:28,323 INFO ..process item: [('Text6', 4, 6)] 
+2017-09-06 17:10:28,323 INFO ...cur text: [0888 776655]
+2017-09-06 17:10:28,326 INFO ...new text: 0888 776655
+2017-09-06 17:10:28,326 INFO ..process item: [('Text7', 4, 7)] 
+2017-09-06 17:10:28,326 INFO ...cur text: [www.google.com]
+2017-09-06 17:10:28,329 INFO ...new text: www.google.com
+2017-09-06 17:10:28,329 INFO ..process item: [('Text8', 4, 8)] 
+2017-09-06 17:10:28,329 INFO ...cur text: [John Doe]
+2017-09-06 17:10:28,332 INFO ...new text: John Doe
+2017-09-06 17:10:28,333 INFO ..process item: [('Text9', 4, 9)] 
+2017-09-06 17:10:28,333 INFO ...cur text: [John Doe]
+2017-09-06 17:10:28,336 INFO ...new text: John Doe
+2017-09-06 17:10:28,336 INFO ! done processing template
+2017-09-06 17:10:28,336 INFO ! process colors
+2017-09-06 17:10:28,336 INFO ! colcodes []
+2017-09-06 17:10:28,336 INFO ! colors xlat {} 
+2017-09-06 17:10:28,519 INFO ! export current to PDF
+2017-09-06 17:10:28,519 INFO ! done :D
+2017-09-06 17:10:28,519 INFO ! done processing command [CONVERT]
+2017-09-06 17:13:28,513 INFO ! timeout waiting for input
+2017-09-06 17:13:28,513 WARNING ! shutdown system.
+2017-09-06 17:13:28,514 WARNING could not import PyQt4.QtGui. just close all
