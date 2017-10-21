@@ -10,33 +10,33 @@
     <form style="margin-left: 24px;min-width: 150px;max-width: 500px;width: 100%">
 
         <h3 style="margin: 4px">Order Contact</h3>
-        <md-form-field style="width: 100%">
-            <input #fname mdInput placeholder="Full name" required>
-        </md-form-field>
+        <mat-form-field style="width: 100%">
+            <input #fname matInput placeholder="Full name" required>
+        </mat-form-field>
 
         <table style="width: 100%" cellspacing="0"><tr>
-            <td><md-form-field style="width: 100%">
-                <input #phone mdInput placeholder="Phone" required>
-            </md-form-field></td>
-            <td><md-form-field style="width: 100%">
-                <input #email mdInput placeholder="Email" required>
-            </md-form-field></td>
+            <td><mat-form-field style="width: 100%">
+                <input #phone matInput placeholder="Phone" required>
+            </mat-form-field></td>
+            <td><mat-form-field style="width: 100%">
+                <input #email matInput placeholder="Email" required>
+            </mat-form-field></td>
         </tr></table>
 
         <h3 align="left" style="margin: 4px">Shipping Address</h3>
         <table style="width: 100%" cellspacing="0"><tr>
-            <td><md-form-field style="width: 100%">
-                <input #city mdInput placeholder="City">
-            </md-form-field></td>
-            <td><md-form-field style="width: 100%">
-                <input #zip mdInput maxlength="4" placeholder="Postal Code">
-                <md-hint align="end">{{zip.value.length}} / 4</md-hint>
-            </md-form-field></td>
+            <td><mat-form-field style="width: 100%">
+                <input #city matInput placeholder="City">
+            </mat-form-field></td>
+            <td><mat-form-field style="width: 100%">
+                <input #zip matInput maxlength="4" placeholder="Postal Code">
+                <mat-hint align="end">{{zip.value.length}} / 4</mat-hint>
+            </mat-form-field></td>
         </tr></table>
 
-        <md-form-field style="width: 100%">
-            <textarea #addr mdInput rows="4" placeholder="Address">1600 Amphitheatre Pkwy</textarea>
-        </md-form-field>
+        <mat-form-field style="width: 100%">
+            <textarea #addr matInput rows="4" placeholder="Address">1600 Amphitheatre Pkwy</textarea>
+        </mat-form-field>
 
         <table style="width: 100%" cellspacing="0">
             <tr>
@@ -55,7 +55,7 @@
             </tr>
             <tr>
                 <td>
-                    <input style="width: 80px" #quantity mdInput type="number" pattern="[0-9]{5}" placeholder="Enter quantity" value="1">
+                    <input style="width: 80px" #quantity matInput type="number" pattern="[0-9]{5}" placeholder="Enter quantity" value="1">
                 </td>
                 <td>
                     <label style="font-size: 80%">Shipped Print</label>
@@ -106,7 +106,7 @@
         </table>
 
         <div align="right">
-            <button style="padding: 10px;right: -20px" [disabled]="(fname.value && phone.value && email.value) ? false : true" md-button (click)="ccc.execute()" color="primary"
+            <button style="padding: 10px;right: -20px" [disabled]="(fname.value && phone.value && email.value) ? false : true" mat-button (click)="ccc.execute()" color="primary"
                     (click)="root.return({name: fname.value,city: city.value,phone: phone.value,email: email.value,zip: zip.value,address: addr.value,quantity: quantity.value})"
             >Submit</button>
         </div>

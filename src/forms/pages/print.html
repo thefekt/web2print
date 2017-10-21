@@ -159,8 +159,8 @@
             <!-- ROOT (parent is null) CATEGORIES -->
             <div *ngIf="!cat.value" absolute-fill fxLayout="row" style="overflow: auto">
 
-                <md-sidenav-container absolute-fill>
-                    <md-sidenav [style.width]="ldc.classList.contains('layout-detect-xs') ? '100%' : '200px'" [opened]="sidenavOpen.value" #sn mode="side">
+                <mat-sidenav-container absolute-fill>
+                    <mat-sidenav [style.width]="ldc.classList.contains('layout-detect-xs') ? '100%' : '200px'" [opened]="sidenavOpen.value" #sn mode="side">
                         <div *ngIf="rootCategories.value">
                             <div>
                                 Home / <font color="#ec8a24">All Products</font>
@@ -187,13 +187,13 @@
                                 <div *ngIf="idmap.value">
                                     <ng-template let-tags let-i="index" ngFor [ngForOf]="((crrC.value) ? crrC.value.tags || [] : rootC.tags || [])">
                                         <div>
-                                            <md-checkbox [(ngModel)]="idmap.value[tags.id]">{{tags.NAME}}</md-checkbox>
+                                            <mat-checkbox [(ngModel)]="idmap.value[tags.id]">{{tags.NAME}}</mat-checkbox>
                                         </div>
                                     </ng-template>
                                 </div>
                             </div>
                         </div>
-                    </md-sidenav>
+                    </mat-sidenav>
                     <div absolute-fill *ngIf="wlist.value && tagmap && tagmap.value">
                         <div style="padding-left: 8px" fxLayout="row">
                             <ng-template let-t let-i="index" ngFor [ngForOf]="tagmap.value" style="display: inline-block">
@@ -250,7 +250,7 @@
                             </div>
                         </query>
                     </div>
-                </md-sidenav-container>
+                </mat-sidenav-container>
 
                 <!--<div *ngFor="let chip of (rootCategories.value || []);let i = index" style="margin-left: 4px; text-align: center">-->
                     <!--<h3 align="left" style="margin: 8px 8px 8px 8px">{{chip.NAME}}</h3>-->
@@ -339,8 +339,8 @@
                     console.log("OPEN ORDER!");
                 ]]></execution>
 
-                <md-sidenav-container absolute-fill>
-                    <md-sidenav [style.width]="ldc.classList.contains('layout-detect-xs') ? '100%' : '240px'" [opened]="sidenavOpen2.value" mode="side" #sidenav style="padding:8px;border-left:1px solid #eee">
+                <mat-sidenav-container absolute-fill>
+                    <mat-sidenav [style.width]="ldc.classList.contains('layout-detect-xs') ? '100%' : '240px'" [opened]="sidenavOpen2.value" mode="side" #sidenav style="padding:8px;border-left:1px solid #eee">
                         <div *ngIf="templateObject.value && templateObject.value.contents">
                             <div *ngFor="let comp of templateObject.value.contents;let i = index" fxLayout="row">
                                 <variable #val [defaults]="{value : (custom.value||{})[comp.code] || templateObject.value.defaultData[i] }">
@@ -352,19 +352,19 @@
                                         </execution>
                                     </observe>
                                 </variable>
-                                <md-form-field fxFlex *ngIf="comp.type == 'varchar' || comp.type == 'qrcode'">
-                                    <input mdInput placeholder="{{comp.NAME}}" [(ngModel)]="val.value">
-                                </md-form-field>
-                                <md-form-field fxFlex *ngIf="comp.type == 'text'">
-                                    <textarea mdInput placeholder="{{comp.NAME}}" [(ngModel)]="val.value" rows="4"></textarea>
-                                </md-form-field>
+                                <mat-form-field fxFlex *ngIf="comp.type == 'varchar' || comp.type == 'qrcode'">
+                                    <input matInput placeholder="{{comp.NAME}}" [(ngModel)]="val.value">
+                                </mat-form-field>
+                                <mat-form-field fxFlex *ngIf="comp.type == 'text'">
+                                    <textarea matInput placeholder="{{comp.NAME}}" [(ngModel)]="val.value" rows="4"></textarea>
+                                </mat-form-field>
                                 <div fxFlex *ngIf="comp.type == 'image'">
                                     <label style="color: #757575;font-size: 80%">{{comp.NAME}}</label>
                                     <query [schema]="comp.placeholder.SCHEMA" where="id = {{comp.placeholder.id}}" properties="OICON@280x300,width_mm,height_mm">
                                         <result #rz>
                                             <div *ngIf="rz && rz.objects[0]">
                                                 <img #img id="blah" [src]="rz.objects[0].ICON" style="width: 80px;height: 80px"/>
-                                                <button (click)="br.click()" style="top: -32px" md-button>Browse</button>
+                                                <button (click)="br.click()" style="top: -32px" mat-button>Browse</button>
                                                 <input hidden #br (change)="onch.execute(br,img)" type="file" accept="image/*">
                                             </div>
                                         </result>
@@ -416,32 +416,32 @@
                         </div>
                         <br/>
                         <div style="margin-bottom:2em">
-                              <button color="accent" style="float:left;color:rgb(236, 138, 36);background-color:rgba(255,255,255,0.85);border:2px solid rgb(236, 138, 36);font-weight:bold" type="button" md-button (click)="resetContent.execute();sidenav.close();sidenavOpen2.value = false">
+                              <button color="accent" style="float:left;color:rgb(236, 138, 36);background-color:rgba(255,255,255,0.85);border:2px solid rgb(236, 138, 36);font-weight:bold" type="button" mat-button (click)="resetContent.execute();sidenav.close();sidenavOpen2.value = false">
                               RESET
                               </button>
-                              <button color="accent" style="float:right;color:rgb(236, 138, 36);background-color:rgba(255,255,255,0.85);border:2px solid rgb(236, 138, 36);font-weight:bold" type="button" md-button (click)="sidenav.close();sidenavOpen2.value = false">
+                              <button color="accent" style="float:right;color:rgb(236, 138, 36);background-color:rgba(255,255,255,0.85);border:2px solid rgb(236, 138, 36);font-weight:bold" type="button" mat-button (click)="sidenav.close();sidenavOpen2.value = false">
                               DONE
                               </button>
                         </div>
-                    </md-sidenav>
+                    </mat-sidenav>
                     <div absolute-fill fxLayout="column">
                         <div fxFlex relative>
                               <viewer *ngIf="templateObject && templateObject.value" [initialPaddingPercents]="10" preserveBounds [object]="generatedPreview.value || templateObject.value.preview_document" absolute-fill style="border-top:1px solid #eeeeee"></viewer>
                               <div [style.display]="!sidenav.opened ? undefined : 'none'" style="position:absolute;right:6px;top:6px" fxLayout="row">
                                   <dialog ref="/dialogs/buy" #buyDialog></dialog>
-                                  <button style="background-color:rgba(255,255,255,0.85);color:#808080;border:1px solid #eee" type="button" md-button (click)="buyDialog.open({
+                                  <button style="background-color:rgba(255,255,255,0.85);color:#808080;border:1px solid #eee" type="button" mat-button (click)="buyDialog.open({
                                         object : templateObject.value,
                                         pdf : generatedPreview.value || templateObject.value.preview_document
                                     })">
                                       BUY
                                   </button>
-                                  <button color="accent" style="color:rgb(236, 138, 36);background-color:rgba(255,255,255,0.85);border:1px solid #eee;font-weight:bold;" type="button" md-button (click)="sidenav.open();;sidenavOpen2.value = true">
+                                  <button color="accent" style="color:rgb(236, 138, 36);background-color:rgba(255,255,255,0.85);border:1px solid #eee;font-weight:bold;" type="button" mat-button (click)="sidenav.open();;sidenavOpen2.value = true">
                                       CUSTOMIZE
                                   </button>
                               </div>
                         </div>
                     </div>
-                </md-sidenav-container>
+                </mat-sidenav-container>
             </div>
         </div>
     </div>

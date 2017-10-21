@@ -5,7 +5,7 @@
 <variable #sidenavOpen></variable>
 
 <div fxLayout="column" absolute-fill style="overflow:hidden">
-	<md-toolbar style="background-color: white;border-bottom:1px solid #eeeeee;padding-left:0.25em;padding-right:0;min-height:45px;">
+	<mat-toolbar style="background-color: white;border-bottom:1px solid #eeeeee;padding-left:0.25em;padding-right:0;min-height:45px;">
     	<i *ngIf="root.db.loggedIn && onSidenavMenuClicked && onSidenavMenuClicked.value" class="material-icons icon-button" style="font-size:2em;width:1em;top:9px;background-color:white;left:4px;" (click)="togg.execute()">menu</i>
     	<span fxFlex relative style="height:30px" >
     		<measure #mtoolbar [delayMilliseconds]="0">
@@ -30,38 +30,38 @@
 		    <i18n>INFO_NOT_LOGGED_IN</i18n>
 	    </span>
 
-        <img md-icon-button [mdMenuTriggerFor]="langMenu" style="width:28px;height:28px;margin-top:15px;margin-right:2px;cursor:pointer" src="/images/library/flags/128/{{root.db.lang.substring(root.db.lang.indexOf('-')+1).toLowerCase()}}.png"></img>
-  		<i *ngIf="root.db.loggedIn" class="material-icons icon-button" style="font-size:35px;margin-top:15px;width:32px;overflow:hidden;margin-left:-3px;" [mdMenuTriggerFor]="settingsMenu">person</i>
+        <img mat-icon-button [matMenuTriggerFor]="langMenu" style="width:28px;height:28px;margin-top:15px;margin-right:2px;cursor:pointer" src="/images/library/flags/128/{{root.db.lang.substring(root.db.lang.indexOf('-')+1).toLowerCase()}}.png"></img>
+  		<i *ngIf="root.db.loggedIn" class="material-icons icon-button" style="font-size:35px;margin-top:15px;width:32px;overflow:hidden;margin-left:-3px;" [matMenuTriggerFor]="settingsMenu">person</i>
 
         
     	<query schema="core.lang" properties="code,NAME" where="is_active=1">
 	      	<result #langs>
-		        <md-menu #langMenu>
-	          		<button *ngFor="let lang of langs.objects" md-menu-item (click)="root.app.changeLanguage(lang.code)">
-			            <md-icon>
+		        <mat-menu #langMenu>
+	          		<button *ngFor="let lang of langs.objects" mat-menu-item (click)="root.app.changeLanguage(lang.code)">
+			            <mat-icon>
 	    	          		<img style="width:32px;height:32px;margin-top:-4px;margin-left:-4px" src="/images/library/flags/128/{{lang.code.substring(lang.code.indexOf('-')+1).toLowerCase()}}.png">
 	        	      		</img>
-	            		</md-icon>
+	            		</mat-icon>
 	            		<span>{{lang.NAME}}</span>
 	          		</button>
-	        	</md-menu>
+	        	</mat-menu>
 	      	</result>
     	</query>
-    	<md-menu #settingsMenu>
-	      	<button disabled md-menu-item (click)="root.app.openSettings()">
-		        <md-icon>settings</md-icon>
+    	<mat-menu #settingsMenu>
+	      	<button disabled mat-menu-item (click)="root.app.openSettings()">
+		        <mat-icon>settings</mat-icon>
         		<i18n>LABEL_SETTINGS</i18n>
 	      	</button>
-	      	<button md-menu-item (click)="root.app.logout()">
-		        <md-icon>lock_outline</md-icon>
+	      	<button mat-menu-item (click)="root.app.logout()">
+		        <mat-icon>lock_outline</mat-icon>
 	        	<i18n>INFO_LOGOUT</i18n>
 	      	</button>
-	    </md-menu>
-  	</md-toolbar>
-  	<md-divider md-inset></md-divider>
+	    </mat-menu>
+  	</mat-toolbar>
+  	<mat-divider mat-inset></mat-divider>
 	<!-- MAIN CONTENT IF LOGGED IN -->
 	<div fxFlex relative>
-		<md-progress-bar [style.opacity]="0.35" [style.z-index]="15" color="accent" [style.visibility]="root.app.loading ? 'visible' : 'hidden'" [value]="root.app.progress" [mode]="root.app.loading ? (root.app.progress != undefined ? 'determinate' : 'query') : 'determinate'"></md-progress-bar>
+		<mat-progress-bar [style.opacity]="0.35" [style.z-index]="15" color="accent" [style.visibility]="root.app.loading ? 'visible' : 'hidden'" [value]="root.app.progress" [mode]="root.app.loading ? (root.app.progress != undefined ? 'determinate' : 'query') : 'determinate'"></mat-progress-bar>
 
 	    <ng-template let-route let-index ngFor [ngForOf]="root.app.routes" >
 	    	<!-- *ngIf="route === root.app.route" -->
