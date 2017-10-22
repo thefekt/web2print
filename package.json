@@ -9,8 +9,8 @@
     "license": "ISC",
     "description": "",
     "dependencies": {
-        "visionr-enterprise": "6.8.3",
-        "visionr-dev": "6.8.3"
+        "visionr-enterprise": "6.8.4",
+        "visionr-dev": "6.8.4"
     },
     "bin": {
         "reset-print": "./src/bin/reset-print.js"
