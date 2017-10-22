@@ -25,7 +25,8 @@
             "visionr.json",
             "src",
             "share",
-            "etc"
+            "etc",
+            "target/client"
         ]
     },
     "additional" : 
