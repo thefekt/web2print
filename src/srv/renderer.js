@@ -1,3 +1,5 @@
+// @allowEveryone
+
 var lastUpdateTimes = {};
 var misc = require("server/misc");
 
