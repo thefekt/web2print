@@ -115,8 +115,12 @@ exports.checkPreview = function(tmpl) {
     tmpl.preview_document=exports.renderTemplate(tmpl,{});
     if (tmpl.preview_document == null)
         return;
-    var parent = db.documents.folder.byCode("/");
-    var rparent = parent.children["print_cache"];
+
+//        var parent = db.documents.folder.byCode("/");
+//    log.warn('parent ' + JSON.stringify(parent,null,4));
+    var rparent = db.documents.folder.byCode('print_cache');
+    log.warn('rparent ' + rparent);
+
     if (rparent == null) {
         rparent = new db.documents.folder();
         rparent.code="print_cache";
