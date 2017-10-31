@@ -15,6 +15,8 @@
 *.PDF	 diff=astextplain
 *.rtf	 diff=astextplain
 *.RTF	 diff=astextplain
+*.xml diff=astextplain
+*.txt diff=astextplain
 
 # binary files
 *.jpg binary

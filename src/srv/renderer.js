@@ -1,3 +1,5 @@
+// @allowEveryone
+
 var lastUpdateTimes = {};
 var misc = require("server/misc");
 
@@ -113,15 +115,8 @@ exports.checkPreview = function(tmpl) {
     tmpl.preview_document=exports.renderTemplate(tmpl,{});
     if (tmpl.preview_document == null)
         return;
-    var parent = db.documents.folder.byCode("/");
-    var rparent = parent.children["print_cache"];
-    if (rparent == null) {
-        rparent = new db.documents.folder();
-        rparent.code="print_cache";
-        rparent.parent=parent;
-    }
-    parent=rparent; 
     //-------------------------------------------
+    var parent = getCacheDir();
     tmpl.preview_document.parent=parent;
     try {
         var dim =__vr.Exec.callVSC("java.util.getPDFDimensions",tmpl.preview_document.uuid,0);
@@ -286,3 +281,17 @@ function getContentsDefault(t) {
     return res;
 }
     
+
+
+var _cachedir;
+function getCacheDir() 
+{
+    if (_cachedir)
+        return _cachedir;
+    var parent = db.documents.folder.SELECT("code = 'print_cache' AND parent.code = '/' AND parent.parent IS NULL'")[0];
+    if (!parent) {
+        log.error("UNABLE TO FIND PRINT CACHE FOLDER!");        
+        throw new Exception("UNABLE TO FIND PRINT CACHE FOLDER!");
+    }
+    return _cachedir=parent;
+}

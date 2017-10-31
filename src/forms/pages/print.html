@@ -40,8 +40,11 @@
     ]]></execution>
 
     <!-- Content if not logged in -->
+    <!--
     <include shared ref="/app/not-logged"></include>
-    <div absolute-fill *ngIf="root.db.loggedIn">
+    next div : *ngIf="root.db.loggedIn"
+    -->
+    <div absolute-fill>
         <variable #tpl export></variable>
         <div #ldc hidden class.xs="layout-detect-xs"> </div>
         <div *ngIf="!tpl.value && tpl.ready">

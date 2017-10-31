@@ -4,63 +4,6 @@
 <variable #onSidenavMenuClicked></variable>
 <variable #sidenavOpen></variable>
 
-<div fxLayout="column" absolute-fill style="overflow:hidden">
-	<mat-toolbar style="background-color: white;border-bottom:1px solid #eeeeee;padding-left:0.25em;padding-right:0;min-height:45px;">
-    	<i *ngIf="root.db.loggedIn && onSidenavMenuClicked && onSidenavMenuClicked.value" class="material-icons icon-button" style="font-size:2em;width:1em;top:9px;background-color:white;left:4px;" (click)="togg.execute()">menu</i>
-    	<span fxFlex relative style="height:30px" >
-    		<measure #mtoolbar [delayMilliseconds]="0">
-    			<observe [events]="[mtoolbar.onReady,mtoolbar.onChange]">
-    				<execution [params]="{m:mtoolbar,app:root.app}">
-    					app.onToolbarPositionChanged({left:m.left,top:m.top,width:m.width,height:m.height});
-    				</execution>
-    			</observe>
-    		</measure>
-    		<!--
-    		left = {{mtoolbar.left}} top={{mtoolbar.top}} > {{mtoolbar.width}}x{{mtoolbar.height}}
-    		 -->
-    	</span>
-  		
-  		<!-- TODO TODO SIMPLIFY -->
-  		<!-- root.app.toggleLocked() -->  		
-		<providers-menu #gridMenu walkChildContexts [providers]="[
-				'grid.root.*'
-		]"></providers-menu>
-    	<span *ngIf="root.db.loggedIn" class="app-toolbar-user-text">{{root.db.userText}}<i *ngIf="root.storage == 'server'" class="material-icons" style="color:#CCCCCC;font-size: 22px;line-height: 12px;float: right;margin-left: 1px;margin-right:-3px;">wifi</i></span>
-    	<span *ngIf="!root.db.loggedIn" class="app-toolbar-user-text">
-		    <i18n>INFO_NOT_LOGGED_IN</i18n>
-	    </span>
-
-        <img mat-icon-button [matMenuTriggerFor]="langMenu" style="width:28px;height:28px;margin-top:15px;margin-right:2px;cursor:pointer" src="/images/library/flags/128/{{root.db.lang.substring(root.db.lang.indexOf('-')+1).toLowerCase()}}.png"></img>
-  		<i *ngIf="root.db.loggedIn" class="material-icons icon-button" style="font-size:35px;margin-top:15px;width:32px;overflow:hidden;margin-left:-3px;" [matMenuTriggerFor]="settingsMenu">person</i>
-
-        
-    	<query schema="core.lang" properties="code,NAME" where="is_active=1">
-	      	<result #langs>
-		        <mat-menu #langMenu>
-	          		<button *ngFor="let lang of langs.objects" mat-menu-item (click)="root.app.changeLanguage(lang.code)">
-			            <mat-icon>
-	    	          		<img style="width:32px;height:32px;margin-top:-4px;margin-left:-4px" src="/images/library/flags/128/{{lang.code.substring(lang.code.indexOf('-')+1).toLowerCase()}}.png">
-	        	      		</img>
-	            		</mat-icon>
-	            		<span>{{lang.NAME}}</span>
-	          		</button>
-	        	</mat-menu>
-	      	</result>
-    	</query>
-    	<mat-menu #settingsMenu>
-	      	<button disabled mat-menu-item (click)="root.app.openSettings()">
-		        <mat-icon>settings</mat-icon>
-        		<i18n>LABEL_SETTINGS</i18n>
-	      	</button>
-	      	<button mat-menu-item (click)="root.app.logout()">
-		        <mat-icon>lock_outline</mat-icon>
-	        	<i18n>INFO_LOGOUT</i18n>
-	      	</button>
-	    </mat-menu>
-  	</mat-toolbar>
-  	<mat-divider mat-inset></mat-divider>
-	<!-- MAIN CONTENT IF LOGGED IN -->
-	<div fxFlex relative>
 		<mat-progress-bar [style.opacity]="0.35" [style.z-index]="15" color="accent" [style.visibility]="root.app.loading ? 'visible' : 'hidden'" [value]="root.app.progress" [mode]="root.app.loading ? (root.app.progress != undefined ? 'determinate' : 'query') : 'determinate'"></mat-progress-bar>
 
 	    <ng-template let-route let-index ngFor [ngForOf]="root.app.routes" >
