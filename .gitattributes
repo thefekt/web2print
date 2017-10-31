@@ -1,4 +1,5 @@
 # Auto detect text files and perform LF normalization
+
 * text=auto eol=lf
 
 # Custom for Visual Studio
@@ -15,10 +16,12 @@
 *.PDF	 diff=astextplain
 *.rtf	 diff=astextplain
 *.RTF	 diff=astextplain
-*.xml diff=astextplain
-*.txt diff=astextplain
+*.xml	 diff=astextplain
+*.txt	 diff=astextplain
+*.html diff=astextplain
 
 # binary files
+*.ico binary
 *.jpg binary
 *.jpeg binary
 *.bmp binary
@@ -28,3 +31,5 @@
 *.tft binary
 *.gif binary
 *.zip binary
+*.jar binary
+*.tgz binary

@@ -41,36 +41,36 @@ exports.getTemplateJSON = function(tmpl,data,doNotRender) {
     for (var e of tmpl.contents) 
     {
         if (e instanceof db.web2print.varchar_content ) {
-            var d = data[e.code]||e.initial_value;
+            var d = data[e.code] !== undefined ? data[e.code] : e.initial_value;
             if (!d) d="";
             toReplace[e.code]=d;
         } else if (e instanceof db.web2print.text_content ) {
-            var d = data[e.code]||e.initial_value;
+            var d = data[e.code]!== undefined ? data[e.code] : e.initial_value;
             if (!d) d="";
             toReplace[e.code]=d;
         } else if (e instanceof db.web2print.date_content ) {
-            var d = data[e.code]||e.initial_value;
+            var d = data[e.code]!== undefined ? data[e.code] : e.initial_value;
             if (d)
                 d=db.core.output_format.byCode("default_output_format_date").get_as_string(data[e.code]);
             else 
                 d="";
             toReplace[e.code]=d;
         } else if (e instanceof db.web2print.datetime_content ) {
-            var d = data[e.code]||e.initial_value;
+            var d = data[e.code]!== undefined ? data[e.code] : e.initial_value;
             if (d)
                 d=db.core.output_format.byCode("default_output_format_datetime").get_as_string(data[e.code]);
             else 
                 d="";
             toReplace[e.code]=d;
         } else if (e instanceof db.web2print.time_content ) {
-            var d = data[e.code]||e.initial_value;
+            var d = data[e.code]!== undefined ? data[e.code] : e.initial_value;
             if (d)
                 d=db.core.output_format.byCode("default_output_format_time").get_as_string(data[e.code]);
             else 
                 d="";
             toReplace[e.code]=d;
         } else if (e instanceof db.web2print.image_content) {
-            var d = data[e.code]||e.initial_value;
+            var d = data[e.code]!== undefined ? data[e.code] : e.initial_value;
                 if (d instanceof db.documents.file) {
                     if (!doNotRender) {
                         __vr.Exec.callVSC("java.util.copyInTempDirectory","rndr-"+tmpl.document.id,d,e.code);
@@ -82,7 +82,7 @@ exports.getTemplateJSON = function(tmpl,data,doNotRender) {
                 else
                     console.warn("render.js : document is not a file!");
         } else if (e instanceof db.web2print.qrcode_content ) {
-            var d = data[e.code]||e.initial_value;
+            var d = data[e.code]!== undefined ? data[e.code] : e.initial_value;
             if (d) 
             {
                 if (!doNotRender) {
@@ -93,7 +93,7 @@ exports.getTemplateJSON = function(tmpl,data,doNotRender) {
                 }
             }
         } else if (e instanceof db.web2print.indexed_color_content ) {
-            var d = data[e.code]||e.initial_value;
+            var d = data[e.code]!== undefined ? data[e.code] : e.initial_value;
             if (!d) d="";
             toReplace[e.code]=d;
         } 
@@ -115,8 +115,20 @@ exports.checkPreview = function(tmpl) {
     tmpl.preview_document=exports.renderTemplate(tmpl,{});
     if (tmpl.preview_document == null)
         return;
+
+//        var parent = db.documents.folder.byCode("/");
+//    log.warn('parent ' + JSON.stringify(parent,null,4));
+    var rparent = db.documents.folder.byCode('print_cache');
+    log.warn('rparent ' + rparent);
+
+    if (rparent == null) {
+        rparent = new db.documents.folder();
+        rparent.code="print_cache";
+        rparent.parent=parent;
+    }
+    var parent=rparent; 
+
     //-------------------------------------------
-    var parent = getCacheDir();
     tmpl.preview_document.parent=parent;
     try {
         var dim =__vr.Exec.callVSC("java.util.getPDFDimensions",tmpl.preview_document.uuid,0);
