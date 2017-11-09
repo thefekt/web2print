@@ -300,6 +300,7 @@ function getCacheDir()
 {
     if (_cachedir)
         return _cachedir;
+    var parent = db.documents.folder.SELECT("path='/visionr/print_cache'")[0];
     if (!parent) {
         log.error("UNABLE TO FIND PRINT CACHE FOLDER!");        
         throw new Exception("UNABLE TO FIND PRINT CACHE FOLDER!");
