@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<import revision="$LastChangedRevision: 12404 $">
+<objects>
+    <object code="print_cache" cond="path='/visionr/forms'" module="documents" objectdef="folder">
+        <access_update><value>administrators</value></access_update>
+        <access_delete><value>ROOT</value></access_delete>
+        <access_archive><value>ROOT</value></access_archive>
+        <access_copy><value>ROOT</value></access_copy>
+        <name>
+            <value>
+                <en-US>Print cache</en-US>
+            </value>
+            <value>
+                <de-DE>Druck-Puffer</de-DE>
+            </value>
+            <value>
+                <bg-BG>Буфер печат</bg-BG>
+            </value>
+        </name>
+        <path>
+            <value>/visionr/print_cache</value>
+        </path>
+    </object>
+</objects>
+</import>

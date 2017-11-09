@@ -8,7 +8,7 @@
     +-->
 <import revision="$LastChangedRevision: 13495 $" xmlns:xi="http://www.w3.org/2001/XInclude">
 
-    <xi:include href="includes/web2print-examples-data-simple.xml" xpointer="element(/1)"/>
+    <xi:include href="includes/web2print-documents-data-simple.xml" xpointer="element(/1)"/>
 <!-- SCHEMA NAMES AT THE END -->
     <xi:include href="includes/web2print-schema_names-data-simple.xml" xpointer="element(/1)"/>
 

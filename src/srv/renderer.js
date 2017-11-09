@@ -119,7 +119,7 @@ exports.checkPreview = function(tmpl) {
 //        var parent = db.documents.folder.byCode("/");
 //    log.warn('parent ' + JSON.stringify(parent,null,4));
     var rparent = db.documents.folder.byCode('print_cache');
-    log.warn('rparent ' + rparent);
+    //log.warn('rparent ' + rparent);
 
     if (rparent == null) {
         rparent = new db.documents.folder();
@@ -300,7 +300,6 @@ function getCacheDir()
 {
     if (_cachedir)
         return _cachedir;
-    var parent = db.documents.folder.SELECT("code = 'print_cache' AND parent.code = '/' AND parent.parent IS NULL'")[0];
     if (!parent) {
         log.error("UNABLE TO FIND PRINT CACHE FOLDER!");        
         throw new Exception("UNABLE TO FIND PRINT CACHE FOLDER!");
