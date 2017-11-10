@@ -119,14 +119,15 @@ exports.checkPreview = function(tmpl) {
 //        var parent = db.documents.folder.byCode("/");
 //    log.warn('parent ' + JSON.stringify(parent,null,4));
     var rparent = db.documents.folder.byCode('print_cache');
-    log.warn('rparent ' + rparent);
+    //log.warn('rparent ' + rparent);
 
     if (rparent == null) {
         rparent = new db.documents.folder();
         rparent.code="print_cache";
         rparent.parent=parent;
     }
-    parent=rparent; 
+    var parent=rparent; 
+
     //-------------------------------------------
     tmpl.preview_document.parent=parent;
     try {
@@ -292,3 +293,17 @@ function getContentsDefault(t) {
     return res;
 }
     
+
+
+var _cachedir;
+function getCacheDir() 
+{
+    if (_cachedir)
+        return _cachedir;
+    var parent = db.documents.folder.SELECT("path='/visionr/print_cache'")[0];
+    if (!parent) {
+        log.error("UNABLE TO FIND PRINT CACHE FOLDER!");        
+        throw new Exception("UNABLE TO FIND PRINT CACHE FOLDER!");
+    }
+    return _cachedir=parent;
+}
