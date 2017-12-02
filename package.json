@@ -2,15 +2,15 @@
     "name": "Web2Print",
     "version": "1.0.0",
     "scripts": {
-        "build" : "node node_modules/visionr-dev/src/build/build.prod.js",
+        "build": "node node_modules/visionr-dev/src/build/build.prod.js",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": "",
     "license": "ISC",
     "description": "",
     "dependencies": {
-        "visionr-enterprise": "6.8.5",
-        "visionr-dev": "6.8.5"
+        "visionr-enterprise": "^6.9.1",
+        "visionr-dev": "^6.9.1"
     },
     "bin": {
         "reset-print": "./src/bin/reset-print.js"
