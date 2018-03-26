@@ -167,9 +167,9 @@ exports.getRootCategoriesWithDetails = function(id)
                 };
             }
             // if (level < 2) {
-                for (var x of e.tags)
+                for (var x of e.tags||[])
                     r.tags.push(rec(x,level+1));
-                for (var x of e.children)
+                for (var x of e.children||[])
                     r.children.push(rec(x,level+1));
             // }
         } else if (e instanceof db.web2print.print_tag) {
@@ -197,6 +197,8 @@ exports.getRootCategoriesWithDetails = function(id)
 }
 
 exports.getTemplateDetails = function (id) {
+    if (typeof id != "number")
+        id = Number(id);
     var tpl = db.web2print.print_template.byId(id);
     if (!tpl) return {path:[],NAME: 'error'};
     var d1 = exports.getContentsData(tpl);
