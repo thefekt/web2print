@@ -17,3 +17,5 @@ npm-debug.*
 .project
 .settings
 package-lock.json
+visionr-dev/
+exports/

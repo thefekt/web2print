@@ -6,7 +6,7 @@
     <variable #currentHierarchy></variable>
     <variable #currentEHierarchy></variable>
     <variable #sidenavOpen [defaults]="{value: true}"></variable>
-    <variable #sidenavOpen2 [defaults]="{value:false}"></variable>
+    <variable #sidenavOpen2 [defaults]="{value: true}"></variable>
 
     <execution #convertRBG [params]="{root:root}"><![CDATA[
         var result = {};
@@ -58,6 +58,7 @@
             <variable #idmapJSON [dependency]="idmap" [value]="idmap.value | json">
                 <observe>
                     <execution [params]="{idmap:idmap,wlist:wlist}"><![CDATA[
+
                         var arr = [];
                         for (var ids in idmap.value) {
                             if (idmap.value[ids] == true) arr.push(ids);
@@ -127,6 +128,7 @@
                     ]]></execution> 
                 </observe> 
             </variable>
+
             <observe [event]="cindex.onChange" *ngIf="rootCategories.value"> 
                 <execution [params]="{crr:crr,root:root,cindex:cindex,rootCategories:rootCategories,cat:cat}"><![CDATA[
                     var chip = rootCategories.value[cindex.value];
@@ -141,7 +143,7 @@
                </observe>
                <execution #ex [params]="{root:root,cat:cat}"><![CDATA[
                    var element = args[1];
-                root.app.openRoute('/print',args[0],{crr:element.id,cat:element.parent.id});
+                   root.app.openRoute('/print',args[0],{crr:element.id,cat:element.parent.id});
                ]]></execution>
                <!-- TOOLBAR CAPTION -->
             <div toolbar-content style="line-height: 30px; overflow: visible" fxLayout="row">
@@ -278,8 +280,9 @@
         </div>
 
         <!-- Template part ----------------------------------------------- -->
+        <variable #custom path="{{tpl.value}}" [dependency]="tpl" persist></variable>
 
-        <div *ngIf="tpl.value && tpl.ready" absolute-fill fxLayout="column">
+        <div *ngIf="custom.ready" absolute-fill fxLayout="column">
             <div toolbar-content style="line-height: 30px; overflow: visible" fxLayout="row">
                 <i (click)="sidenavOpen2.value = !sidenavOpen2.value" class="material-icons icon-button" style="font-size: 44px;padding-right: 1px;margin-top: -7px;">menu</i>
                 <img src="{{root.app.url}}/images/logos/customer-logo_200x35.jpg" style="width: 200px; height: 35px; margin-top: -2.5px; cursor: pointer" (click)="root.app.openRoute('/print',$event)" /> <span fxFlex></span>
@@ -289,22 +292,33 @@
             <variable #templateObject>
                 <observe>
                     <execution [params]="{tpl:tpl,root:root,templateObject:templateObject}"><![CDATA[
-                        if (!templateObject.value)
-                        {
-                            root.db.remote("src/srv/renderer").getTemplateDetails(Number(tpl.value)).done(function(res) {
+                        if (!templateObject.value) {
+                            root.db.remote("src/srv/renderer").getTemplateDetails(tpl.value).done(function(res) {
                                 templateObject.value = res.object;
+                                if (res.NAME === 'error') {
+                                    console.log("error getting result from renderer ");
+                                }
                               });
                         }
                     ]]></execution>
                 </observe>
             </variable>
-            <div absolute-fill *ngIf="templateObject.value && templateObject.value.preview_document">
+            <variable #generatedPreview persist path="{{tpl.value}}" [dependency]="tpl" (valueChange)="localPresent.value=true"></variable>
+
+            <query schema="documents.document"
+                    where="id=:ID"
+                    [params]="{ID: (generatedPreview.value || {})['id'] || 0}">
+                <result #localPresent [dependency]="generatedPreview"></result>
+            </query>
+
+            <div absolute-fill *ngIf="templateObject.value && templateObject.value.preview_document && localPresent.ready">
                 <!-- THE MAIN VIEWER + CUSTOMIZE TOOLBAR -->
                 <variable #timer></variable>
-                <variable #generatedPreview></variable>
-                <variable #custom path="{{tpl.value}}" persist></variable>
                 <variable #paused></variable>
                 <variable #reupdate></variable>
+
+                <variable #customjson [value]="custom.value|json" (valueChange)="custom.value = root.clone(custom.value)"></variable>
+
                 <execution #update [params]="{update:update,root:root,paused:paused,reupdate:reupdate,custom:custom,timer:timer,generatedPreview:generatedPreview,templateObject:templateObject}"><![CDATA[
                     if (timer.value) {
                         clearTimeout(timer.value);
@@ -320,8 +334,9 @@
                             return;
                         }
                         paused.value=true;
-                        console.log(custom.value);
+                        console.log(JSON.stringify(custom.value));
                         root.db.remote("src/srv/renderer").renderTemplate(templateObject.value,custom.value).done(function(res) {
+                            console.log(`got renderer response`);
                             paused.value=false;
                             generatedPreview.value=res;
                             if (reupdate.value) {
@@ -422,22 +437,31 @@
                               <button color="accent" style="float:left;color:rgb(236, 138, 36);background-color:rgba(255,255,255,0.85);border:2px solid rgb(236, 138, 36);font-weight:bold" type="button" mat-button (click)="resetContent.execute();sidenav.close();sidenavOpen2.value = false">
                               RESET
                               </button>
-                              <button color="accent" style="float:right;color:rgb(236, 138, 36);background-color:rgba(255,255,255,0.85);border:2px solid rgb(236, 138, 36);font-weight:bold" type="button" mat-button (click)="sidenav.close();sidenavOpen2.value = false">
+                              <!-- <button color="accent" style="float:right;color:rgb(236, 138, 36);background-color:rgba(255,255,255,0.85);border:2px solid rgb(236, 138, 36);font-weight:bold" type="button" mat-button (click)="sidenav.close();sidenavOpen2.value = false">
                               DONE
-                              </button>
+                              </button> -->
                         </div>
                     </mat-sidenav>
                     <div absolute-fill fxLayout="column">
-                        <div fxFlex relative>
-                              <viewer *ngIf="templateObject && templateObject.value" [initialPaddingPercents]="10" preserveBounds [object]="generatedPreview.value || templateObject.value.preview_document" absolute-fill style="border-top:1px solid #eeeeee"></viewer>
-                              <div [style.display]="!sidenav.opened ? undefined : 'none'" style="position:absolute;right:6px;top:6px" fxLayout="row">
-                                  <dialog ref="/dialogs/buy" #buyDialog></dialog>
+                        generated: {{generatedPreview.value|json}} <br/>
+                        local: {{localPresent.value|json}} <br/>
+                        template: {{templateObject.value.preview_document|json}} <br/>
+                        <div fxFlex relative> 
+                              <viewer *ngIf="templateObject && templateObject.value" 
+                                [initialPaddingPercents]="10" 
+                                preserveBounds 
+                                [object]="(localPresent.value ? generatedPreview.value : undefined) || templateObject.value.preview_document" 
+                                absolute-fill 
+                                style="border-top: solid #eeeeee"></viewer>
+
+                                <div [style.display]="!sidenav.opened ? undefined : 'none'" style="position:absolute;right:6px;top:6px" fxLayout="row"> 
+                                  <!-- <dialog ref="/dialogs/buy" #buyDialog></dialog>
                                   <button style="background-color:rgba(255,255,255,0.85);color:#808080;border:1px solid #eee" type="button" mat-button (click)="buyDialog.open({
                                         object : templateObject.value,
                                         pdf : generatedPreview.value || templateObject.value.preview_document
                                     })">
                                       BUY
-                                  </button>
+                                  </button> -->
                                   <button color="accent" style="color:rgb(236, 138, 36);background-color:rgba(255,255,255,0.85);border:1px solid #eee;font-weight:bold;" type="button" mat-button (click)="sidenav.open();;sidenavOpen2.value = true">
                                       CUSTOMIZE
                                   </button>

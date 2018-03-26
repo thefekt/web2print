@@ -197,7 +197,14 @@ exports.getRootCategoriesWithDetails = function(id)
 }
 
 exports.getTemplateDetails = function (id) {
-    var tpl = db.web2print.print_template.byId(id);
+    var tpl;
+
+    if (typeof id == 'string') {
+        tpl = db.web2print.print_template.byCode(id);
+    } else {
+         tpl = db.web2print.print_template.byId(Number(id));
+    }
+
     if (!tpl) return {path:[],NAME: 'error'};
     var d1 = exports.getContentsData(tpl);
 
