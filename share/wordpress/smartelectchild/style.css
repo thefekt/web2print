@@ -1,0 +1,38 @@
+/*
+ Theme Name:   Pechatar Customization
+ Theme URI:    http://www.pechatarnik.com/
+ Description:  Pechatar extension for Printshop Woocommerce Theme
+ Author:       Stelf XS
+ Author URI:   http://github.com/stelf
+ Template:     smartelect
+ Version:      1.0.0
+ License:      GNU General Public License v2 or later
+ License URI:  http://www.gnu.org/licenses/gpl-2.0.html
+ Text Domain:  smartchild
+*/
+
+
+/*                                                        
+
+
+ _____  _____  _____  __ __ 
+|  _  ||   __||     ||  |  |
+|   __||   __||   --||     |
+|__|   |_____||_____||__|__|
+ _____  _____  _____  _____ 
+|  _  ||_   _||  _  || __  |
+|     |  | |  |     ||    -|
+|__|__|  |_|  |__|__||__|__|
+                            
+                                                        
+*/
+
+div.visionr-container {
+    width: 100%;
+    background-color: rgb(228, 255, 248);
+}
+  
+div.visionr-container iframe {
+    width: 100%;
+    height: 600px;
+}

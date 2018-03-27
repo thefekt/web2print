@@ -3,14 +3,14 @@
 var lastUpdateTimes = {};
 var misc = require("server/misc");
 
-exports.renderTemplate = function(tmpl,data) 
+exports.renderTemplate = function(tmpl,data)
 {
     if (!tmpl.document)
         return { error : "document not existing or corrupted!"};
 
     var key =  "rndr-"+tmpl.document.id;
     var result = undefined;
-    __vr.Exec.callVSC("java.util.executeJSWithTempDirLock",key,function() 
+    __vr.Exec.callVSC("java.util.executeJSWithTempDirLock",key,function()
     {
         // NEEDS REFRESH?
         var upd = tmpl.update_time ? tmpl.update_time.getTime() : 0;
@@ -25,7 +25,7 @@ exports.renderTemplate = function(tmpl,data)
         var toReplace = exports.getTemplateJSON(tmpl,data,false);
         result = com.planvision.visionr.server6.mod.web.ScribusService.convert(key,tmpl+"",encodeURIComponent(JSON.stringify(toReplace)));
         if (!result) {
-            // TODO TODO TODO 
+            // TODO TODO TODO
             // BUG stelf? first convert error ? command not recognised?
             log.warn("STELF? TODO ? Scribus generator returned FIRST EMPTY result : "+tmpl.code);
             result = com.planvision.visionr.server6.mod.web.ScribusService.convert(key,tmpl+"",encodeURIComponent(JSON.stringify(toReplace)));
@@ -38,7 +38,7 @@ exports.renderTemplate = function(tmpl,data)
 
 exports.getTemplateJSON = function(tmpl,data,doNotRender) {
     var toReplace = {};
-    for (var e of tmpl.contents) 
+    for (var e of tmpl.contents)
     {
         if (e instanceof db.web2print.varchar_content ) {
             var d = data[e.code] !== undefined ? data[e.code] : e.initial_value;
@@ -52,21 +52,21 @@ exports.getTemplateJSON = function(tmpl,data,doNotRender) {
             var d = data[e.code]!== undefined ? data[e.code] : e.initial_value;
             if (d)
                 d=db.core.output_format.byCode("default_output_format_date").get_as_string(data[e.code]);
-            else 
+            else
                 d="";
             toReplace[e.code]=d;
         } else if (e instanceof db.web2print.datetime_content ) {
             var d = data[e.code]!== undefined ? data[e.code] : e.initial_value;
             if (d)
                 d=db.core.output_format.byCode("default_output_format_datetime").get_as_string(data[e.code]);
-            else 
+            else
                 d="";
             toReplace[e.code]=d;
         } else if (e instanceof db.web2print.time_content ) {
             var d = data[e.code]!== undefined ? data[e.code] : e.initial_value;
             if (d)
                 d=db.core.output_format.byCode("default_output_format_time").get_as_string(data[e.code]);
-            else 
+            else
                 d="";
             toReplace[e.code]=d;
         } else if (e instanceof db.web2print.image_content) {
@@ -83,7 +83,7 @@ exports.getTemplateJSON = function(tmpl,data,doNotRender) {
                     console.warn("render.js : document is not a file!");
         } else if (e instanceof db.web2print.qrcode_content ) {
             var d = data[e.code]!== undefined ? data[e.code] : e.initial_value;
-            if (d) 
+            if (d)
             {
                 if (!doNotRender) {
                     __vr.Exec.callVSC("java.util.generateQRInTempDirectory","rndr-"+tmpl.document.id,d,e.code);
@@ -96,7 +96,7 @@ exports.getTemplateJSON = function(tmpl,data,doNotRender) {
             var d = data[e.code]!== undefined ? data[e.code] : e.initial_value;
             if (!d) d="";
             toReplace[e.code]=d;
-        } 
+        }
     }
     return toReplace;
 }
@@ -126,7 +126,7 @@ exports.checkPreview = function(tmpl) {
         rparent.code="print_cache";
         rparent.parent=parent;
     }
-    var parent=rparent; 
+    var parent=rparent;
 
     //-------------------------------------------
     tmpl.preview_document.parent=parent;
@@ -143,14 +143,14 @@ exports.checkPreview = function(tmpl) {
     console.warn(" >> PREVIEW UPDATED : "+tmpl+" | "+key+" | "+tmpl.preview_document);
 }
 
-exports.getRootCategoriesWithDetails = function(id) 
+exports.getRootCategoriesWithDetails = function(id)
 {
-    function rec(e,level) 
+    function rec(e,level)
     {
         var r;
-        if (e instanceof db.web2print.tag_category) 
+        if (e instanceof db.web2print.tag_category)
         {
-            r = 
+            r =
             {
                 id : e.id,
                 SCHEMA : e.SCHEMA.module.code+"."+e.SCHEMA.code,
@@ -159,7 +159,7 @@ exports.getRootCategoriesWithDetails = function(id)
                 children : [],
                 tags : []
             };
-            if (e.parent) 
+            if (e.parent)
             {
                 r.parent={
                     id : e.parent.id,
@@ -173,20 +173,20 @@ exports.getRootCategoriesWithDetails = function(id)
                     r.children.push(rec(x,level+1));
             // }
         } else if (e instanceof db.web2print.print_tag) {
-            r = 
+            r =
             {
                 id : e.id,
                 SCHEMA : e.SCHEMA.module.code+"."+e.SCHEMA.code,
                 code : e.code,
                 NAME : misc.OBJSTR(e)
             };
-        } 
+        }
         return r;
     }
     var res=[];
     if (id) {
         var cat = db.web2print.tag_category.byId(id);
-        if (cat) 
+        if (cat)
             for (var e of (cat.children || []))
                 res.push(rec(e,0));
     } else {
@@ -208,13 +208,14 @@ exports.getTemplateDetails = function (id) {
     if (!tpl) return {path:[],NAME: 'error'};
     var d1 = exports.getContentsData(tpl);
 
-    return { 
-        object : 
+    return {
+        object :
         {
             NAME : misc.OBJSTR(tpl)+" ("+misc.formatDouble(tpl.width_mm)+"x"+misc.formatDouble(tpl.height_mm)+" mm)",
             width : tpl.width_mm,
             height : tpl.height_mm,
             id : tpl.id,
+            uuid: tpl.uuid,
             SCHEMA : tpl.SCHEMA.module.code+"."+tpl.SCHEMA.code,
             preview_document : tpl.preview_document,
             contents : d1,
@@ -236,49 +237,49 @@ exports.getContentsData = function(tpl) {
                 NAME : misc.OBJSTR(e),
                 type : 'varchar',
                 placeholder : e.initial_value
-            }); 
+            });
         } else if (e instanceof db.web2print.text_content) {
             res.push({
                 code : e.code,
                 NAME : misc.OBJSTR(e),
                 type : 'text',
                 placeholder : e.initial_value
-            }); 
+            });
         } else if (e instanceof db.web2print.date_content) {
             res.push({
                 code : e.code,
                 NAME : misc.OBJSTR(e),
                 type : 'date',
                 placeholder : e.initial_value
-            }); 
+            });
         } else if (e instanceof db.web2print.time_content) {
             res.push({
                 code : e.code,
                 NAME : misc.OBJSTR(e),
                 type : 'time',
                 placeholder : e.initial_value
-            }); 
+            });
         } else if (e instanceof db.web2print.datetime_content) {
             res.push({
                 code : e.code,
                 NAME : misc.OBJSTR(e),
                 type : 'datetime',
                 placeholder : e.initial_value
-            }); 
+            });
         } else if (e instanceof db.web2print.image_content) {
             res.push({
                 code : e.code,
                 NAME : misc.OBJSTR(e),
                 type : 'image',
                 placeholder : e.initial_value
-            }); 
+            });
         } else if (e instanceof db.web2print.qrcode_content) {
             res.push({
                 NAME : misc.OBJSTR(e),
                 code : e.code,
                 type : 'qrcode',
                 placeholder : e.initial_value
-            }); 
+            });
         } else if (e instanceof db.web2print.indexed_color_content) {
             res.push({
                 NAME : misc.OBJSTR(e),
@@ -286,30 +287,30 @@ exports.getContentsData = function(tpl) {
                 type : 'color',
                 placeholder : e.initial_value,
                 colors: e.available_colors
-            }); 
-        } 
+            });
+        }
     }
     return res;
 }
 
-// NOT EXPORTED 
+// NOT EXPORTED
 function getContentsDefault(t) {
     var res = [];
     for (var i=0;i<t.length;i++)
         res.push(t[i].placeholder);
     return res;
 }
-    
+
 
 
 var _cachedir;
-function getCacheDir() 
+function getCacheDir()
 {
     if (_cachedir)
         return _cachedir;
     var parent = db.documents.folder.SELECT("path='/visionr/print_cache'")[0];
     if (!parent) {
-        log.error("UNABLE TO FIND PRINT CACHE FOLDER!");        
+        log.error("UNABLE TO FIND PRINT CACHE FOLDER!");
         throw new Exception("UNABLE TO FIND PRINT CACHE FOLDER!");
     }
     return _cachedir=parent;
