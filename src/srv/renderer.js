@@ -38,6 +38,7 @@ exports.renderTemplate = function(tmpl,data)
 
 exports.getTemplateJSON = function(tmpl,data,doNotRender) {
     var toReplace = {};
+    console.log("HERE?!");
     for (var e of tmpl.contents)
     {
         if (e instanceof db.web2print.varchar_content ) {
@@ -186,7 +187,9 @@ exports.getRootCategoriesWithDetails = function(id)
     var res=[];
     if (id) {
         var cat = db.web2print.tag_category.byId(id);
-        if (cat)
+        if (cat){
+
+        }
             for (var e of (cat.children || []))
                 res.push(rec(e,0));
     } else {
@@ -217,7 +220,11 @@ exports.getTemplateDetails = function (id) {
             id : tpl.id,
             uuid: tpl.uuid,
             SCHEMA : tpl.SCHEMA.module.code+"."+tpl.SCHEMA.code,
-            preview_document : tpl.preview_document,
+            preview_document : tpl.preview_document ? {
+              id : tpl.preview_document.id,
+              SCHEMA : tpl.preview_document.SCHEMA.KEY,
+              uuid : tpl.preview_document.uuid
+            } : undefined,
             contents : d1,
             defaultData : getContentsDefault(d1)
         }

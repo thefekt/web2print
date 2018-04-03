@@ -93,7 +93,7 @@ function pechatar_output_local_storage() {
       window.addEventListener("message", receiveMessage, false);
 
       function receiveMessage(event) {
-        if (!(event.origin === "http://localhost") || (event.origin === "http://localhost:4300") )
+        if (!((event.origin === "http://localhost") || (event.origin === "http://localhost:4300")) )
           return;
 
         document.getElementById('item-config').value = event.data;
@@ -152,6 +152,25 @@ function display_text_cart( $item_data, $cart_item ) {
 
 add_filter( 'woocommerce_get_item_data', 'display_text_cart', 10, 2 );
 
+////////////////
+
+function custom_new_product_image( $_product_img, $cart_item, $cart_item_key ) {
+	$vimgdata = json_decode($cart_item['pechatar-meta'], true);
+  $uuid = $vimgdata["preview_uuid"];
+  $thumb      =   '<img src="http://localhost:8585/tmp/documents/'.$uuid.'.uuid.png?operation=resizeImage.png&width=320&height=200" />';
+  return $thumb;
+}
+
+add_filter( 'woocommerce_cart_item_thumbnail', 'custom_new_product_image', 10, 3 );
+
+function wpdocs_post_image_html( $html, $post_id, $post_image_id ) {
+  $html = '<a href="' . get_permalink( $post_id ) . '" alt="' . esc_attr( get_the_title( $post_id ) ) . '">' . $html . '</a>';
+  return $html;
+}
+
+add_filter( 'post_thumbnail_html', 'wpdocs_post_image_html', 10, 3 );
+
+/////////////////
 
 function setup_theme_admin_menus() {
     add_submenu_page('themes.php',

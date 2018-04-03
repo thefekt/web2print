@@ -39,6 +39,7 @@
         }
     ]]></execution>
 
+
     <!-- Content if not logged in -->
     <!--
     <include shared ref="/app/not-logged"></include>
@@ -280,17 +281,9 @@
         </div>
 
         <!-- Template part -->
-        <execution [params]="{tpl:tpl,custom:custom, templateObject:templateObject}" #postConfig><![CDATA[
-          var msgpost = JSON.stringify({tpl: tpl.value, config: custom.value, preview_uuid: templateObject.value.uuid});
-          var target = window.parent;
-
-          if (target !== null)
-            target.postMessage(msgpost, 'http://localhost');
-        ]]></execution>
-
-        <variable #templateObject (valueChange)="postConfig.execute()">
+        <variable #templateObject>
             <observe>
-                <execution [params]="{tpl:tpl,root:root,templateObject:templateObject}"><![CDATA[
+                <execution [params]="{tpl:tpl,root:root,templateObject:templateObject,postConfig:postConfig}"><![CDATA[
                     if (!templateObject.value) {
                         root.db.remote("src/srv/renderer").getTemplateDetails(tpl.value).done(function(res) {
                             templateObject.value = res.object;
@@ -323,9 +316,29 @@
 
             <query schema="documents.document"
                     where="id=:ID"
+                    properties="uuid"
                     [params]="{ID: (generatedPreview.value || {})['id'] || 0}">
-                <result #localPresent [dependency]="generatedPreview"></result>
+
+                    <result #localPresent [dependency]="generatedPreview" (onReady)="postConfig.execute();"></result>
             </query>
+
+
+            <execution [params]="{tpl:tpl,custom:custom, localPresent:localPresent, generatedPreview:generatedPreview, update:update}" #postConfig><![CDATA[
+              if (localPresent.objects.length === 0) {
+                return;
+              }
+
+              const msgpost = JSON.stringify({
+                tpl: tpl.value,
+                config: custom.value,
+                preview_uuid: localPresent.objects[0].uuid
+              });
+
+              var target = window.parent;
+              if (target !== null)
+                target.postMessage(msgpost, 'http://localhost');
+
+            ]]></execution>
 
             <div absolute-fill *ngIf="templateObject.value && templateObject.value.preview_document && localPresent.ready">
                 <!-- THE MAIN VIEWER + CUSTOMIZE TOOLBAR -->
@@ -335,7 +348,9 @@
 
                 <variable #customjson [value]="custom.value|json" (valueChange)="custom.value = root.clone(custom.value)"></variable>
 
-                <execution #update [params]="{update:update,root:root,paused:paused,reupdate:reupdate,custom:custom,timer:timer,generatedPreview:generatedPreview,templateObject:templateObject}"><![CDATA[
+                <execution #update
+                  [params]="{update:update,root:root,paused:paused,reupdate:reupdate,custom:custom,timer:timer,generatedPreview:generatedPreview,templateObject:templateObject,postConfig:postConfig}"
+                  (onReady)="initialExec.value=update"><![CDATA[
                     if (timer.value) {
                         clearTimeout(timer.value);
                         timer.value=undefined;
@@ -351,10 +366,13 @@
                         }
                         paused.value=true;
                         console.log(JSON.stringify(custom.value));
+
                         root.db.remote("src/srv/renderer").renderTemplate(templateObject.value,custom.value).done(function(res) {
                             console.log(`got renderer response`);
                             paused.value=false;
                             generatedPreview.value=res;
+                            postConfig.execute();
+
                             if (reupdate.value) {
                                 reupdate.value=false;
                                 update.execute();
@@ -363,11 +381,21 @@
                     },generatedPreview.value === undefined ? 0 : 500);
                 ]]></execution>
 
+                <execution #initLocal [params]="{update:update,localPresent:localPresent}"><![CDATA[
+                    if (localPresent.objects.length === 0)
+                      update.execute();
+                ]]></execution>
+
+                <variable #initialExec
+                  [value]="localPresent.objects.length"
+                  (onReady)="initLocal.execute()"
+                  [dependency]="localPresent">
+                </variable>
+
                 <execution #resetContent [params]="{root:root,custom:custom,timer:timer,generatedPreview:generatedPreview,templateObject:templateObject}"><![CDATA[
                     custom.value=null;
                     generatedPreview.value=null;
                 ]]></execution>
-
 
                 <execution #openOrder [params]="{root:root,custom:custom,timer:timer,generatedPreview:generatedPreview,templateObject:templateObject}"><![CDATA[
                     console.log("OPEN ORDER!");
@@ -460,13 +488,20 @@
                     </mat-sidenav>
                     <div absolute-fill fxLayout="column">
                         generated: {{generatedPreview.value|json}} <br/>
-                        local: {{custom.value|json}} <br/>
+                        custom: {{custom.value|json}} <br/>
                         template: {{templateObject.value.preview_document|json}} <br/>
+                        localPresent: {{localPresent.objects.length}} <br/>
+                        [query params: {{ (generatedPreview.value || {})['id'] || 0}} ] <br/>
+
+                        viewer object: {{(
+                            (localPresent.objects.length ? generatedPreview.value : undefined) || templateObject.value.preview_document
+                          )|json
+                        }}
                         <div fxFlex relative>
                               <viewer *ngIf="templateObject && templateObject.value"
                                 [initialPaddingPercents]="10"
                                 preserveBounds
-                                [object]="(localPresent.value ? generatedPreview.value : undefined) || templateObject.value.preview_document"
+                                [object]="(localPresent.objects.length ? generatedPreview.value : undefined) || templateObject.value.preview_document"
                                 absolute-fill
                                 style="border-top: solid #eeeeee"></viewer>
 
