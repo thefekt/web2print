@@ -8,16 +8,16 @@
         "formsDir" : "src/forms"
     },
     "server" : {
-		"devel" : true,
-		"debugger" : true,
-		"javaDebugPort" : 8999,		
-		"ports" : 
-		{
-			"http" : 8585
-		}
-    },    
-     "modules": [
-		"mobile"
+        "devel" : true,
+        "debugger" : true,
+        "javaDebugPort" : 8999,
+        "ports" :
+        {
+            "http" : 8585
+        }
+    },
+    "modules": [
+        "mobile"
     ],
     "project": {
         "files": [
@@ -29,9 +29,9 @@
             "target/client"
         ]
     },
-    "additional" : 
-	{
-        "web.scribus.path" : "C:/Program Files/Scribus 1.5.3/scribus.exe",
+    "additional" :
+    {
+        "web.scribus.path" : "/usr/bin/scribus-ng",
         "core.vscript.src.debug" : true
-	}  
+    }
 }

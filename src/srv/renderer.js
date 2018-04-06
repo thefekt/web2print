@@ -38,8 +38,8 @@ exports.renderTemplate = function(tmpl,data)
 
 exports.getTemplateJSON = function(tmpl,data,doNotRender) {
     var toReplace = {};
-    console.log("HERE?!");
-    for (var e of tmpl.contents)
+
+    for (var e of tmpl.contents||[])
     {
         if (e instanceof db.web2print.varchar_content ) {
             var d = data[e.code] !== undefined ? data[e.code] : e.initial_value;
@@ -72,17 +72,18 @@ exports.getTemplateJSON = function(tmpl,data,doNotRender) {
             toReplace[e.code]=d;
         } else if (e instanceof db.web2print.image_content) {
             var d = data[e.code]!== undefined ? data[e.code] : e.initial_value;
-                if (d instanceof db.documents.file) {
-                    if (!doNotRender) {
-                        __vr.Exec.callVSC("java.util.copyInTempDirectory","rndr-"+tmpl.document.id,d,e.code);
-                    } else {
-                        // JUST A KEY
-                        toReplace[e.code]=d.update_time||d.insert_time||0;
-                    }
+            if (d instanceof db.documents.file) {
+                if (!doNotRender) {
+                    __vr.Exec.callVSC("java.util.copyInTempDirectory","rndr-"+tmpl.document.id, d, e.code);
+                } else {
+                    // JUST A KEY
+                    toReplace[e.code]=d.update_time||d.insert_time||0;
                 }
-                else
-                    console.warn("render.js : document is not a file!");
-        } else if (e instanceof db.web2print.qrcode_content ) {
+            }
+            else {
+              console.warn("render.js : document [ " + e.code + "] is not a db.documents.file instance!");
+            }
+          } else if (e instanceof db.web2print.qrcode_content ) {
             var d = data[e.code]!== undefined ? data[e.code] : e.initial_value;
             if (d)
             {
@@ -243,6 +244,7 @@ exports.getContentsData = function(tpl) {
                 code : e.code,
                 NAME : misc.OBJSTR(e),
                 type : 'varchar',
+                dest_page : e.dest_page,
                 placeholder : e.initial_value
             });
         } else if (e instanceof db.web2print.text_content) {
@@ -250,6 +252,7 @@ exports.getContentsData = function(tpl) {
                 code : e.code,
                 NAME : misc.OBJSTR(e),
                 type : 'text',
+                dest_page : e.dest_page,
                 placeholder : e.initial_value
             });
         } else if (e instanceof db.web2print.date_content) {
@@ -257,6 +260,7 @@ exports.getContentsData = function(tpl) {
                 code : e.code,
                 NAME : misc.OBJSTR(e),
                 type : 'date',
+                dest_page : e.dest_page,
                 placeholder : e.initial_value
             });
         } else if (e instanceof db.web2print.time_content) {
@@ -264,6 +268,7 @@ exports.getContentsData = function(tpl) {
                 code : e.code,
                 NAME : misc.OBJSTR(e),
                 type : 'time',
+                dest_page : e.dest_page,
                 placeholder : e.initial_value
             });
         } else if (e instanceof db.web2print.datetime_content) {
@@ -271,6 +276,7 @@ exports.getContentsData = function(tpl) {
                 code : e.code,
                 NAME : misc.OBJSTR(e),
                 type : 'datetime',
+                dest_page : e.dest_page,
                 placeholder : e.initial_value
             });
         } else if (e instanceof db.web2print.image_content) {
@@ -278,6 +284,7 @@ exports.getContentsData = function(tpl) {
                 code : e.code,
                 NAME : misc.OBJSTR(e),
                 type : 'image',
+                dest_page : e.dest_page,
                 placeholder : e.initial_value
             });
         } else if (e instanceof db.web2print.qrcode_content) {
@@ -285,6 +292,7 @@ exports.getContentsData = function(tpl) {
                 NAME : misc.OBJSTR(e),
                 code : e.code,
                 type : 'qrcode',
+                dest_page : e.dest_page,
                 placeholder : e.initial_value
             });
         } else if (e instanceof db.web2print.indexed_color_content) {
@@ -292,6 +300,7 @@ exports.getContentsData = function(tpl) {
                 NAME : misc.OBJSTR(e),
                 code : e.code,
                 type : 'color',
+                dest_page : e.dest_page,
                 placeholder : e.initial_value,
                 colors: e.available_colors
             });
