@@ -2,7 +2,7 @@
 <!--+
     | Main import file for the module test.
     |
-    | Date:    $LastChangedDate: 2012-02-22 11:49:00 +0100 (Mi, 22 Feb 2012) $ 
+    | Date:    $LastChangedDate: 2012-02-22 11:49:00 +0100 (Mi, 22 Feb 2012) $
     | Version: $LastChangedRevision: 12142 $
     +-->
 
@@ -27,11 +27,32 @@
                 </name>
                 <name>
                     <bg-BG>Шаблон</bg-BG>
-                </name>            
-            </print_template>           
+                </name>
+            </print_template>
+						<dest_page col="dpage">
+                <sort_id>2001</sort_id>
+                <category>main.basic</category>
+                <data_source>input</data_source>
+                <data_type>integer</data_type>
+                <is_inmaintbl>true</is_inmaintbl>
+                <is_obligatory>true</is_obligatory>
+                <name>
+                    <en-US>Page</en-US>
+                </name>
+                <name>
+                    <de-DE>Seite</de-DE>
+                </name>
+                <name>
+                    <bg-BG>Страница</bg-BG>
+                </name>
+								<default_value>1</default_value>
+								<min_value_integer>1</min_value_integer>
+								<is_not_insert_default_value>true</is_not_insert_default_value>
+            </dest_page>
+
         </abstract_content>
 
-        <varchar_content parent_objectdef="web2print.abstract_content">            
+        <varchar_content parent_objectdef="web2print.abstract_content">
             <initial_value col="ival_vc">
                 <sort_id>2001</sort_id>
                 <category>main.basic</category>
@@ -51,7 +72,7 @@
             </initial_value>
         </varchar_content>
 
-        <text_content parent_objectdef="web2print.abstract_content">            
+        <text_content parent_objectdef="web2print.abstract_content">
             <initial_value col="ival_vt">
                 <sort_id>2001</sort_id>
                 <category>main.basic</category>
@@ -71,7 +92,7 @@
             </initial_value>
         </text_content>
 
-        <date_content parent_objectdef="web2print.abstract_content">            
+        <date_content parent_objectdef="web2print.abstract_content">
             <initial_value col="ival_vd">
                 <sort_id>2001</sort_id>
                 <category>main.basic</category>
@@ -92,7 +113,7 @@
             </initial_value>
         </date_content>
 
-        <datetime_content parent_objectdef="web2print.abstract_content">            
+        <datetime_content parent_objectdef="web2print.abstract_content">
             <initial_value col="ival_vd">
                 <sort_id>2001</sort_id>
                 <category>main.basic</category>
@@ -113,7 +134,7 @@
             </initial_value>
         </datetime_content>
 
-        <time_content parent_objectdef="web2print.abstract_content">            
+        <time_content parent_objectdef="web2print.abstract_content">
             <initial_value col="ival_vd">
                 <sort_id>2001</sort_id>
                 <category>main.basic</category>
@@ -134,7 +155,7 @@
             </initial_value>
         </time_content>
 
-        <image_content parent_objectdef="web2print.abstract_content">       
+        <image_content parent_objectdef="web2print.abstract_content">
             <initial_value col="ival_vi">
                 <sort_id>2001</sort_id>
                 <category>main.basic</category>
@@ -175,7 +196,7 @@
         </qrcode_content>
 
         <indexed_color_content parent_objectdef="web2print.abstract_content">
-            
+
             <initial_value col="ival_vc">
                 <sort_id>2001</sort_id>
                 <category>main.basic</category>
@@ -210,10 +231,10 @@
                 <name>
                     <bg-BG>Налични цветове (CMYK)</bg-BG>
                 </name>
-                <value_table>$(DB_PREFIX)_wp_var_avlcl</value_table>   
+                <value_table>$(DB_PREFIX)_wp_var_avlcl</value_table>
             </available_colors>
-            
-        </indexed_color_content>       
+
+        </indexed_color_content>
 
 
         <print_tag tbl="prnt_tag" copy_from="core.template_normal_transaction">
@@ -248,7 +269,7 @@
                 </name>
                 <name>
                     <bg-BG>Шаблони</bg-BG>
-                </name>              
+                </name>
             </templates>
 
 		</print_tag>
@@ -417,13 +438,13 @@ require("src/srv/renderer").checkPreview(this);
                 </name>
                 <name>
                     <bg-BG>Тагове</bg-BG>
-                </name>              
+                </name>
             </tags>
 
 		</print_template>
 
         <print_category mode="delete"/>
-        
+
         <tag_category tbl="prnt_tct" copy_from="core.template_normal_transaction">
 
             <tags>
@@ -464,7 +485,7 @@ require("src/srv/renderer").checkPreview(this);
                 <index_code>par</index_code>
                 <is_selfreference>true</is_selfreference>
             </parent>
-            
+
             <children>
                 <category>main.settings</category>
                 <sort_id>3002</sort_id>
