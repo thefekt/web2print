@@ -1,5 +1,7 @@
 <?php
 
+// docker cp share/wordpress/storechild/functions.php friendly_khorana:/data/www/wp-content/themes/smartelectchild/
+
 function pechatar_theme_enqueue_styles() {
         // as per https://codex.wordpress.org/Child_Themes
         $parent_style = 'smartelect-style-home';
@@ -23,9 +25,12 @@ add_action('woocommerce_before_single_product_summary', 'pechatar_open_div', 5);
 
 function pechatar_open_div() {
     echo '<h3> Design </h3>';
-    $visionr_location = get_option("visionr_location").'/#/print?tpl=8090';
     global $product;
-    echo 'PID: '.$product->get_id();
+    $pid = $product->get_id();
+
+    $visionr_location = get_option("visionr_location").'/#/print?tpl='.$pid;
+
+    if ($DEBUG) echo 'DEBUG PID: '.$pid;
     echo '<div class="visionr-container"><iframe src="'.$visionr_location.'"> </iframe></h3>';
 }
 
@@ -88,6 +93,8 @@ function woocommerce_new_order() {
 function pechatar_output_local_storage() {
     global $product;
 
+    $ishide = $DEBUG ? 'text' : 'hidden';
+
     ?>
     <script>
       window.addEventListener("message", receiveMessage, false);
@@ -100,7 +107,7 @@ function pechatar_output_local_storage() {
       }
     </script>
     <div class="iconic-engraving-field">
-        <input type="hidden" id="item-config" name="item-config" value="<?php echo $lvarser ?>">
+        <input type="<?php echo ishide ?>" id="item-config" name="item-config" value="<?php echo $lvarser ?>">
     </div>
 
     <?php
@@ -108,35 +115,16 @@ function pechatar_output_local_storage() {
 
 add_action( 'woocommerce_before_add_to_cart_button', 'pechatar_output_local_storage', 10 );
 
-/**
- * Add engraving text to cart item.
- *
- * @param array $cart_item_data
- * @param int   $product_id
- * @param int   $variation_id
- *
- * @return array
- */
 
 function pechatar_add_meta_to_cart_item( $cart_item_data, $product_id, $variation_id ) {
     $item_meta = filter_input( INPUT_POST, 'item-config' );
-
     $cart_item_data['pechatar-meta'] = $item_meta;
-
     return $cart_item_data;
 }
 
 add_filter( 'woocommerce_add_cart_item_data', 'pechatar_add_meta_to_cart_item', 10, 3 );
 
-/**
- * Display engraving text in the cart.
- *
- * @param array $item_data
- * @param array $cart_item
- *
- * @return array
- */
-function display_text_cart( $item_data, $cart_item ) {
+function display_meta( $item_data, $cart_item ) {
     if ( empty( $cart_item['pechatar-meta'] ) ) {
         return $item_data;
     }
@@ -150,7 +138,7 @@ function display_text_cart( $item_data, $cart_item ) {
     return $item_data;
 }
 
-add_filter( 'woocommerce_get_item_data', 'display_text_cart', 10, 2 );
+add_filter( 'woocommerce_get_item_data', 'display_meta', 10, 2 );
 
 ////////////////
 
