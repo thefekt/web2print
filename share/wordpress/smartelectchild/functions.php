@@ -1,6 +1,23 @@
 <?php
 
+// from https://www.elegantthemes.com/blog/tips-tricks/using-the-wordpress-debug-log
+
+if ( ! function_exists('write_log')) {
+   function write_log ( $log )  {
+      if ( is_array( $log ) || is_object( $log ) ) {
+         error_log( print_r( $log, true ) );
+      } else {
+         error_log( $log );
+      }
+   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+
 // docker cp share/wordpress/storechild/functions.php friendly_khorana:/data/www/wp-content/themes/smartelectchild/
+
+define(PET_DEBUG, true);
 
 function pechatar_theme_enqueue_styles() {
         // as per https://codex.wordpress.org/Child_Themes
@@ -18,9 +35,10 @@ function pechatar_theme_enqueue_styles() {
 
 add_action( 'wp_enqueue_scripts', 'pechatar_theme_enqueue_styles' );
 
-/**
- * Opening div for our content wrapper
- */
+////////////////////////////////////////////////////////////////////////////////
+
+/* output design editor markup */
+
 add_action('woocommerce_before_single_product_summary', 'pechatar_open_div', 5);
 
 function pechatar_open_div() {
@@ -30,18 +48,18 @@ function pechatar_open_div() {
 
     $visionr_location = get_option("visionr_location").'/#/print?tpl='.$pid;
 
-    if ($DEBUG) echo 'DEBUG PID: '.$pid;
+    if (PET_DEBUG) echo 'DEBUG PID: '.$pid;
     echo '<div class="visionr-container"><iframe src="'.$visionr_location.'"> </iframe></h3>';
 }
-
-/**
- * Closing div for our content wrapper
- */
 add_action('woocommerce_before_single_product_summary', 'pechatar_close_div', 50);
 
 function pechatar_close_div() {
     echo '</div>';
 }
+
+////////////////////////////////////////////////////////////////////////////////
+
+/* specific config */
 
 remove_action( 'woocommerce_before_single_product_summary', 'woocommerce_show_product_images', 20 );
 
@@ -62,67 +80,92 @@ function pechatarnik_specific_config() {
     }
     ?>
 
-        <form method="POST" action="">
-            <h2> Pechatarnik customization </h2>
-            <input type="hidden" name="update_settings" value="Y" />
-            <label for="num_elements">
-                URL of underlying VISIONR :
-            </label>
+    <form method="POST" action="">
+        <h2> Pechatarnik customization </h2>
+        <input type="hidden" name="update_settings" value="Y" />
+        <label for="num_elements">
+            URL of underlying VISIONR :
+        </label>
 
-            <input type="text" name="visionr_location" value="<?php echo $visionr_location?>" />
+        <input type="text" name="visionr_location" value="<?php echo $visionr_location?>" />
 
-            <p>
-                <input type="submit" value="Save settings" class="button-primary"/>
-            </p>
-        </form>
+        <p>
+            <input type="submit" value="Save settings" class="button-primary"/>
+        </p>
+    </form>
+
     <?php
 }
 
+////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////
-
-function woocommerce_new_order() {
-
-
-}
-
-/**
- * Output engraving field.
- */
-
+/* CART CUSTOMIZATION */
+/*  display metadata where appropriate */
 function pechatar_output_local_storage() {
     global $product;
 
-    $ishide = $DEBUG ? 'text' : 'hidden';
+    $ishide = PET_DEBUG ? true : false;
+    $lvarser = '{}';
 
     ?>
     <script>
       window.addEventListener("message", receiveMessage, false);
 
+
       function receiveMessage(event) {
         if (!((event.origin === "http://localhost") || (event.origin === "http://localhost:4300")) )
           return;
 
+       var butel = document.getElementsByClassName('single_add_to_cart_button')[0];
+       if (butel) butel.disabled = false;
         document.getElementById('item-config').value = event.data;
       }
     </script>
     <div class="iconic-engraving-field">
-        <input type="<?php echo ishide ?>" id="item-config" name="item-config" value="<?php echo $lvarser ?>">
-    </div>
-
+          <input type="<?php echo $ishide ?>" id="item-config" name="item-config" value="<?php echo $lvarser ?>">
+      </div>
     <?php
 }
 
-add_action( 'woocommerce_before_add_to_cart_button', 'pechatar_output_local_storage', 10 );
-
+add_action('woocommerce_before_add_to_cart_button', 'pechatar_output_local_storage', 10 );
 
 function pechatar_add_meta_to_cart_item( $cart_item_data, $product_id, $variation_id ) {
+    write_log('PECHATAR: initial setup of cart item metadata for ['.$cart_item_key);
     $item_meta = filter_input( INPUT_POST, 'item-config' );
     $cart_item_data['pechatar-meta'] = $item_meta;
     return $cart_item_data;
+
+  }
+add_filter( 'woocommerce_add_cart_item_data', 'pechatar_add_meta_to_cart_item', 10, 3 );
+
+function pechatar_add_downloadable($html, $item, $args) {
+  return "<pre> ".var_dump(json_decode($item, true))." </pre>".$html;
 }
 
-add_filter( 'woocommerce_add_cart_item_data', 'pechatar_add_meta_to_cart_item', 10, 3 );
+add_filter( 'woocommerce_display_item_meta', 'pechatar_add_downloadable',10, 3);
+
+function custom_checkout_create_order_line_item( $item, $cart_item_key, $values, $order ) {
+    write_log('PECHATAR: copy cart item ['.$cart_item_key.'] meta data to order');
+
+    if(isset($values['pechatar-meta'])) {
+        $item->update_meta_data( 'pechatar-meta', $values['pechatar-meta'] );
+    }
+}
+
+add_action( 'woocommerce_checkout_create_order_line_item', 'custom_checkout_create_order_line_item', 20, 4 );
+
+////////////////////////////////////////////////////////////////////////////////
+
+function remove_tabs($tabs) {
+  return [];
+}
+
+add_filter('woocommerce_product_tabs', 'remove_tabs', 10);
+
+////////////////////////////////////////////////////////////////////////////////
+
+/* CART CUSTOMIZATION */
+/*  display metadata with cart contents */
 
 function display_meta( $item_data, $cart_item ) {
     if ( empty( $cart_item['pechatar-meta'] ) ) {
@@ -140,25 +183,21 @@ function display_meta( $item_data, $cart_item ) {
 
 add_filter( 'woocommerce_get_item_data', 'display_meta', 10, 2 );
 
-////////////////
+/*  display image preview */
 
-function custom_new_product_image( $_product_img, $cart_item, $cart_item_key ) {
+function product_cart_image( $_product_img, $cart_item, $cart_item_key ) {
+  write_log('PECHATAR: output ['.$cart_item_key.'] thumbnail link');
+
 	$vimgdata = json_decode($cart_item['pechatar-meta'], true);
   $uuid = $vimgdata["preview_uuid"];
-  $thumb      =   '<img src="http://localhost:8585/tmp/documents/'.$uuid.'.uuid.png?operation=resizeImage.png&width=320&height=200" />';
+  $thumb      =   '<img src="http://localhost:8585/tmp/documents/'.$uuid.'.uuid.png?operation=resizeImage.png&width=640&height=480" />';
   return $thumb;
 }
 
-add_filter( 'woocommerce_cart_item_thumbnail', 'custom_new_product_image', 10, 3 );
+add_filter( 'woocommerce_cart_item_thumbnail', 'product_cart_image', 10, 3 );
 
-function wpdocs_post_image_html( $html, $post_id, $post_image_id ) {
-  $html = '<a href="' . get_permalink( $post_id ) . '" alt="' . esc_attr( get_the_title( $post_id ) ) . '">' . $html . '</a>';
-  return $html;
-}
 
-add_filter( 'post_thumbnail_html', 'wpdocs_post_image_html', 10, 3 );
-
-/////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 function setup_theme_admin_menus() {
     add_submenu_page('themes.php',
