@@ -209,7 +209,7 @@ exports.getTemplateDetails = function (id) {
          tpl = db.web2print.print_template.byId(Number(id));
     }
 
-    if (!tpl) return {path:[],NAME: 'error'};
+    if (!tpl) return {path:[],NAME: 'getTemplateDetails: error - no template found'};
     var d1 = exports.getContentsData(tpl);
 
     return {

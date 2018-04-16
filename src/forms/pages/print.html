@@ -1,6 +1,6 @@
     <variable #object export></variable>
 
-    <variable #DEBUG [defaults]="{value: false}"></variable>
+    <variable #DEBUG [defaults]="{value: true}"></variable>
 
     <variable #sidenavOpen [defaults]="{value: true}"></variable>
     <variable #sidenavOpen2 [defaults]="{value: true}"></variable>
@@ -38,8 +38,6 @@
               var data = new FormData();
               data.append('file', br.files[0]);
 
-              debugger;
-
               fetch('http://localhost:8585/visionr.vsp?ajax=true&operation=upload', {
                 method: 'POST',
                 body: data
@@ -67,7 +65,8 @@
                         root.db.remote("src/srv/renderer").getTemplateDetails(tpl.value).done(function(res) {
                             console.log("#templateObject: got template " + templateObject.value);
                             templateObject.value = res.object;
-                            if (res.NAME === 'error') {
+                            if (res.NAME && res.NAME.indexOf('error') >= 0) {
+                                debugger;
                                 console.log("#templateObject: error getting result from renderer ");
                             }
                           });
@@ -116,16 +115,16 @@
                 preview_uuid: localPresent.objects[0].uuid
               });
 
-              console.info('#postConfig: ' + msgpost);
-
               var target = window.parent;
-              if (target !== null)
+              if (target !== null) {
+                console.info('#postConfig: posting data to parent ' + msgpost);
                 target.postMessage(msgpost, 'http://localhost');
+              }
 
             ]]></execution>
 
             <div absolute-fill *ngIf="templateObject.value && templateObject.value.preview_document && localPresent.ready">
-                <!-- THE MAIN VIEWER + CUSTOMIZE TOOLBAR -->
+                <!-- THE MAIN VIEWER + CUSTOMIZE TOOLBAR -->!!
                 <variable #timer></variable>
                 <variable #paused></variable>
                 <variable #reupdate></variable>
@@ -165,7 +164,8 @@
                     },generatedPreview.value === undefined ? 0 : 500);
                 ]]></execution>
 
-                <execution #initLocal [params]="{update:update,localPresent:localPresent}"><![CDATA[
+                <execution #initLocal [params]="{update:update,localPresent:localPresent,postConfig:postConfig}"><![CDATA[
+                    postConfig.execute();
                     if (localPresent.objects.length === 0)
                       update.execute();
                 ]]></execution>
