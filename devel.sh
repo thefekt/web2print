@@ -2,6 +2,7 @@
 
 WORKROOT=/media/stelf/work2
 
+docker container start friendly_khorana
 tmux new-session -d -c $WORKROOT/web2print -n pechatar -s pechatar
 tmux split-window -d -v -t pechatar -c $WORKROOT/visionr2018/visionr-dev 
 tmux send-keys -t pechatar "vrs run" Enter
