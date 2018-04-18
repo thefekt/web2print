@@ -5,6 +5,8 @@ var misc = require("server/misc");
 
 exports.renderTemplate = function(tmpl,data)
 {
+    console.log(`render.js: render ${tmpl.document.code} with ${JSON.stringify(data)} `);
+
     if (!tmpl.document)
         return { error : "document not existing or corrupted!"};
 
@@ -81,7 +83,7 @@ exports.getTemplateJSON = function(tmpl,data,doNotRender) {
                 }
             }
             else {
-              console.warn("render.js : document [ " + e.code + "] is not a db.documents.file instance!");
+              console.warn("render.js : document [" + e.code + "] is not a db.documents.file instance!");
             }
           } else if (e instanceof db.web2print.qrcode_content ) {
             var d = data[e.code]!== undefined ? data[e.code] : e.initial_value;
