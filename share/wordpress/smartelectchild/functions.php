@@ -17,7 +17,7 @@ if ( ! function_exists('write_log')) {
 
 // docker cp share/wordpress/storechild/functions.php friendly_khorana:/data/www/wp-content/themes/smartelectchild/
 
-define(PET_DEBUG, true);
+define(PET_DEBUG, false);
 
 function pechatar_theme_enqueue_styles() {
         // as per https://codex.wordpress.org/Child_Themes
@@ -51,6 +51,7 @@ function pechatar_open_div() {
     if (PET_DEBUG) echo 'DEBUG PID: '.$pid;
     echo '<div class="visionr-container"><iframe src="'.$visionr_location.'"> </iframe></h3>';
 }
+
 add_action('woocommerce_before_single_product_summary', 'pechatar_close_div', 50);
 
 function pechatar_close_div() {
@@ -104,7 +105,7 @@ function pechatarnik_specific_config() {
 function pechatar_output_local_storage() {
     global $product;
 
-    $ishide = PET_DEBUG ? true : false;
+    $ishide = PET_DEBUG ? 'text' : 'hidden';
     $lvarser = '{}';
 
     ?>
@@ -118,16 +119,38 @@ function pechatar_output_local_storage() {
 
        var butel = document.getElementsByClassName('single_add_to_cart_button')[0];
        if (butel) butel.disabled = false;
-        document.getElementById('item-config').value = event.data;
+
+       document.getElementById('item-config').value = event.data;
       }
     </script>
-    <div class="iconic-engraving-field">
-          <input type="<?php echo $ishide ?>" id="item-config" name="item-config" value="<?php echo $lvarser ?>">
-      </div>
+    <div class="pechatar-field">
+        <input type="<?php echo $ishide ?>" id="item-config" name="item-config" value="<?php echo $lvarser ?>">
+    </div>
     <?php
 }
 
 add_action('woocommerce_before_add_to_cart_button', 'pechatar_output_local_storage', 10 );
+
+function pechatar_tweak_button() {
+  ?>
+  <script>
+    jQuery(document).ready(function() {
+      jQuery('button.single_add_to_cart_button').on('click', function(event) {
+          let confval = document.getElementById('item-config').value ;
+          if (confval === '' || confval === '{}') {
+            alert('please configure your design first');
+            event.stopPropagation();
+            return false;
+          }
+          return true;
+      })
+    })
+  </script>
+  <?php
+
+}
+
+add_action('woocommerce_after_add_to_cart_button', 'pechatar_tweak_button', 10 );
 
 function pechatar_add_meta_to_cart_item( $cart_item_data, $product_id, $variation_id ) {
     write_log('PECHATAR: initial setup of cart item metadata for ['.$cart_item_key);
@@ -139,7 +162,11 @@ function pechatar_add_meta_to_cart_item( $cart_item_data, $product_id, $variatio
 add_filter( 'woocommerce_add_cart_item_data', 'pechatar_add_meta_to_cart_item', 10, 3 );
 
 function pechatar_add_downloadable($html, $item, $args) {
-  return "<pre> ".var_dump(json_decode($item, true))." </pre>".$html;
+  // return "<pre> ".var_dump(json_decode($item, true))." </pre>".$html;
+  $vimgdata = json_decode($item['pechatar-meta'], true);
+  $uuid = $vimgdata["preview_uuid"];
+
+  return "<div class='pechatar-download'><a style='font-size:16pt; color: #e22' href='/documents/{$uuid}.uuid.pdf'> download here </a></h3>";
 }
 
 add_filter( 'woocommerce_display_item_meta', 'pechatar_add_downloadable',10, 3);
