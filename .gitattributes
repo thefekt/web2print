@@ -12,15 +12,16 @@
 *.DOCX diff=astextplain
 *.dot  diff=astextplain
 *.DOT  diff=astextplain
-*.pdf  diff=astextplain
-*.PDF	 diff=astextplain
 *.rtf	 diff=astextplain
 *.RTF	 diff=astextplain
 *.xml	 diff=astextplain
 *.txt	 diff=astextplain
+*.svg   diff=astextplain
 *.html diff=astextplain
 
 # binary files
+*.pdf binary
+*.PDF binary
 *.ico binary
 *.jpg binary
 *.jpeg binary
@@ -28,7 +29,7 @@
 *.png binary
 *.woff binary
 *.woff2 binary
-*.tft binary
+*.ttf binary
 *.gif binary
 *.zip binary
 *.jar binary
