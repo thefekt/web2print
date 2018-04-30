@@ -19,3 +19,4 @@ npm-debug.*
 package-lock.json
 visionr-dev/
 exports/
+share/wordpress/**/*.zip
