@@ -34,3 +34,7 @@
 *.zip binary
 *.jar binary
 *.tgz binary
+*.pdf binary
+*.PDF binary
+*.ai binary
+*.zip binary
