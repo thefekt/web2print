@@ -5,10 +5,12 @@ var misc = require("server/misc");
 
 exports.renderTemplate = function(tmpl,data)
 {
-    console.log(`render.js: render ${tmpl.document.code} with ${JSON.stringify(data)} `);
+    console.info(`render.js: render ${tmpl.document.code} with ${JSON.stringify(data)} `);
 
-    if (!tmpl.document)
-        return { error : "document not existing or corrupted!"};
+    if (!tmpl.document) {
+      return { error : "document not existing or corrupted!"};
+      console.error("document not existing or corrupted!");
+    }
 
     var key =  "rndr-"+tmpl.document.id;
     var result = undefined;
@@ -20,16 +22,17 @@ exports.renderTemplate = function(tmpl,data)
         if (doRefresh)
         {
             com.planvision.visionr.server6.mod.web.ScribusService.forceStop(key);
-            console.warn(">>> UPDATING "+key+" | "+upd+" | "+tmpl.code);
-            __vr.Exec.callVSC("java.util.extractInTempDirectory",key,tmpl.document);
+            console.warn(`render.js: updating -> service key [${key}]\n\t update time [${upd}]\n\t template [${tmpl.code}]\n\t file [${tmpl.document}]`);
+            console.warn(["java.util.extractInTempDirectory",key,tmpl.document].join(", "));
+            __vr.Exec.callVSC("java.util.extractInTempDirectory",key,tmpl.document,{});
+            console.info(`render.js: content extracted in temp.`);
+
             lastUpdateTimes[key]=upd;
         }
         var toReplace = exports.getTemplateJSON(tmpl,data,false);
         result = com.planvision.visionr.server6.mod.web.ScribusService.convert(key,tmpl+"",encodeURIComponent(JSON.stringify(toReplace)));
         if (!result) {
-            // TODO TODO TODO
-            // BUG stelf? first convert error ? command not recognised?
-            log.warn("STELF? TODO ? Scribus generator returned FIRST EMPTY result : "+tmpl.code);
+            console.warn("render.js: Scribus generator returned FIRST EMPTY result : "+tmpl.code);
             result = com.planvision.visionr.server6.mod.web.ScribusService.convert(key,tmpl+"",encodeURIComponent(JSON.stringify(toReplace)));
             if (!result)
                 log.error("!!!! Scribus generator returned EMPTY result : "+tmpl.code);
