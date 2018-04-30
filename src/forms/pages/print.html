@@ -1,339 +1,350 @@
-    <variable #object export></variable>
+<!DOCTYPE html>
 
-    <variable #DEBUG [defaults]="{value: true}"></variable>
+  <!-- DEBUG option provided by external param or defaulting to false  -->
+  <variable #DEBUG export [defaults]="{value: 0}"></variable>
 
-    <variable #sidenavOpen [defaults]="{value: true}"></variable>
-    <variable #sidenavOpen2 [defaults]="{value: true}"></variable>
+  <variable #sidenavOpen [defaults]="{value: true}"></variable>
+  <variable #sidenavOpen2 [defaults]="{value: true}"></variable>
 
-    <execution #convertRBG><![CDATA[
-        var result = {};
-        var cmyk = args[0];
-        var c = cmyk.replace("cmyk(", "").replace(")", "").split(",")[0]/100;
-        var m = cmyk.replace("cmyk(", "").replace(")", "").split(",")[1]/100;
-        var y = cmyk.replace("cmyk(", "").replace(")", "").split(",")[2]/100;
-        var k = cmyk.replace("cmyk(", "").replace(")", "").split(",")[3]/100;
+  <!-- base url provided by external param or defaulting to localhost  -->
+  <variable #baseURL export [defaults]="{value: 'http://localhost' }"></variable>
 
-        result.r = 1 - Math.min( 1, c * ( 1 - k ) + k );
-        result.g = 1 - Math.min( 1, m * ( 1 - k ) + k );
-        result.b = 1 - Math.min( 1, y * ( 1 - k ) + k );
+  <!-- convert CMYK colours to RGB. -->
+  <execution #convertRBG [params]="{DBG:DEBUG.value}"><![CDATA[
+      var result = {};
+      var cmyk = args[0];
+      var c = cmyk.replace("cmyk(", "").replace(")", "").split(",")[0]/100;
+      var m = cmyk.replace("cmyk(", "").replace(")", "").split(",")[1]/100;
+      var y = cmyk.replace("cmyk(", "").replace(")", "").split(",")[2]/100;
+      var k = cmyk.replace("cmyk(", "").replace(")", "").split(",")[3]/100;
 
-        result.r = Math.round( result.r * 255 );
-        result.g = Math.round( result.g * 255 );
-        result.b = Math.round( result.b * 255 );
-        console.log(`#convertRBG: CMYK -> RGB converted: ${JSON.stringify(cmyk)} -> ${JSON.stringify(result)}`);
-        return result;
-    ]]></execution>
+      result.r = 1 - Math.min( 1, c * ( 1 - k ) + k );
+      result.g = 1 - Math.min( 1, m * ( 1 - k ) + k );
+      result.b = 1 - Math.min( 1, y * ( 1 - k ) + k );
 
-    <execution #onch><![CDATA[
-        let [br, img, form] = args;
-        var curtumb = JSON.stringify(((br.files||[])[0]||{})['name']);
-        console.log(`#onch: current thumbnail ${curtumb}.`);
+      result.r = Math.round( result.r * 255 );
+      result.g = Math.round( result.g * 255 );
+      result.b = Math.round( result.b * 255 );
 
-        if (br.files && br.files[0]) {
-            var reader = new FileReader();
-            reader.onloadend = function() {
-              img.src = reader.result;
+      DBG && console.log(
+        `#convertRBG: CMYK -> RGB converted: ${JSON.stringify(cmyk)} -> ${JSON.stringify(result)}`);
 
-              console.log(`#onch: upload new image ${br.files[0].name}.`);
-              var data = new FormData();
-              data.append('file', br.files[0]);
+      return result;
+  ]]></execution>
 
-              fetch('http://localhost:8585/visionr.vsp?ajax=true&operation=upload', {
-                method: 'POST',
-                body: data
-              }).then(success => console.log(`#onch: success ${success}`)
-              ).catch(e => console.error(e));
+  <!-- executed upon change of user configured content. send to template -->
+  <execution #contentChange [params]="{baseURL:baseURL,DBG:DEBUG.value}"><![CDATA[
+      let [br, img, form] = args;
+      var curtumb = JSON.stringify(((br.files||[])[0]||{})['name']);
+      DBG && console.log(`#contentChange: current thumbnail ${curtumb}.`);
 
-            }
-            reader.readAsDataURL(br.files[0]);
-        }
-    ]]></execution>
+      if (br.files && br.files[0]) {
+          var reader = new FileReader();
+          reader.onloadend = function() {
+            img.src = reader.result;
 
+            DBG && console.log(`#contentChange: upload new image ${br.files[0].name}.`);
+            var data = new FormData();
+            data.append('file', br.files[0]);
 
-    <div absolute-fill>
-        <variable #tpl export></variable>
-        <div #ldc hidden class.xs="layout-detect-xs"> </div>
+            fetch(`${baseURL.value}/visionr.vsp?ajax=true&operation=upload`, {
+              method: 'POST',
+              body: data
+            }).then(success => DBG && console.log(`#contentChange: success ${success}`)
+            ).catch(e => console.error(e));
 
-        <include shared ref="category-select">
-        </include>
+          }
+          reader.readAsDataURL(br.files[0]);
+      }
+  ]]></execution>
 
-        <!-- Template part -->
-        <variable #templateObject>
-            <observe>
-                <execution [params]="{tpl:tpl,root:root,templateObject:templateObject}"><![CDATA[
-                    if (!templateObject.value) {
-                        root.db.remote("src/srv/renderer").getTemplateDetails(tpl.value).done(function(res) {
-                            console.log("#templateObject: got template " + res.object);
-                            templateObject.value = res.object;
-                            if (res.NAME && res.NAME.indexOf('error') >= 0) {
-                                debugger;
-                                console.log("#templateObject: error getting result from renderer ");
-                            }
-                          });
-                    }
-                ]]></execution>
-            </observe>
-        </variable>
+  <div absolute-fill>
+      <variable #tpl export></variable>
+      <div #ldc hidden class.xs="layout-detect-xs"> </div>
 
-        <variable #custom
-          path="{{tpl.value}}"
-          [dependency]="tpl"
-          persist></variable>
+      <include shared ref="category-select">
+      </include>
 
-        <div *ngIf="custom.ready" absolute-fill fxLayout="column">
-            <div toolbar-content style="line-height: 30px; overflow: visible" fxLayout="row">
-                <i (click)="sidenavOpen2.value = !sidenavOpen2.value" class="material-icons icon-button" style="font-size: 44px;padding-right: 1px;margin-top: -7px;">menu</i>
-                <img src="{{root.app.url}}/images/logos/customer-logo_200x35.jpg" style="width: 200px; height: 35px; margin-top: -2.5px; cursor: pointer" (click)="root.app.openRoute('/print',$event)" /> <span fxFlex></span>
-                <h2 no-margin style="font-weight: normal; line-height: 30px; color: #c0c0c0"><span *ngIf="templateObject.value">{{templateObject.value.NAME}}</span></h2>
-                <span fxFlex></span>
-            </div>
-
-            <variable #generatedPreview persist
-              path="{{tpl.value}}"
-              [dependency]="tpl"
-              (valueChange)="localPresent.value=true"></variable>
-
-            <query schema="documents.document"
-                    where="id=:ID"
-                    properties="uuid"
-                    [params]="{ID: (generatedPreview.value || {})['id'] || 0}">
-
-                    <!-- find local document in the db if present -->
-
-                    <result #localPresent [dependency]="generatedPreview" (onReady)="postConfig.execute();"></result>
-            </query>
-
-            <execution #postConfig [params]="{
-                tpl:tpl,custom:custom,
-                localPresent:localPresent,
-                generatedPreview:generatedPreview,
-                update:update}">
-                <![CDATA[
-              if (localPresent.objects.length === 0) {
-                return;
-              }
-
-              const msgpost = JSON.stringify({
-                tpl: tpl.value,
-                config: custom.value,
-                preview_uuid: localPresent.objects[0].uuid
-              });
-
-              var target = window.parent;
-              if (target !== null) {
-                console.info('#postConfig: posting data to parent ' + msgpost);
-                target.postMessage(msgpost, 'http://localhost');
-              }
-
-            ]]></execution>
-
-            <div absolute-fill *ngIf="templateObject.value && templateObject.value.preview_document && localPresent.ready">
-                <!-- THE MAIN VIEWER + CUSTOMIZE TOOLBAR -->
-                <variable #timer></variable>
-                <variable #paused></variable>
-                <variable #reupdate></variable>
-
-                <variable #customjson [value]="custom.value|json" (valueChange)="custom.value = root.clone(custom.value)"></variable>
-                <execution #update
-                  [params]="{update:update,
-                    root:root,
-                    paused:paused,
-                    reupdate:reupdate,
-                    custom:custom,
-                    timer:timer,
-                    generatedPreview:generatedPreview,
-                    templateObject:templateObject,
-                    postConfig:postConfig}"
-                  (onReady)="initialExec.value=update"><![CDATA[
-                    if (timer.value) {
-                        clearTimeout(timer.value);
-                        timer.value=undefined;
-                    }
-                    if (!custom.value) {
-                        generatedPreview.value=null;
-                        return;
-                    }
-                    timer.value=root.setTimeout(function() {
-                        if (paused.value) {
-                            reupdate.value=true;
-                            return;
-                        }
-                        paused.value=true;
-                        console.log(JSON.stringify(custom.value));
-
-                        root.db.remote("src/srv/renderer").renderTemplate(templateObject.value,custom.value).done(function(res) {
-                            console.log(`#update: got renderer response`);
-                            if (res === undefined) {
-                              console.error('failed to receive meaningful response from server');
-                              return;
-                            }
-                            paused.value=false;
-                            generatedPreview.value=res;
-                            postConfig.execute();
-
-                            if (reupdate.value) {
-                                reupdate.value=false;
-                                update.execute();
-                            }
+      <!-- Template part -->
+      <variable #templateObject>
+          <observe>
+              <execution [params]="{tpl:tpl,root:root,templateObject:templateObject,DBG:DEBUG.value}"><![CDATA[
+                  if (!templateObject.value) {
+                      root.db.remote("src/srv/renderer").getTemplateDetails(tpl.value).done(function(res) {
+                          DBG && console.log("#templateObject: got template " + res.object);
+                          templateObject.value = res.object;
+                          if (res.NAME && res.NAME.indexOf('error') >= 0) {
+                              DBG && console.log("#templateObject: error getting result from renderer ");
+                          }
                         });
-                    },generatedPreview.value === undefined ? 0 : 500);
-                ]]></execution>
+                  }
+              ]]></execution>
+          </observe>
+      </variable>
 
-                <execution #initLocal [params]="{update:update,localPresent:localPresent,postConfig:postConfig}"><![CDATA[
-                    postConfig.execute();
-                    if (localPresent.objects.length === 0)
-                      update.execute();
-                ]]></execution>
+      <variable #custom
+        path="{{tpl.value}}"
+        [dependency]="tpl"
+        persist></variable>
 
-                <variable #initialExec
-                  [value]="localPresent.objects.length"
-                  (onReady)="initLocal.execute()"
-                  [dependency]="localPresent">
-                    <!-- reactively trigger initial execution of generated preview -->
-                </variable>
+      <div *ngIf="custom.ready" absolute-fill fxLayout="column">
+          <div toolbar-content style="line-height: 30px; overflow: visible" fxLayout="row">
+              <i (click)="sidenavOpen2.value = !sidenavOpen2.value" class="material-icons icon-button" style="font-size: 44px;padding-right: 1px;margin-top: -7px;">menu</i>
+              <img src="{{root.app.url}}/images/logos/customer-logo_200x35.jpg" style="width: 200px; height: 35px; margin-top: -2.5px; cursor: pointer" (click)="root.app.openRoute('/print',$event)" /> <span fxFlex></span>
+              <h2 no-margin style="font-weight: normal; line-height: 30px; color: #c0c0c0"><span *ngIf="templateObject.value">{{templateObject.value.NAME}}</span></h2>
+              <span fxFlex></span>
+          </div>
 
-                <execution #resetContent [params]="{root:root,custom:custom,timer:timer,generatedPreview:generatedPreview,templateObject:templateObject}"><![CDATA[
-                    custom.value=null;
-                    generatedPreview.value=null;
-                ]]></execution>
+          <variable #generatedPreview persist
+            path="{{tpl.value}}"
+            [dependency]="tpl"
+            (valueChange)="localPresent.value=true"></variable>
 
-                <mat-sidenav-container absolute-fill>
-                  <mat-sidenav [style.width]="ldc.classList.contains('layout-detect-xs') ? '100%' : '240px'" [opened]="sidenavOpen2.value" mode="side" #sidenav style="padding:8px;border-left:1px solid #eee">
-                      <div *ngIf="templateObject.value && templateObject.value.contents">
-                          <div *ngFor="let comp of templateObject.value.contents;let i = index" fxLayout="row">
-                              <variable #val [defaults]="{value : (custom.value||{})[comp.code] || templateObject.value.defaultData[i] }">
-                                  <observe [event]="val.onChange">
-                                      <execution [params]="{update:update,val:val,custom:custom,root:root,def:templateObject.value.defaultData[i],code:comp.code}">
-                                        <![CDATA[
-                                          custom.value=custom.value||{};
-                                          custom.value[code]=val.value;
-                                          update.execute();
-                                        ]]>
-                                      </execution>
-                                  </observe>
-                              </variable>
-                              <mat-form-field fxFlex *ngIf="comp.type == 'varchar' || comp.type == 'qrcode'">
-                                  <input matInput
-                                    placeholder="{{comp.NAME}}"
-                                    [(ngModel)]="val.value"
-                                    (focus)="dynamicViewer && dynamicViewer.gotoPage(comp.dest_page-1)"
-                                    >
-                              </mat-form-field>
-                              <mat-form-field fxFlex *ngIf="comp.type == 'text'">
-                                  <textarea matInput placeholder="{{comp.NAME}}"
-                                    [(ngModel)]="val.value"
-                                    rows="4"
-                                    (focus)="dynamicViewer && dynamicViewer.gotoPage(comp.dest_page-1)"
-                                    ></textarea>
-                              </mat-form-field>
-                              <div fxFlex *ngIf="comp.type == 'image'">
-                                  <label style="color: #757575;font-size: 80%">{{comp.NAME}}</label>
+          <query schema="documents.document"
+                  where="id=:ID"
+                  properties="uuid"
+                  [params]="{ID: (generatedPreview.value || {})['id'] || 0}">
 
-                                  <query
-                                    [schema]="comp.placeholder ? comp.placeholder.SCHEMA : 'documents.document'"
-                                    [where]="comp.placeholder ? 'id=' + comp.placeholder.id : 'code=\'no_image_PNG\''"
-                                    properties="OICON@280x300,width_mm,height_mm">
-                                      <result #rz>
-                                          <div *ngIf="rz && rz.objects[0]">
-                                              <img #img id="blah" [src]="rz.objects[0].ICON" style="width: 80px;height: 80px"/>
-                                              <button (click)="br.click()" style="top: -32px" mat-button>Browse</button>
-                                              <form #imgform encoding="multipart/form-data"
-                                                action="http://localhost:8585/visionr.vsp?ajax=true&amp;operation=upload"
-                                                method="post">
-                                                <input hidden #br (change)="onch.execute(br, img, imgform)" type="file" accept="image/*">
-                                              </form>
-                                          </div>
-                                      </result>
-                                  </query>
+                  <!-- find local document in the db if present -->
 
-                              </div>
-                              <div fxFlex *ngIf="comp.type == 'color'">
-                                  <!--{{comp | json}}-->
-                                  <variable #rgbcolor></variable>
-                                  <variable #rgbcolorSec></variable>
-                                  <variable #col [defaults]="{value: comp.code}">
-                                      <observe>
-                                          <execution [params]="{convertRBG:convertRBG,col:col,root:root,comp:comp,rgbcolor:rgbcolor,rgbcolorSec:rgbcolorSec}">
-                                            <![CDATA[
-                                              var result = {};
-                                              result = convertRBG.execute(comp.placeholder);
-                                              rgbcolor.value = result;
+                  <result #localPresent [dependency]="generatedPreview" (onReady)="postConfig.execute();"></result>
+          </query>
 
-                                              var result2 = [];
-                                              for (var i = 0; i < comp.colors.length; i++) {
-                                                  result = {};
-                                                  result = convertRBG.execute(comp.colors[i]);
-                                                  result2.push(result);
-                                              }
-                                              rgbcolorSec.value = result2;
-                                            ]]>
-                                          </execution>
-                                      </observe>
-                                  </variable>
+          <execution #postConfig [params]="{
+              DBG:DEBUG.value,
+              tpl:tpl,custom:custom,
+              localPresent:localPresent,
+              generatedPreview:generatedPreview,
+              update:update,
+              baseURL:baseURL}">
+              <![CDATA[
+              DBG && console.log('#postConfig: check conditions');
+            if (localPresent.objects.length === 0) {
+              return;
+            }
 
-                                  <label style="color: #757575;font-size: 80%">Colors</label>
-                                  <div style="margin-top: 4px" fxLayout="row">
-                                      <variable #colorSelection2 [defaults]="{value: 0}"></variable>
-                                      <div (click)="chval.execute(0)" [style.border]="colorSelection2.value ? '0' : '2px solid black'" [style.background-color]="'rgb(' + rgbcolor.value.r + ',' + rgbcolor.value.g + ',' + rgbcolor.value.b +')'" style="margin-right: 4px;width: 32px;height: 32px;border-radius: 100%"></div>
-                                      <ng-template let-sc let-i="index" ngFor [ngForOf]="rgbcolorSec.value" style="display: inline-block">
-                                          <div (click)="chval.execute(i+1)" [style.border]="(colorSelection2.value == i+1) ? '2px solid black' : '0'" [style.background-color]="'rgb(' + sc.r + ',' + sc.g + ',' + sc.b +')'" style="margin-right: 4px;width: 32px;height: 32px;border-radius: 100%"></div>
-                                      </ng-template>
-                                      <execution #chval [params]="{val:val,comp:comp,colorSelection2:colorSelection2}"><![CDATA[
-                                          colorSelection2.value = args[0];
-                                          if (!args[0]) {
-                                              val.value = comp.placeholder;
-                                          } else {
-                                              val.value = comp.colors[args[0]-1];
-                                          }
-                                          console.log(`#chval + ${val.value}`);
-                                      ]]></execution>
-                                  </div>
-                              </div>
-                          </div>
+            const msgpost = JSON.stringify({
+              tpl: tpl.value,
+              config: custom.value,
+              preview_uuid: localPresent.objects[0].uuid
+            });
 
-                      </div>
-                      <br/>
-                      <div style="margin-bottom:2em">
-                            <button color="accent" style="float:left;color:rgb(236, 138, 36);background-color:rgba(255,255,255,0.85);border:2px solid rgb(236, 138, 36);font-weight:bold" type="button" mat-button (click)="resetContent.execute();sidenav.close();sidenavOpen2.value = false">
-                            RESET
-                            </button>
-                      </div>
-                  </mat-sidenav>
+            var target = window.parent;
+            if (target !== null) {
+              DBG && console.log('#postConfig: posting data to parent ' + msgpost);
+              target.postMessage(msgpost, baseURL.value);
+            }
 
-                    <div absolute-fill fxLayout="column">
-                      <div *ngIf="DEBUG.value">
-                        generated: {{generatedPreview.value|json}} <br/>
-                        custom: {{custom.value|json}} <br/>
-                        template: {{templateObject.value.preview_document|json}} <br/>
-                        localPresent: {{localPresent.objects.length}} <br/>
-                        [query params: {{ (generatedPreview.value || {})['id'] || 0}} ] <br/>
-                        viewer object: {{(
-                            (localPresent.objects.length ? generatedPreview.value : undefined) || templateObject.value.preview_document
-                          )|json
-                        }}
-                      </div>
-                        <div fxFlex relative>
-                              <viewer #dynamicViewer
-                                [dependency]="templateObject"
-                                [initialPaddingPercents]="10"
-                                preserveBounds
-                                [object]="(localPresent.objects.length ? generatedPreview.value : undefined) || templateObject.value.preview_document"
-                                absolute-fill
-                                style="border-top: solid #eeeeee"></viewer>
+          ]]></execution>
 
-                                <div [style.display]="!sidenav.opened ? undefined : 'none'" style="position:absolute;right:6px;top:6px" fxLayout="row">
+          <div absolute-fill *ngIf="templateObject.value && templateObject.value.preview_document && localPresent.ready">
+              <!-- THE MAIN VIEWER + CUSTOMIZE TOOLBAR -->
+              <variable #timer></variable>
+              <variable #paused></variable>
+              <variable #reupdate></variable>
 
-                                  <button mat-button
-                                    style="color:rgb(236, 138, 36);background-color:rgba(255,255,255,0.85);border:1px solid #eee;font-weight:bold;"
-                                    type="button"
-                                    color="accent"
-                                    (click)="sidenav.open();;sidenavOpen2.value = true">
-                                      CUSTOMIZE
-                                  </button>
-                              </div>
+              <variable #customjson [value]="custom.value|json" (valueChange)="custom.value = root.clone(custom.value)"></variable>
+              <execution #update
+                [params]="{DBG:DEBUG.value,
+                  update:update,
+                  root:root,
+                  paused:paused,
+                  reupdate:reupdate,
+                  custom:custom,
+                  timer:timer,
+                  generatedPreview:generatedPreview,
+                  templateObject:templateObject,
+                  postConfig:postConfig}"
+                (onReady)="initialExec.value=update"><![CDATA[
+                  if (timer.value) {
+                      clearTimeout(timer.value);
+                      timer.value=undefined;
+                  }
+                  if (!custom.value) {
+                      generatedPreview.value=null;
+                      return;
+
+                  }
+                  timer.value=root.setTimeout(function() {
+                      if (paused.value) {
+                          reupdate.value=true;
+                          return;
+                      }
+                      paused.value=true;
+                      DBG && console.log(JSON.stringify(custom.value));
+
+                      root.db.remote("src/srv/renderer").renderTemplate(templateObject.value,custom.value).done(function(res) {
+                          DBG && console.log(`#update: got renderer response`);
+                          if (res === undefined) {
+                            console.error('#update: failed to receive reasonable response from server');
+                            return;
+                          }
+                          paused.value=false;
+                          generatedPreview.value=res;
+                          postConfig.execute();
+
+                          if (reupdate.value) {
+                              reupdate.value=false;
+                              update.execute();
+                          }
+                      });
+                  },generatedPreview.value === undefined ? 0 : 500);
+              ]]></execution>
+
+              <execution #initLocal [params]="{update:update,localPresent:localPresent,postConfig:postConfig}"><![CDATA[
+                  postConfig.execute();
+                  if (localPresent.objects.length === 0)
+                    update.execute();
+              ]]></execution>
+
+              <variable #initialExec
+                [value]="localPresent.objects.length"
+                (onReady)="initLocal.execute()"
+                [dependency]="localPresent">
+                  <!-- reactively trigger initial execution of generated preview -->
+              </variable>
+
+              <execution #resetContent [params]="{root:root,custom:custom,timer:timer,generatedPreview:generatedPreview,templateObject:templateObject}"><![CDATA[
+                  custom.value=null;
+                  generatedPreview.value=null;
+              ]]></execution>
+
+              <mat-sidenav-container absolute-fill>
+                <mat-sidenav [style.width]="ldc.classList.contains('layout-detect-xs') ? '100%' : '240px'" [opened]="sidenavOpen2.value" mode="side" #sidenav style="padding:8px;border-left:1px solid #eee">
+                    <div *ngIf="templateObject.value && templateObject.value.contents">
+                        <div *ngFor="let comp of templateObject.value.contents; let i = index" fxLayout="row">
+                            <variable #val [defaults]="{value : (custom.value||{})[comp.code] || templateObject.value.defaultData[i] }">
+                                <observe [event]="val.onChange">
+                                    <execution [params]="{update:update,val:val,custom:custom,root:root,def:templateObject.value.defaultData[i],code:comp.code}">
+                                      <![CDATA[
+                                        custom.value=custom.value||{};
+                                        custom.value[code]=val.value;
+                                        update.execute();
+                                      ]]>
+                                    </execution>
+                                </observe>
+                            </variable>
+                            <mat-form-field fxFlex *ngIf="comp.type == 'varchar' || comp.type == 'qrcode'">
+                                <input matInput
+                                  placeholder="{{comp.NAME}}"
+                                  [(ngModel)]="val.value"
+                                  (focus)="dynamicViewer && dynamicViewer.gotoPage(comp.dest_page-1)"
+                                  >
+                            </mat-form-field>
+                            <mat-form-field fxFlex *ngIf="comp.type == 'text'">
+                                <textarea matInput placeholder="{{comp.NAME}}"
+                                  [(ngModel)]="val.value"
+                                  rows="4"
+                                  (focus)="dynamicViewer && dynamicViewer.gotoPage(comp.dest_page-1)"
+                                  ></textarea>
+                            </mat-form-field>
+                            <div fxFlex *ngIf="comp.type == 'image'">
+                                <label style="color: #757575;font-size: 80%">{{comp.NAME}}</label>
+
+                                <query
+                                  [schema]="comp.placeholder ? comp.placeholder.SCHEMA : 'documents.document'"
+                                  [where]="comp.placeholder ? 'id=' + comp.placeholder.id : 'code=\'no_image_PNG\''"
+                                  properties="OICON@280x300,width_mm,height_mm">
+                                    <result #rz>
+                                        <div *ngIf="rz && rz.objects[0]">
+                                            <img #img id="blah" [src]="rz.objects[0].ICON" style="width: 80px;height: 80px"/>
+                                            <button (click)="br.click()" style="top: -32px" mat-button>Browse</button>
+                                            <form #imgform encoding="multipart/form-data"
+                                              [action]="baseURL.value + '/visionr.vsp?ajax=true&amp;operation=upload'"
+                                              method="post">
+                                              <input hidden #br (change)="contentChange.execute(br, img, imgform)" type="file" accept="image/*">
+                                            </form>
+                                        </div>
+                                    </result>
+                                </query>
+
+                            </div>
+                            <div fxFlex *ngIf="comp.type == 'color'">
+                                <variable #rgbcolor></variable>
+                                <variable #rgbcolorSec></variable>
+                                <variable #col [defaults]="{value: comp.code}">
+                                    <observe>
+                                        <execution [params]="{convertRBG:convertRBG,col:col,root:root,comp:comp,rgbcolor:rgbcolor,rgbcolorSec:rgbcolorSec}">
+                                          <![CDATA[
+                                            var result = {};
+                                            result = convertRBG.execute(comp.placeholder);
+                                            rgbcolor.value = result;
+
+                                            var result2 = [];
+                                            for (var i = 0; i < comp.colors.length; i++) {
+                                                result = {};
+                                                result = convertRBG.execute(comp.colors[i]);
+                                                result2.push(result);
+                                            }
+                                            rgbcolorSec.value = result2;
+                                          ]]>
+                                        </execution>
+                                    </observe>
+                                </variable>
+
+                                <label style="color: #757575;font-size: 80%">Colors</label>
+                                <div style="margin-top: 4px" fxLayout="row">
+                                    <variable #colorSelection2 [defaults]="{value: 0}"></variable>
+                                    <div (click)="chval.execute(0)" [style.border]="colorSelection2.value ? '0' : '2px solid black'" [style.background-color]="'rgb(' + rgbcolor.value.r + ',' + rgbcolor.value.g + ',' + rgbcolor.value.b +')'" style="margin-right: 4px;width: 32px;height: 32px;border-radius: 100%"></div>
+                                    <ng-template let-sc let-i="index" ngFor [ngForOf]="rgbcolorSec.value" style="display: inline-block">
+                                        <div (click)="chval.execute(i+1)" [style.border]="(colorSelection2.value == i+1) ? '2px solid black' : '0'" [style.background-color]="'rgb(' + sc.r + ',' + sc.g + ',' + sc.b +')'" style="margin-right: 4px;width: 32px;height: 32px;border-radius: 100%"></div>
+                                    </ng-template>
+                                    <execution #chval [params]="{DBG:DEBUG.value,val:val,comp:comp,colorSelection2:colorSelection2}"><![CDATA[
+                                        colorSelection2.value = args[0];
+                                        if (!args[0]) {
+                                            val.value = comp.placeholder;
+                                        } else {
+                                            val.value = comp.colors[args[0]-1];
+                                        }
+                                        DBG && console.log(`#chval + ${val.value}`);
+                                    ]]></execution>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </mat-sidenav-container>
-            </div>
-        </div>
-    </div>
+                    <br/>
+                    <div style="margin-bottom:2em">
+                          <button color="accent" style="float:left;color:rgb(236, 138, 36);background-color:rgba(255,255,255,0.85);border:2px solid rgb(236, 138, 36);font-weight:bold" type="button" mat-button (click)="resetContent.execute();sidenav.close();sidenavOpen2.value = false">
+                          RESET
+                          </button>
+                    </div>
+                </mat-sidenav>
+
+                  <div absolute-fill fxLayout="column">
+                    <div *ngIf="DEBUG.value > 0">
+                      <li>DEBUG: {{DEBUG.value}}</li>
+                      <li>generated: {{generatedPreview.value|json}} </li>
+                      <li>custom: {{custom.value|json}} </li>
+                      <li>template: {{templateObject.value.preview_document|json}} </li>
+                      <li>localPresent: {{localPresent.objects.length}} </li>
+                      <li>[query params: {{ (generatedPreview.value || {})['id'] || 0}} ] </li>
+                      <li>viewer object: {{(
+                          (localPresent.objects.length ? generatedPreview.value : undefined) || templateObject.value.preview_document
+                        )|json
+                      }}</li>
+                    </div>
+                      <div fxFlex relative>
+                            <viewer #dynamicViewer
+                              [dependency]="templateObject"
+                              [initialPaddingPercents]="10"
+                              preserveBounds
+                              [object]="(localPresent.objects.length ? generatedPreview.value : undefined) || templateObject.value.preview_document"
+                              absolute-fill
+                              style="border-top: solid #eeeeee"></viewer>
+
+                              <div [style.display]="!sidenav.opened ? undefined : 'none'" style="position:absolute;right:6px;top:6px" fxLayout="row">
+
+                                <button mat-button
+                                  style="color:rgb(236, 138, 36);background-color:rgba(255,255,255,0.85);border:1px solid #eee;font-weight:bold;"
+                                  type="button"
+                                  color="accent"
+                                  (click)="sidenav.open();;sidenavOpen2.value = true">
+                                    CUSTOMIZE
+                                </button>
+                            </div>
+                      </div>
+                  </div>
+              </mat-sidenav-container>
+          </div>
+      </div>
+  </div>

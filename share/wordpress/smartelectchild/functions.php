@@ -1,6 +1,8 @@
 <?php
 
 // from https://www.elegantthemes.com/blog/tips-tricks/using-the-wordpress-debug-log
+global $PET_DEBUG;
+$PET_DEBUG =  get_option("visionr_DEBUG") > 0 ? true : false;
 
 if ( ! function_exists('write_log')) {
    function write_log ( $log )  {
@@ -14,10 +16,7 @@ if ( ! function_exists('write_log')) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-
 // docker cp share/wordpress/storechild/functions.php friendly_khorana:/data/www/wp-content/themes/smartelectchild/
-
-define(PET_DEBUG, false);
 
 function pechatar_theme_enqueue_styles() {
         // as per https://codex.wordpress.org/Child_Themes
@@ -42,13 +41,19 @@ add_action( 'wp_enqueue_scripts', 'pechatar_theme_enqueue_styles' );
 add_action('woocommerce_before_single_product_summary', 'pechatar_open_div', 5);
 
 function pechatar_open_div() {
-    echo '<h3> Design </h3>';
+    global $PET_DEBUG;
     global $product;
+
+    echo '<h3> Дизайн и съдържание </h3>';
     $pid = $product->get_id();
+    $baseURL = home_url();
 
-    $visionr_location = get_option("visionr_location").'/#/print?tpl='.$pid;
+    $visionr_location = get_option("visionr_location")."/#/print?".join([
+      "tpl=$pid",
+      "DEBUG=".(int)$PET_DEBUG,
+      "baseURL=".$baseURL], '&');
 
-    if (PET_DEBUG) echo 'DEBUG PID: '.$pid;
+    if ($PET_DEBUG) echo "<B> PID: $pid </b>";
     echo '<div class="visionr-container"><iframe src="'.$visionr_location.'"> </iframe></h3>';
 }
 
@@ -70,10 +75,13 @@ function pechatarnik_specific_config() {
     }
 
     $visionr_location = get_option("visionr_location");
+    $visionr_DEBUG = get_option("visionr_DEBUG");
 
     if (isset($_POST["update_settings"])) {
         $visionr_location = esc_attr($_POST["visionr_location"]);
         update_option("visionr_location", $visionr_location);
+        $visionr_DEBUG = esc_attr($_POST["visionr_DEBUG"]);
+        update_option("visionr_DEBUG", $visionr_DEBUG == 'true' ? true : false);
 
         ?>
             <div id="message" class="updated">Settings saved</div>
@@ -84,12 +92,25 @@ function pechatarnik_specific_config() {
     <form method="POST" action="">
         <h2> Pechatarnik customization </h2>
         <input type="hidden" name="update_settings" value="Y" />
-        <label for="num_elements">
-            URL of underlying VISIONR :
-        </label>
+        <ul>
+          <li>
+            <label for="visionr_location">
+                URL of underlying VISIONR :
+            </label>
+          </li>
+          <li>
+            <input type="text" name="visionr_location" value="<?php echo $visionr_location?>" />
+          </li>
 
-        <input type="text" name="visionr_location" value="<?php echo $visionr_location?>" />
-
+          <li>
+            <label for="visionr_DEBUG">
+              debug mode enabled?  <?php echo $visionr_DEBUG ? "[ $visionr_DEBUG ]": ''  ?>
+            </label>
+          </li>
+          <li>
+            <input type="checkbox" name="visionr_DEBUG" value="true" <?php echo ($visionr_DEBUG ? 'CHECKED' : '') ?> />
+          </li>
+        </ul>
         <p>
             <input type="submit" value="Save settings" class="button-primary"/>
         </p>
@@ -104,17 +125,20 @@ function pechatarnik_specific_config() {
 /*  display metadata where appropriate */
 function pechatar_output_local_storage() {
     global $product;
+    global $PET_DEBUG;
 
-    $ishide = PET_DEBUG ? 'text' : 'hidden';
+    $baseURL = home_url();
+
+    $ishide = $PET_DEBUG ? 'text' : 'hidden';
     $lvarser = '{}';
 
     ?>
     <script>
       window.addEventListener("message", receiveMessage, false);
 
-
       function receiveMessage(event) {
-        if (!((event.origin === "http://localhost") || (event.origin === "http://localhost:4300")) )
+        console.info('template configured');
+        if (event.origin.indexOf('<?php echo $baseURL ?>') < 0)
           return;
 
        var butel = document.getElementsByClassName('single_add_to_cart_button')[0];
@@ -214,15 +238,33 @@ add_filter( 'woocommerce_get_item_data', 'display_meta', 10, 2 );
 
 function product_cart_image( $_product_img, $cart_item, $cart_item_key ) {
   write_log('PECHATAR: output ['.$cart_item_key.'] thumbnail link');
-
-	$vimgdata = json_decode($cart_item['pechatar-meta'], true);
+  $vimgdata = json_decode($cart_item['pechatar-meta'], true);
   $uuid = $vimgdata["preview_uuid"];
-  $thumb      =   '<img src="http://localhost:8585/tmp/documents/'.$uuid.'.uuid.png?operation=resizeImage.png&width=640&height=480" />';
+  $thumb = 'no thumb';
+
+  if ($uuid) {
+    $baseURL = home_url();
+    $thumb      =   '<img src="'.$baseURL.'/tmp/documents/'.$uuid.'.uuid.png?operation=resizeImage.png&width=640&height=480" />';
+  }
+
   return $thumb;
 }
 
 add_filter( 'woocommerce_cart_item_thumbnail', 'product_cart_image', 10, 3 );
 
+////////////////////////////////////////////////////////////////////////////////
+
+function pechatar_admin_order_thumbnails($item_id, $item, $product ) {
+  $vimgdata = json_decode($item['pechatar-meta'], true);
+  $uuid = $vimgdata["preview_uuid"];
+  if ($uuid) {
+    $thumb  = '<img src="'.$baseURL.'/tmp/documents/'.$uuid.'.uuid.png?operation=resizeImage.png&width=320&height=200" />';
+    $down   = "<div class='pechatar-download'><a style='font-size:16pt; color: #e22' href='/documents/{$uuid}.uuid.pdf'> download here </a></h3>";
+    echo $down."<br/>".$thumb;
+  }
+}
+
+add_action( 'woocommerce_after_order_itemmeta', 'pechatar_admin_order_thumbnails', 10, 3);
 
 ////////////////////////////////////////////////////////////////////////////////
 
