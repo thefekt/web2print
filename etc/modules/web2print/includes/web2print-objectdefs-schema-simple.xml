@@ -160,7 +160,7 @@
                 <sort_id>2001</sort_id>
                 <category>main.basic</category>
                 <data_source>relation</data_source>
-                <related_objectdef>documents.document</related_objectdef>
+                <related_objectdef>documents.file_upload</related_objectdef>
                 <is_inmaintbl>true</is_inmaintbl>
                 <is_obligatory>true</is_obligatory>
                 <name>
@@ -315,17 +315,17 @@
                 <sort_id>2001</sort_id>
                 <category>main.basic</category>
                 <data_source>relation</data_source>
-                <related_objectdef>documents.document</related_objectdef>
+                <related_objectdef>documents.file_upload</related_objectdef>
                 <is_inmaintbl>true</is_inmaintbl>
                 <is_obligatory>true</is_obligatory>
                 <name>
-                    <en-US>Template (Document)</en-US>
+                    <en-US>Template (ZIP)</en-US>
                 </name>
                 <name>
-                    <de-DE>Vorlage (Dokument)</de-DE>
+                    <de-DE>Vorlage (ZIP)</de-DE>
                 </name>
                 <name>
-                    <bg-BG>Шаблон (Документ)</bg-BG>
+                    <bg-BG>Шаблон (ZIP)</bg-BG>
                 </name>
                 <on_update_value>
                     <!-- JAVASCRIPT -->
@@ -390,7 +390,7 @@ require("src/srv/renderer").checkPreview(this);
                 <sort_id>2301</sort_id>
                 <category>main.basic</category>
                 <data_source>relation</data_source>
-                <related_objectdef>documents.document</related_objectdef>
+                <related_objectdef>documents.file_upload</related_objectdef>
                 <is_inmaintbl>true</is_inmaintbl>
                 <is_readonly>true</is_readonly>
                 <is_hidden>false</is_hidden>

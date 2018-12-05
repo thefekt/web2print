@@ -2,6 +2,7 @@
 
 var lastUpdateTimes = {};
 var misc = require("server/misc");
+var service = VSERVER.mod.web.ScribusService;
 
 exports.renderTemplate = function(tmpl,data)
 {
@@ -14,26 +15,26 @@ exports.renderTemplate = function(tmpl,data)
 
     var key =  "rndr-"+tmpl.document.id;
     var result = undefined;
-    __vr.Exec.callVSC("java.util.executeJSWithTempDirLock",key,function()
+    JSCORE.Exec.callVSC("java.util.executeJSWithTempDirLock",key,function()
     {
         // NEEDS REFRESH?
         var upd = tmpl.update_time ? tmpl.update_time.getTime() : 0;
         var doRefresh=lastUpdateTimes[key] != upd;
         if (doRefresh)
         {
-            com.planvision.visionr.server6.mod.web.ScribusService.forceStop(key);
+            service.forceStop(key);
             console.warn(`render.js: updating -> service key [${key}]\n\t update time [${upd}]\n\t template [${tmpl.code}]\n\t file [${tmpl.document}]`);
             console.warn(["java.util.extractInTempDirectory",key,tmpl.document].join(", "));
-            __vr.Exec.callVSC("java.util.extractInTempDirectory",key,tmpl.document,{});
+            JSCORE.Exec.callVSC("java.util.extractInTempDirectory",key,tmpl.document,{});
             console.info(`render.js: content extracted in temp.`);
 
             lastUpdateTimes[key]=upd;
         }
         var toReplace = exports.getTemplateJSON(tmpl,data,false);
-        result = com.planvision.visionr.server6.mod.web.ScribusService.convert(key,tmpl+"",encodeURIComponent(JSON.stringify(toReplace)));
+        result = service.convert(key,tmpl+"",encodeURIComponent(JSON.stringify(toReplace)));
         if (!result) {
             console.warn("render.js: Scribus generator returned FIRST EMPTY result : "+tmpl.code);
-            result = com.planvision.visionr.server6.mod.web.ScribusService.convert(key,tmpl+"",encodeURIComponent(JSON.stringify(toReplace)));
+            result = service.convert(key,tmpl+"",encodeURIComponent(JSON.stringify(toReplace)));
             if (!result)
                 log.error("!!!! Scribus generator returned EMPTY result : "+tmpl.code);
         }
@@ -79,7 +80,7 @@ exports.getTemplateJSON = function(tmpl,data,doNotRender) {
             var d = data[e.code]!== undefined ? data[e.code] : e.initial_value;
             if (d instanceof db.documents.file) {
                 if (!doNotRender) {
-                    __vr.Exec.callVSC("java.util.copyInTempDirectory","rndr-"+tmpl.document.id, d, e.code);
+                    JSCORE.Exec.callVSC("java.util.copyInTempDirectory","rndr-"+tmpl.document.id, d, e.code);
                 } else {
                     // JUST A KEY
                     toReplace[e.code]=d.update_time||d.insert_time||0;
@@ -93,7 +94,7 @@ exports.getTemplateJSON = function(tmpl,data,doNotRender) {
             if (d)
             {
                 if (!doNotRender) {
-                    __vr.Exec.callVSC("java.util.generateQRInTempDirectory","rndr-"+tmpl.document.id,d,e.code);
+                    JSCORE.Exec.callVSC("java.util.generateQRInTempDirectory","rndr-"+tmpl.document.id,d,e.code);
                 } else {
                     // JUST A KEY
                     toReplace[e.code]=d;
@@ -138,7 +139,7 @@ exports.checkPreview = function(tmpl) {
     //-------------------------------------------
     tmpl.preview_document.parent=parent;
     try {
-        var dim =__vr.Exec.callVSC("java.util.getPDFDimensions",tmpl.preview_document.uuid,0);
+        var dim =JSCORE.Exec.callVSC("java.util.getPDFDimensions",tmpl.preview_document.uuid,0);
         var width = dim[0]*297/847;
         var height = dim[1]*297/847;
         tmpl.width_mm=width;

@@ -16,9 +16,7 @@
             "http" : 8585
         }
     },
-    "modules": [
-        "mobile"
-    ],
+    "modules": [],
     "project": {
         "files": [
             ".gitignore",
@@ -31,7 +29,7 @@
     },
     "additional" :
     {
-        "web.scribus.path" : "/usr/bin/scribus-ng",
+        "web.scribus.path" : "d:/scribus/scribus.exe",
         "core.vscript.src.debug" : true
     }
 }

@@ -1,0 +1,18 @@
+<variable #selectionPaths persist></variable>
+<variable #state persist></variable>
+<variable #openPaths persist></variable>
+<variable #sidenavOpen persist></variable>
+<variable #type persist></variable>
+<variable #hierarchy persist></variable>
+
+<variable #name value="Administration"></variable>
+<include shared ref="/widgets/forms/dashboard/common"></include>
+<ng-template #main>
+	<objectsview embed menu
+		[dependency]="[openPaths,selectionPaths,hierarchy,state]"
+		[(sidenavOpen)]="sidenavOpen.value" [(hierarchy)]="hierarchy.value"
+		[(state)]="state.value" [(openPaths)]="openPaths.value"
+		[(selectionPaths)]="selectionPaths.value"
+		[(type)]="type.value"
+		schema="web2print.print_template" #view></objectsview>
+</ng-template >

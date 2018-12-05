@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-
+<delay-dialog #delay>
   <!-- DEBUG option provided by external param or defaulting to false  -->
   <variable #DEBUG export [defaults]="{value: 0}"></variable>
 
-  <variable #sidenavOpen [defaults]="{value: true}"></variable>
-  <variable #sidenavOpen2 [defaults]="{value: true}"></variable>
+  <variable #embed export></variable>
+  <variable #sidenavOpen2 [dependency]="embed" [defaults]="{value: !!embed.value}"></variable>
 
   <!-- base url provided by external param or defaulting to localhost  -->
   <variable #baseURL export [defaults]="{value: 'http://localhost' }"></variable>
+
 
   <!-- convert CMYK colours to RGB. -->
   <execution #convertRBG [params]="{DBG:DEBUG.value}"><![CDATA[
@@ -58,12 +59,13 @@
       }
   ]]></execution>
 
-  <div absolute-fill>
+  <div absolute-fill style="background-color:white">
       <variable #tpl export></variable>
       <div #ldc hidden class.xs="layout-detect-xs"> </div>
 
       <include shared ref="category-select">
       </include>
+
 
       <!-- Template part -->
       <variable #templateObject>
@@ -116,9 +118,11 @@
               localPresent:localPresent,
               generatedPreview:generatedPreview,
               update:update,
-              baseURL:baseURL}">
+              baseURL:baseURL,
+              delay:delay}">
               <![CDATA[
               DBG && console.log('#postConfig: check conditions');
+              delay.done();
             if (localPresent.objects.length === 0) {
               return;
             }
@@ -211,7 +215,7 @@
 
               <mat-sidenav-container absolute-fill>
                 <mat-sidenav [style.width]="ldc.classList.contains('layout-detect-xs') ? '100%' : '240px'" [opened]="sidenavOpen2.value" mode="side" #sidenav style="padding:8px;border-left:1px solid #eee">
-                    <div *ngIf="templateObject.value && templateObject.value.contents">
+                    <div *ngIf="templateObject.value && templateObject.value.contents && templateObject.value.contents.length">
                         <div *ngFor="let comp of templateObject.value.contents; let i = index" fxLayout="row">
                             <variable #val [defaults]="{value : (custom.value||{})[comp.code] || templateObject.value.defaultData[i] }">
                                 <observe [event]="val.onChange">
@@ -301,16 +305,16 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <br/>
-                    <div style="margin-bottom:2em">
-                          <button color="accent" style="float:left;color:rgb(236, 138, 36);background-color:rgba(255,255,255,0.85);border:2px solid rgb(236, 138, 36);font-weight:bold" type="button" mat-button (click)="resetContent.execute();sidenav.close();sidenavOpen2.value = false">
-                          RESET
-                          </button>
+                        <br/>
+                        <div style="margin-bottom:2em">
+                              <button color="accent" style="float:left;color:rgb(236, 138, 36);background-color:rgba(255,255,255,0.85);border:2px solid rgb(236, 138, 36);font-weight:bold" type="button" mat-button (click)="resetContent.execute();sidenav.close();sidenavOpen2.value = false">
+                              <i18n code="BUTTON_WEB_LOGIN_RESET"></i18n>
+                              </button>
+                        </div>
                     </div>
                 </mat-sidenav>
 
-                  <div absolute-fill fxLayout="column">
+                <div absolute-fill fxLayout="column">
                     <div *ngIf="DEBUG.value > 0">
                       <li>DEBUG: {{DEBUG.value}}</li>
                       <li>generated: {{generatedPreview.value|json}} </li>
@@ -330,21 +334,28 @@
                               preserveBounds
                               [object]="(localPresent.objects.length ? generatedPreview.value : undefined) || templateObject.value.preview_document"
                               absolute-fill
-                              style="border-top: solid #eeeeee"></viewer>
+                              ></viewer>
 
                               <div [style.display]="!sidenav.opened ? undefined : 'none'" style="position:absolute;right:6px;top:6px" fxLayout="row">
 
-                                <button mat-button
+                                <button mat-button class="mat-elevation-z2"
                                   style="color:rgb(236, 138, 36);background-color:rgba(255,255,255,0.85);border:1px solid #eee;font-weight:bold;"
                                   type="button"
                                   color="accent"
                                   (click)="sidenav.open();;sidenavOpen2.value = true">
-                                    CUSTOMIZE
+                                    <i18n code="INFO_CUSTOMIZE"><i18n>
                                 </button>
                             </div>
                       </div>
                   </div>
               </mat-sidenav-container>
+ 
+              <button *ngIf="!embed.value" class="mat-elevation-z1" mat-button dialog-close style="position:absolute;right:10px;bottom:10px;z-index:1000;background-color:white">
+                    <mat-icon>close</mat-icon>
+                    <span fxHide.xs><i18n>BUTTON_WEB_CLOSE</i18n></span>
+              </button>
+
           </div>
       </div>
   </div>
+</delay-dialog>

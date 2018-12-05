@@ -1,0 +1,89 @@
+<!-- NAME@en-US Overview -->
+<!-- NAME@de-DE Überblick -->
+<!-- NAME@bg-BG Преглед -->
+
+<variable #object export></variable>
+<variable #context export></variable>
+<runtime api="objectdetails.component" #component></runtime>
+
+<!-- gallery-overview -->
+
+<!-- Requires variable #object -->
+<delay-dialog #delay>
+	<!-- NEW trigger change detection of current context. Dispatch must be expression! -->
+	<observe [event]="root.app.mediaSizeChange" (dispatch)="0"></observe>
+
+	<remote require="dev/viewer" api="getPreviewSummary" #res
+	 		  	[args]="[object.value,200,
+						root.app.mediaSize == 'xs' ? 200 :
+						root.app.mediaSize == 'sm' ? 256
+											   	   : 400,true]" [dependency]="object" (onReady)="delay.done()">
+	</remote>
+	<ng-container *ngIf="res.value">
+		<div #overviewContent style="font-size:14px" [innerHTML]="res.value.html"></div>
+		<div relative style="height:200px;margin-bottom:10px;min-width:200px" *ngIf="res.value.geometry">
+			<viewer [object]="res.value.geometry.object" [selected]="object.value"></viewer>
+		</div>
+		<div>
+			<div style="position:relative;overflow:hidden;margin-right:10px;padding-top:8px" *ngIf="res.value.documents && res.value.documents.length">
+					<swiper #swiper [config]="{
+					        	pagination : {
+		        					el: '.swiper-pagination',
+		        					clickable: true
+		      					},
+		      					keyboard: {
+		        					enabled: true
+		      					},
+		        				freeMode: true,
+					        	slidesPerView: 'auto',
+		      					spaceBetween: 10
+		     				}">
+							<div class="swiper-wrapper">
+								<div *ngFor="let element of res.value.documents" class="swiper-slide" style="width:auto;margin-bottom:10px" fxLayout="column">
+									<div *ngIf="res.value.documents.length > 1"
+										style="overflow:hidden;white-space:nowrap;font-size:14px;text-overflow: ellipsis;padding-bottom:2px;text-align:left;opacity:0.75"
+										[style.width]="element.width+'px'">{{element.type != 'gfx' ? element.NAME : root.db.graphics.geometry+''  }}
+                 					</div>
+									<div>
+									<!--
+										[style.padding-top]="element.paddingTop ? element.paddingTop+'px' : undefined"
+									 -->
+										<img [src]="element.ICON"
+											 [style.height]="element.height+'px'"
+											 [style.width]="element.width+'px'"
+											 style="display:block;cursor:pointer"
+                       (click)="root.openDialog('/pages/print',{
+                       		tpl : object.value.code
+                       	})"
+											 ></img>
+									</div>
+								</div>
+							</div>
+							<div class="swiper-pagination" style="bottom:0;top:auto" [style.visibility]="res.value.documents.length > 1 ? undefined : 'hidden'"></div>
+					</swiper>
+			</div>
+		</div>
+	</ng-container>
+</delay-dialog>
+
+
+
+<variable #data export [value]="{
+	context : context.value
+}"></variable>
+
+<ng-template #leftButtons export let-context="context">
+	<ng-container *ngIf="context && context.buttons && context.buttons.edit">
+	   	<include shared ref="/widgets/forms/object/buttons/edit"></include>
+	</ng-container>
+	<ng-container *ngIf="context && context.buttons && context.buttons.admin">
+	   	<include shared ref="/widgets/forms/object/buttons/admin"></include>
+	</ng-container>
+</ng-template>
+
+<ng-template #rightButtons export>
+   <button mat-button dialog-close>
+	 	    <mat-icon>close</mat-icon>
+		<span fxHide.xs><i18n>BUTTON_WEB_CLOSE</i18n></span>
+   </button>
+</ng-template>
