@@ -4,6 +4,58 @@ var lastUpdateTimes = {};
 var misc = require("server/misc");
 var service = VSERVER.mod.web.ScribusService;
 
+function syncTemp(tmpl) {
+    var key =  "rndr-"+tmpl.document.id;
+    var upd = tmpl.update_time ? tmpl.update_time.getTime() : 0;
+    var doRefresh=lastUpdateTimes[key] != upd;
+    if (doRefresh)
+    {
+        service.forceStop(key);
+        console.warn(`render.js: updating -> service key [${key}]\n\t update time [${upd}]\n\t template [${tmpl.code}]\n\t file [${tmpl.document}]`);
+        console.warn(["java.util.extractInTempDirectory",key,tmpl.document].join(", "));
+        JSCORE.Exec.callVSC("java.util.extractInTempDirectory",key,tmpl.document,{});
+        console.info(`render.js: content extracted in temp.`);
+        lastUpdateTimes[key]=upd;
+    }
+}
+exports.initTemplateContents = function(tmpl) {
+    var key =  "rndr-"+tmpl.document.id;
+    JSCORE.Exec.callVSC("java.util.executeJSWithTempDirLock",key,function()
+    {
+        syncTemp(tmpl);
+        var contents = service.getAvailableContents(key);
+        for (var e of tmpl.contents || []) {
+            e.delete();
+            e.commit();
+        }
+        var arr=[];
+        for (var e of contents) {
+            switch (e.type) {
+                case "varchar" :
+                    var c = new db.web2print.varchar_content();
+                    c.code=e.code;
+                    c.initial_value=e.code;
+                    c.template=tmpl;
+                    c.commit();
+                    arr.push(c);
+                    break;
+                case "image" :
+                    var c = new db.web2print.image_content();
+                    c.code=e.code;
+                    c.template=tmpl;
+                    c.commit();
+                    arr.push(c);
+                    break;
+
+                }
+            }
+        if (arr.length)
+            tmpl.contents=arr;
+        tmpl.commit();
+        log.warn("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! "+JSON.stringify(tmpl.contents,null,4));
+    });
+};
+
 exports.renderTemplate = function(tmpl,data)
 {
     console.info(`render.js: render ${tmpl.document.code} with ${JSON.stringify(data)} `);
@@ -17,19 +69,7 @@ exports.renderTemplate = function(tmpl,data)
     var result = undefined;
     JSCORE.Exec.callVSC("java.util.executeJSWithTempDirLock",key,function()
     {
-        // NEEDS REFRESH?
-        var upd = tmpl.update_time ? tmpl.update_time.getTime() : 0;
-        var doRefresh=lastUpdateTimes[key] != upd;
-        if (doRefresh)
-        {
-            service.forceStop(key);
-            console.warn(`render.js: updating -> service key [${key}]\n\t update time [${upd}]\n\t template [${tmpl.code}]\n\t file [${tmpl.document}]`);
-            console.warn(["java.util.extractInTempDirectory",key,tmpl.document].join(", "));
-            JSCORE.Exec.callVSC("java.util.extractInTempDirectory",key,tmpl.document,{});
-            console.info(`render.js: content extracted in temp.`);
-
-            lastUpdateTimes[key]=upd;
-        }
+        syncTemp(tmpl);
         var toReplace = exports.getTemplateJSON(tmpl,data,false);
         result = service.convert(key,tmpl+"",encodeURIComponent(JSON.stringify(toReplace)));
         if (!result) {
@@ -247,6 +287,7 @@ exports.getContentsData = function(tpl) {
     for (var e of tpl.contents) {
         if (e instanceof db.web2print.varchar_content) {
             res.push({
+                object : e,
                 code : e.code,
                 NAME : misc.OBJSTR(e),
                 type : 'varchar',
@@ -255,6 +296,7 @@ exports.getContentsData = function(tpl) {
             });
         } else if (e instanceof db.web2print.text_content) {
             res.push({
+                object : e,
                 code : e.code,
                 NAME : misc.OBJSTR(e),
                 type : 'text',
@@ -263,6 +305,7 @@ exports.getContentsData = function(tpl) {
             });
         } else if (e instanceof db.web2print.date_content) {
             res.push({
+                object : e,
                 code : e.code,
                 NAME : misc.OBJSTR(e),
                 type : 'date',
@@ -271,6 +314,7 @@ exports.getContentsData = function(tpl) {
             });
         } else if (e instanceof db.web2print.time_content) {
             res.push({
+                object : e,
                 code : e.code,
                 NAME : misc.OBJSTR(e),
                 type : 'time',
@@ -279,6 +323,7 @@ exports.getContentsData = function(tpl) {
             });
         } else if (e instanceof db.web2print.datetime_content) {
             res.push({
+                object : e,
                 code : e.code,
                 NAME : misc.OBJSTR(e),
                 type : 'datetime',
@@ -287,6 +332,7 @@ exports.getContentsData = function(tpl) {
             });
         } else if (e instanceof db.web2print.image_content) {
             res.push({
+                object : e,
                 code : e.code,
                 NAME : misc.OBJSTR(e),
                 type : 'image',
@@ -295,6 +341,7 @@ exports.getContentsData = function(tpl) {
             });
         } else if (e instanceof db.web2print.qrcode_content) {
             res.push({
+                object : e,
                 NAME : misc.OBJSTR(e),
                 code : e.code,
                 type : 'qrcode',
@@ -303,6 +350,7 @@ exports.getContentsData = function(tpl) {
             });
         } else if (e instanceof db.web2print.indexed_color_content) {
             res.push({
+                object : e,
                 NAME : misc.OBJSTR(e),
                 code : e.code,
                 type : 'color',

@@ -4,7 +4,7 @@
   <variable #DEBUG export [defaults]="{value: 0}"></variable>
 
   <variable #embed export></variable>
-  <variable #sidenavOpen2 [dependency]="embed" [defaults]="{value: !!embed.value}"></variable>
+  <variable #sidenavOpen2 [dependency]="embed" [defaults]="{value: true}"></variable>
 
   <!-- base url provided by external param or defaulting to localhost  -->
   <variable #baseURL export [defaults]="{value: 'http://localhost' }"></variable>
@@ -228,12 +228,22 @@
                                     </execution>
                                 </observe>
                             </variable>
-                            <mat-form-field fxFlex *ngIf="comp.type == 'varchar' || comp.type == 'qrcode'">
+                            <mat-form-field fxFlex *ngIf="comp.type == 'varchar' || comp.type == 'qrcode'" floatLabel="always">
                                 <input matInput
                                   placeholder="{{comp.NAME}}"
                                   [(ngModel)]="val.value"
-                                  (focus)="dynamicViewer && dynamicViewer.gotoPage(comp.dest_page-1)"
+                                  (focus)="(btn._elementRef.nativeElement.style.opacity=1) + (dynamicViewer && dynamicViewer.gotoPage(comp.dest_page-1))"
+                                  (blur)="btn._elementRef.nativeElement.style.opacity=0"
+
                                   >
+                                  <button #btn mat-icon-button matSuffix style="font-size:24px;top:-4px;opacity:0" (click)="
+                                        root.detailsDialog(comp.object,'web2print.abstract_content',{
+                                            fullscreen : root.app.phone,
+                                            type : 'edit'
+                                        })
+                                    ">
+                                        <mat-icon>edit</mat-icon>
+                                  </button>
                             </mat-form-field>
                             <mat-form-field fxFlex *ngIf="comp.type == 'text'">
                                 <textarea matInput placeholder="{{comp.NAME}}"
@@ -349,7 +359,7 @@
                       </div>
                   </div>
               </mat-sidenav-container>
- 
+
               <button *ngIf="!embed.value" class="mat-elevation-z1" mat-button dialog-close style="position:absolute;right:10px;bottom:10px;z-index:1000;background-color:white">
                     <mat-icon>close</mat-icon>
                     <span fxHide.xs><i18n>BUTTON_WEB_CLOSE</i18n></span>
