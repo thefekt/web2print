@@ -6,32 +6,24 @@
   <variable #embed export></variable>
   <variable #sidenavOpen2 [dependency]="embed" [defaults]="{value: true}"></variable>
 
+  <variable #storage [path]="'/session-documents'" persist>
+      <observe>
+          <execution #calcStorageCondition [params]="{storage:storage,root:root,storageCondition:storageCondition}"><![CDATA[
+              var tmp = storage.value;
+              if (!tmp || !tmp.length) {
+                  storageCondition.value=undefined;
+                  return;
+              }
+              var t = [];
+              for (var i=0;i<tmp.length;i++) t[i]="'"+tmp[i]+"'";
+              storageCondition.value="uuid IN ("+t.join(",")+")";
+          ]]></execution>
+      </observe>
+  </variable>
+  <variable #storageCondition></variable>
+
   <!-- base url provided by external param or defaulting to localhost  -->
   <variable #baseURL export [defaults]="{value: 'http://localhost' }"></variable>
-
-
-  <!-- convert CMYK colours to RGB. -->
-  <execution #convertRBG [params]="{DBG:DEBUG.value}"><![CDATA[
-      var result = {};
-      var cmyk = args[0];
-      var c = cmyk.replace("cmyk(", "").replace(")", "").split(",")[0]/100;
-      var m = cmyk.replace("cmyk(", "").replace(")", "").split(",")[1]/100;
-      var y = cmyk.replace("cmyk(", "").replace(")", "").split(",")[2]/100;
-      var k = cmyk.replace("cmyk(", "").replace(")", "").split(",")[3]/100;
-
-      result.r = 1 - Math.min( 1, c * ( 1 - k ) + k );
-      result.g = 1 - Math.min( 1, m * ( 1 - k ) + k );
-      result.b = 1 - Math.min( 1, y * ( 1 - k ) + k );
-
-      result.r = Math.round( result.r * 255 );
-      result.g = Math.round( result.g * 255 );
-      result.b = Math.round( result.b * 255 );
-
-      DBG && console.log(
-        `#convertRBG: CMYK -> RGB converted: ${JSON.stringify(cmyk)} -> ${JSON.stringify(result)}`);
-
-      return result;
-  ]]></execution>
 
   <!-- executed upon change of user configured content. send to template -->
   <execution #contentChange [params]="{baseURL:baseURL,DBG:DEBUG.value}"><![CDATA[
@@ -63,25 +55,17 @@
       <variable #tpl export></variable>
       <div #ldc hidden class.xs="layout-detect-xs"> </div>
 
-      <include shared ref="category-select">
-      </include>
-
-
       <!-- Template part -->
-      <variable #templateObject>
-          <observe>
-              <execution [params]="{tpl:tpl,root:root,templateObject:templateObject,DBG:DEBUG.value}"><![CDATA[
-                  if (!templateObject.value) {
-                      root.db.remote("src/srv/renderer").getTemplateDetails(tpl.value).done(function(res) {
-                          DBG && console.log("#templateObject: got template " + res.object);
-                          templateObject.value = res.object;
-                          if (res.NAME && res.NAME.indexOf('error') >= 0) {
-                              DBG && console.log("#templateObject: error getting result from renderer ");
-                          }
-                        });
+      <variable #templateObject [dependency]="tpl" (onReady)="reload.execute()">
+          <execution [params]="{tpl:tpl,root:root,templateObject:templateObject,DBG:DEBUG.value}" #reload><![CDATA[
+              root.db.remote("web2print/renderer").getTemplateDetails(tpl.value).done(function(res) {
+                  DBG && console.log("#templateObject: got template " + res.object);
+                  templateObject.value = res.object;
+                  if (res.NAME && res.NAME.indexOf('error') >= 0) {
+                      DBG && console.log("#templateObject: error getting result from renderer ");
                   }
-              ]]></execution>
-          </observe>
+                });
+          ]]></execution>
       </variable>
 
       <variable #custom
@@ -177,7 +161,7 @@
                       paused.value=true;
                       DBG && console.log(JSON.stringify(custom.value));
 
-                      root.db.remote("src/srv/renderer").renderTemplate(templateObject.value,custom.value).done(function(res) {
+                      root.db.remote("web2print/renderer").renderTemplate(templateObject.value,custom.value).done(function(res) {
                           DBG && console.log(`#update: got renderer response`);
                           if (res === undefined) {
                             console.error('#update: failed to receive reasonable response from server');
@@ -214,7 +198,9 @@
               ]]></execution>
 
               <mat-sidenav-container absolute-fill>
-                <mat-sidenav [style.width]="ldc.classList.contains('layout-detect-xs') ? '100%' : '240px'" [opened]="sidenavOpen2.value" mode="side" #sidenav style="padding:8px;border-left:1px solid #eee">
+                <mat-sidenav [style.width]="ldc.classList.contains('layout-detect-xs') ? '100%' : '240px'" [opened]="sidenavOpen2.value" mode="side" #sidenav style="padding:8px;border-left:1px solid #eee"
+                        [mode]="root.app.mediaSize == 'xs' ? 'over' : 'side'"
+                >
                     <div *ngIf="templateObject.value && templateObject.value.contents && templateObject.value.contents.length">
                         <div *ngFor="let comp of templateObject.value.contents; let i = index" fxLayout="row">
                             <variable #val [defaults]="{value : (custom.value||{})[comp.code] || templateObject.value.defaultData[i] }">
@@ -228,97 +214,20 @@
                                     </execution>
                                 </observe>
                             </variable>
-                            <mat-form-field fxFlex *ngIf="comp.type == 'varchar' || comp.type == 'qrcode'" floatLabel="always">
-                                <input matInput
-                                  placeholder="{{comp.NAME}}"
-                                  [(ngModel)]="val.value"
-                                  (focus)="(btn._elementRef.nativeElement.style.opacity=1) + (dynamicViewer && dynamicViewer.gotoPage(comp.dest_page-1))"
-                                  (blur)="btn._elementRef.nativeElement.style.opacity=0"
-
-                                  >
-                                  <button #btn mat-icon-button matSuffix style="font-size:24px;top:-4px;opacity:0" (click)="
-                                        root.detailsDialog(comp.object,'web2print.abstract_content',{
-                                            fullscreen : root.app.phone,
-                                            type : 'edit'
-                                        })
-                                    ">
-                                        <mat-icon>edit</mat-icon>
-                                  </button>
-                            </mat-form-field>
-                            <mat-form-field fxFlex *ngIf="comp.type == 'text'">
-                                <textarea matInput placeholder="{{comp.NAME}}"
-                                  [(ngModel)]="val.value"
-                                  rows="4"
-                                  (focus)="dynamicViewer && dynamicViewer.gotoPage(comp.dest_page-1)"
-                                  ></textarea>
-                            </mat-form-field>
-                            <div fxFlex *ngIf="comp.type == 'image'">
-                                <label style="color: #757575;font-size: 80%">{{comp.NAME}}</label>
-
-                                <query
-                                  [schema]="comp.placeholder ? comp.placeholder.SCHEMA : 'documents.document'"
-                                  [where]="comp.placeholder ? 'id=' + comp.placeholder.id : 'code=\'no_image_PNG\''"
-                                  properties="OICON@280x300,width_mm,height_mm">
-                                    <result #rz>
-                                        <div *ngIf="rz && rz.objects[0]">
-                                            <img #img id="blah" [src]="rz.objects[0].ICON" style="width: 80px;height: 80px"/>
-                                            <button (click)="br.click()" style="top: -32px" mat-button>Browse</button>
-                                            <form #imgform encoding="multipart/form-data"
-                                              [action]="baseURL.value + '/visionr.vsp?ajax=true&amp;operation=upload'"
-                                              method="post">
-                                              <input hidden #br (change)="contentChange.execute(br, img, imgform)" type="file" accept="image/*">
-                                            </form>
-                                        </div>
-                                    </result>
-                                </query>
-
-                            </div>
-                            <div fxFlex *ngIf="comp.type == 'color'">
-                                <variable #rgbcolor></variable>
-                                <variable #rgbcolorSec></variable>
-                                <variable #col [defaults]="{value: comp.code}">
-                                    <observe>
-                                        <execution [params]="{convertRBG:convertRBG,col:col,root:root,comp:comp,rgbcolor:rgbcolor,rgbcolorSec:rgbcolorSec}">
-                                          <![CDATA[
-                                            var result = {};
-                                            result = convertRBG.execute(comp.placeholder);
-                                            rgbcolor.value = result;
-
-                                            var result2 = [];
-                                            for (var i = 0; i < comp.colors.length; i++) {
-                                                result = {};
-                                                result = convertRBG.execute(comp.colors[i]);
-                                                result2.push(result);
-                                            }
-                                            rgbcolorSec.value = result2;
-                                          ]]>
-                                        </execution>
-                                    </observe>
-                                </variable>
-
-                                <label style="color: #757575;font-size: 80%">Colors</label>
-                                <div style="margin-top: 4px" fxLayout="row">
-                                    <variable #colorSelection2 [defaults]="{value: 0}"></variable>
-                                    <div (click)="chval.execute(0)" [style.border]="colorSelection2.value ? '0' : '2px solid black'" [style.background-color]="'rgb(' + rgbcolor.value.r + ',' + rgbcolor.value.g + ',' + rgbcolor.value.b +')'" style="margin-right: 4px;width: 32px;height: 32px;border-radius: 100%"></div>
-                                    <ng-template let-sc let-i="index" ngFor [ngForOf]="rgbcolorSec.value" style="display: inline-block">
-                                        <div (click)="chval.execute(i+1)" [style.border]="(colorSelection2.value == i+1) ? '2px solid black' : '0'" [style.background-color]="'rgb(' + sc.r + ',' + sc.g + ',' + sc.b +')'" style="margin-right: 4px;width: 32px;height: 32px;border-radius: 100%"></div>
-                                    </ng-template>
-                                    <execution #chval [params]="{DBG:DEBUG.value,val:val,comp:comp,colorSelection2:colorSelection2}"><![CDATA[
-                                        colorSelection2.value = args[0];
-                                        if (!args[0]) {
-                                            val.value = comp.placeholder;
-                                        } else {
-                                            val.value = comp.colors[args[0]-1];
-                                        }
-                                        DBG && console.log(`#chval + ${val.value}`);
-                                    ]]></execution>
-                                </div>
-                            </div>
+                            <include shared ref="/widgets/web2print/content/varchar"></include>
+                            <include shared ref="/widgets/web2print/content/text"></include>
+                            <include shared ref="/widgets/web2print/content/color"></include>
+                            <include shared ref="/widgets/web2print/content/image"></include>
                         </div>
                         <br/>
-                        <div style="margin-bottom:2em">
-                              <button color="accent" style="float:left;color:rgb(236, 138, 36);background-color:rgba(255,255,255,0.85);border:2px solid rgb(236, 138, 36);font-weight:bold" type="button" mat-button (click)="resetContent.execute();sidenav.close();sidenavOpen2.value = false">
-                              <i18n code="BUTTON_WEB_LOGIN_RESET"></i18n>
+                        <div style="margin-bottom:2em;margin-left:3px;margin-right:3px">
+                              <button style="float:left" mat-button (click)="resetContent.execute()">
+                                  <mat-icon>restore</mat-icon>
+                                  <i18n code="BUTTON_WEB_LOGIN_RESET"></i18n>
+                              </button>
+                              <button style="float:right" mat-button (click)="sidenav.close();sidenavOpen2.value = false">
+                                  <mat-icon>close</mat-icon>
+                      		      <span><i18n>BUTTON_WEB_CLOSE</i18n></span>
                               </button>
                         </div>
                     </div>
@@ -352,7 +261,7 @@
                                   style="color:rgb(236, 138, 36);background-color:rgba(255,255,255,0.85);border:1px solid #eee;font-weight:bold;"
                                   type="button"
                                   color="accent"
-                                  (click)="sidenav.open();;sidenavOpen2.value = true">
+                                  (click)="sidenav.open();sidenavOpen2.value = true">
                                     <i18n code="INFO_CUSTOMIZE"><i18n>
                                 </button>
                             </div>

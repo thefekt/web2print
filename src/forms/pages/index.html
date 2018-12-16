@@ -1,2 +1,4 @@
 <!-- Content if not logged in -->
-<include shared ref="/pages/print"></include>
+<context [params]="root.app.params">
+    <include shared ref="/pages/print"></include>
+</context>

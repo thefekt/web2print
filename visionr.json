@@ -4,10 +4,12 @@
         "template": "default-postgre-1.0"
     },
     "files" : {
+        "module" : "web2print",
         "loader" : "src/srv/loader.js",
         "formsDir" : "src/forms"
     },
     "server" : {
+		"mode" : "test",
         "devel" : true,
         "debugger" : true,
         "javaDebugPort" : 8999,
@@ -29,6 +31,8 @@
     },
     "additional" :
     {
+        "web.image.jpeg.quality" : 1,
+        "document.upload.anonymous.allow" : true,
         "web.scribus.path" : "d:/scribus/scribus.exe",
         "core.vscript.src.debug" : true
     }

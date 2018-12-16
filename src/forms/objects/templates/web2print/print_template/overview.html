@@ -20,6 +20,9 @@
 											   	   : 400,true]" [dependency]="object" (onReady)="delay.done()">
 	</remote>
 	<ng-container *ngIf="res.value">
+		<div style="margin:10px 0">
+			<a target="_blank" href="/forms/#/print?tpl={{root.app.escape.encodeURIComponent(object.value.code)}}">http://pechatarnik.com/forms/#/print?tpl={{root.app.escape.encodeURIComponent(object.value.code)}}</a>
+		</div>
 		<div #overviewContent style="font-size:14px" [innerHTML]="res.value.html"></div>
 		<div relative style="height:200px;margin-bottom:10px;min-width:200px" *ngIf="res.value.geometry">
 			<viewer [object]="res.value.geometry.object" [selected]="object.value"></viewer>

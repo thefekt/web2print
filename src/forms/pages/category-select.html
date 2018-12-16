@@ -33,7 +33,7 @@
                     <execution [params]="{tagmap:tagmap,crrC:crrC,idmap:idmap,cat:cat,crr:crr,category:category,root:root,cindex:cindex,rootCategories:rootCategories}"><![CDATA[
                         if (rootCategories.value === undefined) {
                             rootCategories.value = null;
-                            root.db.remote("src/srv/renderer").getRootCategoriesWithDetails(cat.value ? Number(cat.value) : undefined).done(function(res) {
+                            root.db.remote("web2print/renderer").getRootCategoriesWithDetails(cat.value ? Number(cat.value) : undefined).done(function(res) {
                                 rootCategories.value = res || [];
 
                                 var restags = [];

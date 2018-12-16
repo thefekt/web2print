@@ -20,10 +20,12 @@ function syncTemp(tmpl) {
 }
 exports.initTemplateContents = function(tmpl) {
     var key =  "rndr-"+tmpl.document.id;
+    var res;
     JSCORE.Exec.callVSC("java.util.executeJSWithTempDirLock",key,function()
     {
         syncTemp(tmpl);
         var contents = service.getAvailableContents(key);
+        if (tmpl instanceof db)
         for (var e of tmpl.contents || []) {
             e.delete();
             e.commit();
@@ -32,18 +34,18 @@ exports.initTemplateContents = function(tmpl) {
         for (var e of contents) {
             switch (e.type) {
                 case "varchar" :
-                    var c = new db.web2print.varchar_content();
+                    var c = tmpl instanceof db ? new db.web2print.varchar_content() : {type:e.type};
                     c.code=e.code;
                     c.initial_value=e.code;
-                    c.template=tmpl;
-                    c.commit();
+                    if (tmpl instanceof db) c.template=tmpl;
+                    c.commit && c.commit();
                     arr.push(c);
                     break;
                 case "image" :
-                    var c = new db.web2print.image_content();
+                    var c = tmpl instanceof db ? new db.web2print.image_content() : {type:e.type};
                     c.code=e.code;
-                    c.template=tmpl;
-                    c.commit();
+                    if (tmpl instanceof db) c.template=tmpl;
+                    c.commit && c.commit();
                     arr.push(c);
                     break;
 
@@ -51,14 +53,26 @@ exports.initTemplateContents = function(tmpl) {
             }
         if (arr.length)
             tmpl.contents=arr;
-        tmpl.commit();
-        log.warn("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! "+JSON.stringify(tmpl.contents,null,4));
+        tmpl.commit && tmpl.commit();
+        res=tmpl;
     });
+    return res;
 };
 
+exports.forceStop = function(tmpl) {
+    var key =  "rndr-"+tmpl.document.id;
+    service.forceStop(key);
+};
+exports.renderTemplateOnce = function(tmpl,data) {
+    try {
+        return exports.renderTemplate(tmpl,data);
+    } finally {
+        exports.forceStop(tmpl);
+    }
+};
 exports.renderTemplate = function(tmpl,data)
 {
-    console.info(`render.js: render ${tmpl.document.code} with ${JSON.stringify(data)} `);
+    //console.info(`render.js: render ${tmpl.document.code} with ${JSON.stringify(data)} `);
 
     if (!tmpl.document) {
       return { error : "document not existing or corrupted!"};
@@ -71,7 +85,7 @@ exports.renderTemplate = function(tmpl,data)
     {
         syncTemp(tmpl);
         var toReplace = exports.getTemplateJSON(tmpl,data,false);
-        result = service.convert(key,tmpl+"",encodeURIComponent(JSON.stringify(toReplace)));
+        result = service.convert(key,(tmpl.name||tmpl.code)+'',encodeURIComponent(JSON.stringify(toReplace)));
         if (!result) {
             console.warn("render.js: Scribus generator returned FIRST EMPTY result : "+tmpl.code);
             result = service.convert(key,tmpl+"",encodeURIComponent(JSON.stringify(toReplace)));
@@ -84,39 +98,38 @@ exports.renderTemplate = function(tmpl,data)
 
 exports.getTemplateJSON = function(tmpl,data,doNotRender) {
     var toReplace = {};
-
     for (var e of tmpl.contents||[])
     {
-        if (e instanceof db.web2print.varchar_content ) {
+        if (e.type == "varchar" || e instanceof db.web2print.varchar_content ) {
             var d = data[e.code] !== undefined ? data[e.code] : e.initial_value;
             if (!d) d="";
             toReplace[e.code]=d;
-        } else if (e instanceof db.web2print.text_content ) {
+        } else if (e.type == "text" || e instanceof db.web2print.text_content ) {
             var d = data[e.code]!== undefined ? data[e.code] : e.initial_value;
             if (!d) d="";
             toReplace[e.code]=d;
-        } else if (e instanceof db.web2print.date_content ) {
+        } else if (e.type == "date" || e instanceof db.web2print.date_content ) {
             var d = data[e.code]!== undefined ? data[e.code] : e.initial_value;
             if (d)
                 d=db.core.output_format.byCode("default_output_format_date").get_as_string(data[e.code]);
             else
                 d="";
             toReplace[e.code]=d;
-        } else if (e instanceof db.web2print.datetime_content ) {
+        } else if (e.type == "datetime" || e instanceof db.web2print.datetime_content ) {
             var d = data[e.code]!== undefined ? data[e.code] : e.initial_value;
             if (d)
                 d=db.core.output_format.byCode("default_output_format_datetime").get_as_string(data[e.code]);
             else
                 d="";
             toReplace[e.code]=d;
-        } else if (e instanceof db.web2print.time_content ) {
+        } else if (e.type == "time" || e instanceof db.web2print.time_content ) {
             var d = data[e.code]!== undefined ? data[e.code] : e.initial_value;
             if (d)
                 d=db.core.output_format.byCode("default_output_format_time").get_as_string(data[e.code]);
             else
                 d="";
             toReplace[e.code]=d;
-        } else if (e instanceof db.web2print.image_content) {
+        } else if (e.type == "date" || e instanceof db.web2print.image_content) {
             var d = data[e.code]!== undefined ? data[e.code] : e.initial_value;
             if (d instanceof db.documents.file) {
                 if (!doNotRender) {
@@ -129,7 +142,7 @@ exports.getTemplateJSON = function(tmpl,data,doNotRender) {
             else {
               console.warn("render.js : document [" + e.code + "] is not a db.documents.file instance!");
             }
-          } else if (e instanceof db.web2print.qrcode_content ) {
+        } else if (e.type == "qrcode" || e instanceof db.web2print.qrcode_content ) {
             var d = data[e.code]!== undefined ? data[e.code] : e.initial_value;
             if (d)
             {
@@ -140,7 +153,7 @@ exports.getTemplateJSON = function(tmpl,data,doNotRender) {
                     toReplace[e.code]=d;
                 }
             }
-        } else if (e instanceof db.web2print.indexed_color_content ) {
+        } else if (e.type == "indexed_color" || e instanceof db.web2print.indexed_color_content ) {
             var d = data[e.code]!== undefined ? data[e.code] : e.initial_value;
             if (!d) d="";
             toReplace[e.code]=d;
@@ -246,15 +259,8 @@ exports.getRootCategoriesWithDetails = function(id)
     return res;
 }
 
-exports.getTemplateDetails = function (id) {
-    var tpl;
-
-    if (typeof id == 'string') {
-        tpl = db.web2print.print_template.byCode(id);
-    } else {
-         tpl = db.web2print.print_template.byId(Number(id));
-    }
-
+exports.getTemplateDetails = function (code) {
+    var tpl = db.web2print.print_template.byCode(code);
     if (!tpl) return {path:[],NAME: 'getTemplateDetails: error - no template found'};
     var d1 = exports.getContentsData(tpl);
 
@@ -349,6 +355,19 @@ exports.getContentsData = function(tpl) {
                 placeholder : e.initial_value
             });
         } else if (e instanceof db.web2print.indexed_color_content) {
+            var colors = e.available.colors;
+            if (colors) {
+                colors=colors.split("\n");
+                var arr=[];
+                for (var i=0;i<colors.length;i++) {
+                    var t = colors[i].trim();
+                    if (t) arr.push(t);
+                }
+                if (arr.length)
+                    colors=arr;
+                else
+                    colors=undefined;
+            }
             res.push({
                 object : e,
                 NAME : misc.OBJSTR(e),
@@ -356,7 +375,7 @@ exports.getContentsData = function(tpl) {
                 type : 'color',
                 dest_page : e.dest_page,
                 placeholder : e.initial_value,
-                colors: e.available_colors
+                colors: e.available_colors.split("\n")
             });
         }
     }
@@ -385,3 +404,49 @@ function getCacheDir()
     }
     return _cachedir=parent;
 }
+//------------------------------------------------------------------------------
+exports.uploadTemplateDocuments = function(template,uploads,isEveryone) {
+    if (!uploads)
+        return;
+    function one(doc) {
+        if (!doc)
+            return;
+        var parent = db.documents.folder.byCode("/");
+        if (!parent) return doc.delete();
+        parent = db.documents.folder.SELECT("code=:CODE AND parent=:ID",{CODE:'web2print',ID:parent.id,limit:1})[0];
+        if (!parent) return doc.delete();
+        parent = db.documents.folder.SELECT("code=:CODE AND parent=:ID",{CODE:template.uuid,ID:parent.id,limit:1})[0];
+        if (!parent) return doc.delete();
+        if (!session.loggedIn || isEveryone) {
+            parent = db.documents.folder.SELECT("code=:CODE AND parent=:ID",{CODE:"everyone",ID:parent.id,limit:1})[0];
+            if (!parent) return doc.delete();
+        }
+        doc.parent=parent;
+        doc.commit();
+        doc.name=undefined;
+        doc.commit();
+    }
+    var arr=[];
+    for (var e of uploads) arr.push("'"+e+"'");
+    for (var doc of db.documents.file_upload.SELECT("uuid IN ("+arr.join(",")+")"))
+        one(doc);
+    return doc;
+};
+
+exports.deleteTemplateDocuments = function(template,documents,isEveryone) {
+    var parent = db.documents.folder.byCode("/");
+    if (!parent) return;
+    parent = db.documents.folder.SELECT("code=:CODE AND parent=:ID",{CODE:'web2print',ID:parent.id,limit:1})[0];
+    if (!parent) return;
+    parent = db.documents.folder.SELECT("code=:CODE AND parent=:ID",{CODE:template.uuid,ID:parent.id,limit:1})[0];
+    if (!session.loggedIn || isEveryone) {
+        parent = db.documents.folder.SELECT("code=:CODE AND parent=:ID",{CODE:"everyone",ID:parent.id,limit:1})[0];
+        if (!parent) return;
+    }
+    for (var e of documents)  {
+        if ((e.parent||{}).id == parent.id) {
+            e.delete();
+            e.commit();
+        }
+    }
+};

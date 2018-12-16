@@ -1,0 +1,63 @@
+<!-- @Abstract -->
+<!-- @Abstract -->
+<input-relation *ngIf="comp.type == 'image'"
+    [dependency]="templateObject"
+    condition="
+        extension.code IN ('JPEG','JPG','PNG','SVG','GIF','PNG','PDF_') AND
+        id IN (
+            SELECT id WHERE parent.code=:UUID AND parent.parent.code='web2print' AND parent.parent.parent.code='/' AND parent.parent.parent.parent IS NULL
+            {{
+                storageCondition.value ? 'UNION ALL SELECT id WHERE '+storageCondition.value : ''
+            }}
+        )
+    "
+    orderBy="update_time DESC"    
+    [queryParams]="{UUID:templateObject.value && templateObject.value.uuid}"
+    [header]="header"
+    itemTemplate="menuitem-large"
+    overlaySize="initial"
+    [menuEnabled]="false"
+    schema="documents.file_upload"
+    style="width:100%"
+    floatLabel="always"
+    [label]="comp.NAME" [placeholder]="(comp.placeholder||{}).code"
+    [(object)]="val.value"
+    (focus)="dynamicViewer && dynamicViewer.gotoPage(comp.dest_page-1)" #inp>
+    <include shared ref="/widgets/web2print/content/edit-button"></include>
+    <ng-template #header>
+            <div fxLayout="row" style="margin-bottom:-5px">
+                <button fxFlex mat-button style="
+    border-radius: 0;
+    margin-bottom: 1px;
+    margin:5px"
+    (click)="$event.stopPropagation();inp.auto.closePanel();root.openDialog('/dialogs/web2print/print_template/documents',{crrTab:2,template:templateObject.value},
+            applyValue.execute,
+            undefined,
+            refreshStorage.execute)"
+    >
+                    <mat-icon>add</mat-icon>
+                    <i18n>INFO_UPLOAD</i18n>
+                </button>
+                <button fxFlex mat-button style="
+    border-radius: 0;
+    margin-bottom: 1px;
+    margin:5px"
+    (click)="$event.stopPropagation();inp.auto.closePanel();root.openDialog('/dialogs/web2print/print_template/documents',{template:templateObject.value},
+            applyValue.execute,
+            undefined,
+            refreshStorage.execute
+        )"
+    >
+                    <mat-icon>open_in_browser</mat-icon>
+                    <i18n>INFO_BROWSE</i18n>
+                    <execution #applyValue [params]="{val:val,inp:inp}"><![CDATA[
+                        inp.auto.closePanel();
+                        val.value=args[0];
+                    ]]></execution>
+                    <execution #refreshStorage [params]="{storage:storage}"><![CDATA[
+                        storage.updateFromStorage();
+                    ]]></execution>
+                </button>
+            </div>
+    </ng-template>
+</input-relation>

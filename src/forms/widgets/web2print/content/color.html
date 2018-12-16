@@ -1,0 +1,74 @@
+<!-- @Abstract -->
+<div fxFlex *ngIf="comp.type == 'color'">
+    <variable #rgbcolor></variable>
+    <variable #rgbcolorSec></variable>
+    <variable #col [defaults]="{value: comp.code}">
+        <observe>
+            <execution [params]="{convertRBG:convertRBG,col:col,root:root,comp:comp,rgbcolor:rgbcolor,rgbcolorSec:rgbcolorSec}">
+              <![CDATA[
+                var result = {};
+                result = convertRBG.execute(comp.placeholder);
+                rgbcolor.value = result;
+
+                var result2 = [];
+                for (var i = 0; i < comp.colors.length; i++) {
+                    result = {};
+                    result = convertRBG.execute(comp.colors[i]);
+                    result2.push(result);
+                }
+                rgbcolorSec.value = result2;
+              ]]>
+            </execution>
+        </observe>
+    </variable>
+    <label style="color: #757575;font-size: 80%">Colors</label>
+    <div style="margin-top: 4px" fxLayout="row">
+        <variable #colorSelection2 [defaults]="{value: 0}"></variable>
+        <div (click)="chval.execute(0)" [style.border]="colorSelection2.value ? '0' : '2px solid black'" [style.background-color]="'rgb(' + rgbcolor.value.r + ',' + rgbcolor.value.g + ',' + rgbcolor.value.b +')'" style="margin-right: 4px;width: 32px;height: 32px;border-radius: 100%"></div>
+        <ng-template let-sc let-i="index" ngFor [ngForOf]="rgbcolorSec.value" style="display: inline-block">
+            <div (click)="chval.execute(i+1)" [style.border]="(colorSelection2.value == i+1) ? '2px solid black' : '0'" [style.background-color]="'rgb(' + sc.r + ',' + sc.g + ',' + sc.b +')'" style="margin-right: 4px;width: 32px;height: 32px;border-radius: 100%"></div>
+        </ng-template>
+        <execution #chval [params]="{DBG:DEBUG.value,val:val,comp:comp,colorSelection2:colorSelection2}"><![CDATA[
+            colorSelection2.value = args[0];
+            if (!args[0]) {
+                val.value = comp.placeholder;
+            } else {
+                val.value = comp.colors[args[0]-1];
+            }
+            DBG && console.log(`#chval + ${val.value}`);
+        ]]></execution>
+    </div>
+</div>
+
+
+<!-- convert CMYK colours to RGB. -->
+<execution #convertRBG [params]="{DBG:DEBUG.value}"><![CDATA[
+    // cmyk(a,b,c,d) [0..100]
+    var result = {};
+    var cmyk = args[0];
+    if (!cmyk)
+      return;
+    /* RGB COLOR SUPPLIED */
+    var k = cmyk.toUpperCase().indexOf("RGB(");
+    if (k >= 0)
+        return "rgb("+cmyk.substring(k+1);
+
+    /* LOW QUALITY APPROXIMATION */
+    var c = cmyk.replace("cmyk(", "").replace(")", "").split(",")[0]/100;
+    var m = cmyk.replace("cmyk(", "").replace(")", "").split(",")[1]/100;
+    var y = cmyk.replace("cmyk(", "").replace(")", "").split(",")[2]/100;
+    var k = cmyk.replace("cmyk(", "").replace(")", "").split(",")[3]/100;
+
+    result.r = 1 - Math.min( 1, c * ( 1 - k ) + k );
+    result.g = 1 - Math.min( 1, m * ( 1 - k ) + k );
+    result.b = 1 - Math.min( 1, y * ( 1 - k ) + k );
+
+    result.r = Math.round( result.r * 255 );
+    result.g = Math.round( result.g * 255 );
+    result.b = Math.round( result.b * 255 );
+
+    DBG && console.log(
+      `#convertRBG: CMYK -> RGB converted: ${JSON.stringify(cmyk)} -> ${JSON.stringify(result)}`);
+
+    return result;
+]]></execution>

@@ -1,0 +1,10 @@
+<!-- @Abstract -->
+<input-text
+    style="width:100%"
+    *ngIf="comp.type == 'text'"
+    floatLabel="always"
+    [label]="comp.NAME" [placeholder]="comp.placeholder"
+    [(value)]="val.value"
+    (focus)="dynamicViewer && dynamicViewer.gotoPage(comp.dest_page-1)" #inp>
+    <include shared ref="/widgets/web2print/content/edit-button"></include>
+</input-text>

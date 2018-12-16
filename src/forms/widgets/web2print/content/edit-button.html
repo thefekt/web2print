@@ -1,0 +1,10 @@
+<!-- @Abstract -->
+<button mat-button style="height:30px;background-color:white;font-size:14px;position:absolute;right:3px;top:3px;z-index:10" *ngIf="inp.focused && root.loggedIn"
+    (click)="root.detailsDialog(comp.object,'web2print.abstract_content',{
+        fullscreen : root.app.phone,
+        type : 'edit'
+    },undefinded,undefined,reload.execute);root.app.blur()"
+    (mousedown)="$event.stopPropagation();$event.preventDefault();"
+    >
+    <mat-icon>edit</mat-icon>
+</button>
