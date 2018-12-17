@@ -2,7 +2,7 @@
 <input-varchar *ngIf="comp.type == 'varchar' || comp.type == 'qrcode'"
     style="width:100%"
     floatLabel="always"
-    [label]="comp.NAME" [placeholder]="comp.placeholder"
+    [placeholder]="comp.NAME"
     [(value)]="val.value"
     (focus)="dynamicViewer && dynamicViewer.gotoPage(comp.dest_page-1)" #inp>
     <include shared ref="/widgets/web2print/content/edit-button"></include>

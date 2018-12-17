@@ -1,5 +1,5 @@
 <!-- @Abstract -->
-<div fxFlex *ngIf="comp.type == 'color'">
+<div *ngIf="comp.type == 'color'">
     <variable #rgbcolor></variable>
     <variable #rgbcolorSec></variable>
     <variable #col [defaults]="{value: comp.code}">
@@ -8,8 +8,7 @@
               <![CDATA[
                 var result = {};
                 result = convertRBG.execute(comp.placeholder);
-                rgbcolor.value = result;
-
+                rgbcolor.value = result || {r:255,g:0,b:0};
                 var result2 = [];
                 for (var i = 0; i < comp.colors.length; i++) {
                     result = {};
@@ -21,12 +20,23 @@
             </execution>
         </observe>
     </variable>
-    <label style="color: #757575;font-size: 80%">Colors</label>
-    <div style="margin-top: 4px" fxLayout="row">
+    <label style="font-size:13px;color:rgba(0,0,0,0.5)">Colors</label>
+    <div style="margin-top: 4px;margin-bottom:16px" fxLayout="row">
         <variable #colorSelection2 [defaults]="{value: 0}"></variable>
-        <div (click)="chval.execute(0)" [style.border]="colorSelection2.value ? '0' : '2px solid black'" [style.background-color]="'rgb(' + rgbcolor.value.r + ',' + rgbcolor.value.g + ',' + rgbcolor.value.b +')'" style="margin-right: 4px;width: 32px;height: 32px;border-radius: 100%"></div>
+        <!--            [style.border]="colorSelection2.value ? '0' : '2px solid black'" -->
+        <div style="width: 32px;height: 32px;border-radius: 100%;margin:5px"
+            class="mat-elevation-z1"
+            [class.mat-elevation-z5]="!colorSelection2.value"
+            (click)="chval.execute(0)"
+            [style.background-color]="'rgb(' + rgbcolor.value.r + ',' + rgbcolor.value.g + ',' + rgbcolor.value.b +')'"
+            ></div>
         <ng-template let-sc let-i="index" ngFor [ngForOf]="rgbcolorSec.value" style="display: inline-block">
-            <div (click)="chval.execute(i+1)" [style.border]="(colorSelection2.value == i+1) ? '2px solid black' : '0'" [style.background-color]="'rgb(' + sc.r + ',' + sc.g + ',' + sc.b +')'" style="margin-right: 4px;width: 32px;height: 32px;border-radius: 100%"></div>
+            <!--[style.border]="(colorSelection2.value == i+1) ? '2px solid black' : '0'" -->
+            <div (click)="chval.execute(i+1)"
+                style="width: 32px;height: 32px;border-radius: 100%;margin:5px"
+                class="mat-elevation-z1"
+                [class.mat-elevation-z5]="colorSelection2.value == i+1"
+                [style.background-color]="'rgb(' + sc.r + ',' + sc.g + ',' + sc.b +')'"></div>
         </ng-template>
         <execution #chval [params]="{DBG:DEBUG.value,val:val,comp:comp,colorSelection2:colorSelection2}"><![CDATA[
             colorSelection2.value = args[0];
@@ -50,14 +60,20 @@
       return;
     /* RGB COLOR SUPPLIED */
     var k = cmyk.toUpperCase().indexOf("RGB(");
-    if (k >= 0)
-        return "rgb("+cmyk.substring(k+1);
+    if (k >= 0) {
+        var x = cmyk.substring(k+4).replace(")", "").split(",");
+        var r = Number(x[0]);
+        var g = Number(x[1]);
+        var b = Number(x[2])
+        return {r:r,g:g,b:b};
+    }
 
     /* LOW QUALITY APPROXIMATION */
-    var c = cmyk.replace("cmyk(", "").replace(")", "").split(",")[0]/100;
-    var m = cmyk.replace("cmyk(", "").replace(")", "").split(",")[1]/100;
-    var y = cmyk.replace("cmyk(", "").replace(")", "").split(",")[2]/100;
-    var k = cmyk.replace("cmyk(", "").replace(")", "").split(",")[3]/100;
+    var x = cmyk.toLowerCase().replace("cmyk(", "").replace(")", "").split(",");
+    var c = x[0]/100;
+    var m = x[1]/100;
+    var y = x[2]/100;
+    var k = x[3]/100;
 
     result.r = 1 - Math.min( 1, c * ( 1 - k ) + k );
     result.g = 1 - Math.min( 1, m * ( 1 - k ) + k );

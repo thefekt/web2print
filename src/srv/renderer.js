@@ -156,6 +156,8 @@ exports.getTemplateJSON = function(tmpl,data,doNotRender) {
         } else if (e.type == "indexed_color" || e instanceof db.web2print.indexed_color_content ) {
             var d = data[e.code]!== undefined ? data[e.code] : e.initial_value;
             if (!d) d="";
+            var h = d.toUpperCase().indexOf(" RGB");
+            if (h > 0) d=d.substring(0,h);
             toReplace[e.code]=d;
         }
     }
@@ -289,6 +291,11 @@ exports.getContentsData = function(tpl) {
         tpl=db.web2print.print_template.byId(tpl);
     if (!tpl || !tpl.contents)
         return [];
+    function fixName(name) {
+        var i = name.indexOf(".");
+        if (i > 0) return name.substring(0,i);
+        return name;
+    }
     var res=[];
     for (var e of tpl.contents) {
         if (e instanceof db.web2print.varchar_content) {
@@ -340,7 +347,7 @@ exports.getContentsData = function(tpl) {
             res.push({
                 object : e,
                 code : e.code,
-                NAME : misc.OBJSTR(e),
+                NAME : fixName(misc.OBJSTR(e)),
                 type : 'image',
                 dest_page : e.dest_page,
                 placeholder : e.initial_value
@@ -348,14 +355,14 @@ exports.getContentsData = function(tpl) {
         } else if (e instanceof db.web2print.qrcode_content) {
             res.push({
                 object : e,
-                NAME : misc.OBJSTR(e),
+                NAME : fixName(misc.OBJSTR(e)),
                 code : e.code,
                 type : 'qrcode',
                 dest_page : e.dest_page,
                 placeholder : e.initial_value
             });
         } else if (e instanceof db.web2print.indexed_color_content) {
-            var colors = e.available.colors;
+            var colors = e.available_colors;
             if (colors) {
                 colors=colors.split("\n");
                 var arr=[];
@@ -375,7 +382,7 @@ exports.getContentsData = function(tpl) {
                 type : 'color',
                 dest_page : e.dest_page,
                 placeholder : e.initial_value,
-                colors: e.available_colors.split("\n")
+                colors: e.available_colors && e.available_colors.split("\n")
             });
         }
     }

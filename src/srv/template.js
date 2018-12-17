@@ -17,3 +17,9 @@ exports.createTemplate = function(code,document) {
     document.commit();
     return tmpl;
 };
+
+exports.deleteTemplate = function(template) {
+    if (!template.ACCESS.deletable)
+        return;
+    template.delete();
+};

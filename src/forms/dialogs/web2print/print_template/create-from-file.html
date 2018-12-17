@@ -1,5 +1,5 @@
 <variable #document export></variable>
-
+<variable #code export></variable>
 <mat-dialog-content simplebar style="min-width:400px" ngStyle.xs="min-width:initial">
 	<div style="padding-bottom: 8px">
 		<mat-icon style="font-size: 26px;display: inline-block;width:26px;height: 26px;color: rgba(0,0,0,0.4);vertical-align: top;padding-right: 8px" mat-list-icon>attach_file</mat-icon>
@@ -32,8 +32,8 @@
 		<mat-icon>add</mat-icon>
 		<span fxHide.xs><i18n>INFO_ADD</i18n></span>
 	</button>
-	<execution #onSubmit [params]="{root:root,document:document}"><![CDATA[
-        var code = document.value.code.substring(0,document.value.code.lastIndexOf('.'));
+	<execution #onSubmit [params]="{root:root,document:document,code:code.value}"><![CDATA[
+		code = code || document.value.code.substring(0,document.value.code.lastIndexOf('.'));		
         root.db.web2print.print_template.byCode(code,function(res) {
             if (res) {
                 root.openDialog("/dialogs/basic/question",{

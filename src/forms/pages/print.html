@@ -151,7 +151,6 @@
                   if (!custom.value) {
                       generatedPreview.value=null;
                       return;
-
                   }
                   timer.value=root.setTimeout(function() {
                       if (paused.value) {
@@ -159,8 +158,8 @@
                           return;
                       }
                       paused.value=true;
-                      DBG && console.log(JSON.stringify(custom.value));
 
+                      DBG && console.log(JSON.stringify(custom.value));
                       root.db.remote("web2print/renderer").renderTemplate(templateObject.value,custom.value).done(function(res) {
                           DBG && console.log(`#update: got renderer response`);
                           if (res === undefined) {
@@ -191,22 +190,27 @@
                 [dependency]="localPresent">
                   <!-- reactively trigger initial execution of generated preview -->
               </variable>
-
-              <execution #resetContent [params]="{root:root,custom:custom,timer:timer,generatedPreview:generatedPreview,templateObject:templateObject}"><![CDATA[
+              <observe #onResetContent></observe>
+              <execution #resetContent [params]="{root:root,onResetContent:onResetContent,custom:custom,timer:timer,generatedPreview:generatedPreview,templateObject:templateObject}"><![CDATA[
                   custom.value=null;
                   generatedPreview.value=null;
+                  onResetContent.emit();
               ]]></execution>
 
               <mat-sidenav-container absolute-fill>
                 <mat-sidenav [style.width]="ldc.classList.contains('layout-detect-xs') ? '100%' : '240px'" [opened]="sidenavOpen2.value" mode="side" #sidenav style="padding:8px;border-left:1px solid #eee"
                         [mode]="root.app.mediaSize == 'xs' ? 'over' : 'side'"
+                        fxLayout="column"
                 >
-                    <div *ngIf="templateObject.value && templateObject.value.contents && templateObject.value.contents.length">
-                        <div *ngFor="let comp of templateObject.value.contents; let i = index" fxLayout="row">
+                    <div *ngIf="templateObject.value && templateObject.value.contents && templateObject.value.contents.length" fxFlex fxLayout="column">
+                        <div *ngFor="let comp of templateObject.value.contents; let i = index">
                             <variable #val [defaults]="{value : (custom.value||{})[comp.code] || templateObject.value.defaultData[i] }">
+                                <observe [event]="onResetContent.dispatch" (dispatch)="val.value=templateObject.value.defaultData[i]"></observe>
                                 <observe [event]="val.onChange">
                                     <execution [params]="{update:update,val:val,custom:custom,root:root,def:templateObject.value.defaultData[i],code:comp.code}">
                                       <![CDATA[
+                                        if (val.value === null)
+                                            return;
                                         custom.value=custom.value||{};
                                         custom.value[code]=val.value;
                                         update.execute();
@@ -218,11 +222,11 @@
                             <include shared ref="/widgets/web2print/content/text"></include>
                             <include shared ref="/widgets/web2print/content/color"></include>
                             <include shared ref="/widgets/web2print/content/image"></include>
-                        </div>
-                        <br/>
-                        <div style="margin-bottom:2em;margin-left:3px;margin-right:3px">
+                       </div>
+                       <div fxFlex></div>
+                       <div style="margin-bottom:3px;margin-left:3px;margin-right:3px">
                               <button style="float:left" mat-button (click)="resetContent.execute()">
-                                  <mat-icon>restore</mat-icon>
+                                  <mat-icon style="margin-right:4px">restore</mat-icon>
                                   <i18n code="BUTTON_WEB_LOGIN_RESET"></i18n>
                               </button>
                               <button style="float:right" mat-button (click)="sidenav.close();sidenavOpen2.value = false">
@@ -258,13 +262,56 @@
                               <div [style.display]="!sidenav.opened ? undefined : 'none'" style="position:absolute;right:6px;top:6px" fxLayout="row">
 
                                 <button mat-button class="mat-elevation-z2"
-                                  style="color:rgb(236, 138, 36);background-color:rgba(255,255,255,0.85);border:1px solid #eee;font-weight:bold;"
+                                  style="
+    background-color: rgba(236, 138, 36,0.9);
+    color: white;
+    padding: 10px;
+    font-weight: bold;"
                                   type="button"
                                   color="accent"
                                   (click)="sidenav.open();sidenavOpen2.value = true">
                                     <i18n code="INFO_CUSTOMIZE"><i18n>
                                 </button>
                             </div>
+
+                            <div [style.display]="!sidenav.opened ? undefined : 'none'" style="position:absolute;right:6px;bottom:6px" fxLayout="row">
+                              <button mat-button class="mat-elevation-z2" *ngIf="root.loggedIn"
+                                style="
+  background-color: rgba(236, 10, 10,0.9);
+  color: white;
+  padding: 10px;
+  font-weight: bold;"
+                                type="button"
+                                color="accent"
+                                (click)="
+                                    root.openDialog('/dialogs/basic/question',{content:root.i18n('INFO_ARE_YOU_SURE_QUESTION')},deleteConfirmed.execute)
+                                ">
+                                  <i18n code="INFO_DELETE"><i18n>
+                              </button>
+                              <button mat-button class="mat-elevation-z2" *ngIf="!root.loggedIn"
+                                style="margin-left:10px;
+  background-color: rgba(236, 138, 36,0.9);
+  color: white;
+  padding: 10px;
+  font-weight: bold;"
+                                type="button"
+                                color="accent"
+                                (click)="root.app.openRoute('/login')">
+                                <i18n code="BUTTON_WEB_LOGIN_LOGIN"></i18n>
+                              </button>
+                              <button mat-button class="mat-elevation-z2" *ngIf="root.loggedIn"
+                                style="margin-left:10px;
+  background-color: rgba(236, 138, 36,0.9);
+  color: white;
+  padding: 10px;
+  font-weight: bold;"
+                                type="button"
+                                color="accent"
+                                (click)="root.app.openRoute('/admin/index')">
+                                  <i18n code="TEXT_ADMINISTRATION"></i18n>
+                              </button>
+                          </div>
+
                       </div>
                   </div>
               </mat-sidenav-container>
@@ -278,3 +325,9 @@
       </div>
   </div>
 </delay-dialog>
+
+<execution #deleteConfirmed [params]="{templateObject:templateObject,root:root}"><![CDATA[
+    root.db.remote("web2print/template").deleteTemplate(templateObject.value).done(function(res) {
+        root.app.reloadRoot();
+    })
+]]></execution>
