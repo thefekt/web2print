@@ -49,7 +49,7 @@
 		<span fxHide.xs><i18n>INFO_ADD</i18n></span>
 	</button>
 	<button mat-button (click)="onSubmit.execute()" *ngIf="force.value">
-		<mat-icon>save_alt</mat-icon>
+		<mat-icon>done</mat-icon>
 		<span fxHide.xs><i18n>INFO_ACCESS_UPDATE</i18n></span>	<!-- TODO ADD ANOTHER MESSAGE,CODE NOT OK -->
 	</button>
 	<execution #onSubmit [params]="{root:root,document:document,code:code.value,force:force}"><![CDATA[

@@ -140,9 +140,9 @@ exports.getTemplateJSON = function(tmpl,data,doNotRender) {
                     toReplace[e.code]=d.update_time||d.insert_time||0;
                 }
             }
-            else {
+            /*else {
               console.warn("render.js : document [" + e.code + "] is not a db.documents.file instance!");
-            }
+            }*/
         } else if (e.type == "qrcode" || e instanceof db.web2print.qrcode_content ) {
             var d = data[e.code]!== undefined ? data[e.code] : e.initial_value;
             if (d)

@@ -59,6 +59,7 @@
       <variable #templateObject [dependency]="tpl" (onReady)="reload.execute()">
           <execution [params]="{tpl:tpl,root:root,templateObject:templateObject,DBG:DEBUG.value}" #reload><![CDATA[
               root.db.remote("web2print/renderer").getTemplateDetails(tpl.value).done(function(res) {
+                  console.log(res);
                   DBG && console.log("#templateObject: got template " + res.object);
                   templateObject.value = res.object;
                   if (res.NAME && res.NAME.indexOf('error') >= 0) {
@@ -273,7 +274,7 @@
                                   type="button"
                                   color="accent"
                                   (click)="sidenav.open();sidenavOpen2.value = true">
-                                    <i18n code="INFO_CUSTOMIZE"><i18n>
+                                    <i18n code="INFO_CUSTOMIZE"></i18n>
                                 </button>
                             </div>
 
@@ -289,7 +290,7 @@
                                   (click)="
                                       root.openDialog('/dialogs/basic/question',{content:root.i18n('INFO_ARE_YOU_SURE_QUESTION')},deleteConfirmed.execute)
                                   ">
-                                    <i18n code="INFO_DELETE"><i18n>
+                                    <i18n code="INFO_DELETE"></i18n>
                                 </button>
                                 <button mat-button class="mat-elevation-z2" *ngIf="root.loggedIn"
                                   style="
@@ -304,13 +305,17 @@
                                       root.openDialog('/dialogs/web2print/print_template/replace',{
                                           code : tpl.value,
                                           data : custom.value||{}
-                                      },update.execute)
+                                      },replaced.execute)
                                   ">
                                     <i18n code="INFO_REPLACE_ZIP">
                                         <en-US>Update template</en-US>
                                         <de-DE>Vorlage aktualisieren</de-DE>
                                         <bg-BG>Актуализация шаблон</bg-BG>
-                                    <i18n>
+                                    </i18n>
+                                    <execution #replaced [params]="{root:root,resetContent:resetContent,reload:reload}">
+                                        resetContent.execute();
+                                        reload.execute();
+                                    </execution>
                                 </button>
                             </div>
 

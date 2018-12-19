@@ -30,7 +30,7 @@ exports.updateTemplate = function(code,document)
     if (!tmpl) return "not found";
     if (!tmpl.ACCESS.updatable || !tmpl.SCHEMA.ACCESS.updatable)
         return "access denied";
-    tmpl.document && !tmpl.document.DELETED && tmpl.document.deleted();
+    tmpl.document && !tmpl.document.DELETED && tmpl.document.delete();
     tmpl.document=document;
     tmpl.code=code;
     tmpl.commit();
