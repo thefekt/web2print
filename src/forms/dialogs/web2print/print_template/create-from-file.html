@@ -1,5 +1,6 @@
 <variable #document export></variable>
 <variable #code export></variable>
+<variable #force export></variable>
 <mat-dialog-content simplebar style="min-width:400px" ngStyle.xs="min-width:initial">
 	<div style="padding-bottom: 8px">
 		<mat-icon style="font-size: 26px;display: inline-block;width:26px;height: 26px;color: rgba(0,0,0,0.4);vertical-align: top;padding-right: 8px" mat-list-icon>attach_file</mat-icon>
@@ -8,12 +9,27 @@
 		</h4>
 	</div>
     <div>
-        <remote #res1 [dependency]="document" api="initTemplateContents" require="web2print/renderer"  [args]="[{
+        <remote #res1
+				[dependency]="document"
+				[disabled]="force.value"
+			    api="initTemplateContents" require="web2print/renderer"  [args]="[{
                 document:document.value,
                 code : document.value.code.substring(0,document.value.code.lastIndexOf('.'))
             }]">
-            <remote #res2 [dependency]="res1" api="renderTemplateOnce" require="web2print/renderer" [args]="[res1.value,{}]">
-                <div style="width:50vw;height:50vh" ngStyle.xs="width:100%" relative>
+            <remote #res2
+				[dependency]="res1"
+				require="web2print/renderer"
+				[api]="!force.value ? 'renderTemplateOnce' : 'renderTemplate'"
+				[args]="[
+
+					(force.value ? {
+						code : code.value,
+						document : document.value
+				    } : res1.value)
+
+					, (force.value || {} )
+				]">
+				<div style="width:50vw;height:50vh" ngStyle.xs="width:100%" relative>
                     <viewer [dependency]="res2"  [object]="res2.value">
                     </viewer>
                 </div>
@@ -28,12 +44,25 @@
 		<mat-icon>close</mat-icon>
 		<span fxHide.xs><i18n>BUTTON_WEB_CLOSE</i18n></span>
 	</button>
-	<button mat-button (click)="onSubmit.execute()">
+	<button mat-button (click)="onSubmit.execute()" *ngIf="!force.value">
 		<mat-icon>add</mat-icon>
 		<span fxHide.xs><i18n>INFO_ADD</i18n></span>
 	</button>
-	<execution #onSubmit [params]="{root:root,document:document,code:code.value}"><![CDATA[
-		code = code || document.value.code.substring(0,document.value.code.lastIndexOf('.'));		
+	<button mat-button (click)="onSubmit.execute()" *ngIf="force.value">
+		<mat-icon>save_alt</mat-icon>
+		<span fxHide.xs><i18n>INFO_ACCESS_UPDATE</i18n></span>	<!-- TODO ADD ANOTHER MESSAGE,CODE NOT OK -->
+	</button>
+	<execution #onSubmit [params]="{root:root,document:document,code:code.value,force:force}"><![CDATA[
+		code = code || document.value.code.substring(0,document.value.code.lastIndexOf('.'));
+		if (force.value)
+			return root.remote("web2print/template").updateTemplate(code,document.value).done(function(res) {
+				if (typeof res == "string")
+					return root.openDialog("/dialogs/basic/error",{
+						content : res
+					});
+				root.return(true);
+			});
+
         root.db.web2print.print_template.byCode(code,function(res) {
             if (res) {
                 root.openDialog("/dialogs/basic/question",{

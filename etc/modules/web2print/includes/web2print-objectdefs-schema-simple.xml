@@ -248,7 +248,6 @@
                 <name>
                     <bg-BG>Налични цветове (CMYK)</bg-BG>
                 </name>
-                <value_table>$(DB_PREFIX)_wp_txt_avlcl</value_table>
             </available_colors>
 
         </indexed_color_content>

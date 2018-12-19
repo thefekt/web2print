@@ -1,0 +1,37 @@
+<!-- @Abstract -->
+
+<include shared ref="/widgets/forms/dashboard/common"></include>
+<ng-template #main>
+    <div fxFlex fxLayout="column">
+        <div style="padding:10px;font-size:24px">
+            <div>{{tpl.value}}</div>
+        </div>
+        <div fxFlex></div>
+        <div fxLayout="column" style="position:relative;min-height: 40vh;max-width:60vw;margin:auto;border: 1px dashed rgba(0,0,0,0.6);padding:10px;border-radius: 18px;background-color:white;display:inline-block">
+            <action
+				 absolute-fill
+				 style="display: block"
+				 (onDrop)="root.app.uploadFiles($event,openDialog.execute)" provider="file"></action>
+            <div fxFlex></div>
+            <div style="font-size: 20px;text-align:center">
+                <i18n code="LABEL_TEMPLATE_ZIP">
+                    <en-US>Drop template ZIP file here</en-US>
+                    <de-DE>Vorlage ZIP-Datei hier per Drag & Drop platzieren</de-DE>
+                    <bg-BG>Поставете шаблонен ZIP файл с драг & дроп тук</bg-BG>
+                </i18n>
+            </div>
+            <div fxFlex></div>
+<!--
+            <input-varchar upload="file" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:1;background-color:rgba(255,0,0,0.1)" class="force-input-height-full"></input-varchar>
+        -->
+        </div>
+        <div fxFlex></div>
+    </div>
+
+
+    <execution #openDialog [params]="{root:root,res:res,tpl:tpl}"><![CDATA[
+        root.openDialog("/dialogs/web2print/print_template/create-from-file",{document:args[0][0],code:tpl.value},function(r) {
+            res.update();
+        })
+   ]]></execution>
+</ng-template>

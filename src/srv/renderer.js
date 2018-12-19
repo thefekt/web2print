@@ -73,6 +73,7 @@ exports.renderTemplateOnce = function(tmpl,data) {
 exports.renderTemplate = function(tmpl,data)
 {
     //console.info(`render.js: render ${tmpl.document.code} with ${JSON.stringify(data)} `);
+    log.warn("OPPP "+JSON.stringify(tmpl,null,4));
 
     if (!tmpl.document) {
       return { error : "document not existing or corrupted!"};

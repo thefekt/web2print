@@ -1,0 +1,360 @@
+<!-- @Abstract -->
+<runtime #dialogRef api="dialog.ref"></runtime>
+<delay-dialog #delay>
+  <!-- DEBUG option provided by external param or defaulting to false  -->
+  <variable #DEBUG export [defaults]="{value: 0}"></variable>
+
+  <variable #sidenavOpen2 [dependency]="embed" [defaults]="{value: true}"></variable>
+
+  <variable #storage [path]="'/session-documents'" persist>
+      <observe>
+          <execution #calcStorageCondition [params]="{storage:storage,root:root,storageCondition:storageCondition}"><![CDATA[
+              var tmp = storage.value;
+              if (!tmp || !tmp.length) {
+                  storageCondition.value=undefined;
+                  return;
+              }
+              var t = [];
+              for (var i=0;i<tmp.length;i++) t[i]="'"+tmp[i]+"'";
+              storageCondition.value="uuid IN ("+t.join(",")+")";
+          ]]></execution>
+      </observe>
+  </variable>
+  <variable #storageCondition></variable>
+
+  <!-- base url provided by external param or defaulting to localhost  -->
+  <variable #baseURL export [defaults]="{value: 'http://localhost' }"></variable>
+
+  <!-- executed upon change of user configured content. send to template -->
+  <execution #contentChange [params]="{baseURL:baseURL,DBG:DEBUG.value}"><![CDATA[
+      let [br, img, form] = args;
+      var curtumb = JSON.stringify(((br.files||[])[0]||{})['name']);
+      DBG && console.log(`#contentChange: current thumbnail ${curtumb}.`);
+
+      if (br.files && br.files[0]) {
+          var reader = new FileReader();
+          reader.onloadend = function() {
+            img.src = reader.result;
+
+            DBG && console.log(`#contentChange: upload new image ${br.files[0].name}.`);
+            var data = new FormData();
+            data.append('file', br.files[0]);
+
+            fetch(`${baseURL.value}/visionr.vsp?ajax=true&operation=upload`, {
+              method: 'POST',
+              body: data
+            }).then(success => DBG && console.log(`#contentChange: success ${success}`)
+            ).catch(e => console.error(e));
+
+          }
+          reader.readAsDataURL(br.files[0]);
+      }
+  ]]></execution>
+
+  <div absolute-fill style="background-color:white">
+      <variable #tpl export></variable>
+      <div #ldc hidden class.xs="layout-detect-xs"> </div>
+
+      <!-- Template part -->
+      <variable #templateObject [dependency]="tpl" (onReady)="reload.execute()">
+          <execution [params]="{tpl:tpl,root:root,templateObject:templateObject,DBG:DEBUG.value}" #reload><![CDATA[
+              root.db.remote("web2print/renderer").getTemplateDetails(tpl.value).done(function(res) {
+                  DBG && console.log("#templateObject: got template " + res.object);
+                  templateObject.value = res.object;
+                  if (res.NAME && res.NAME.indexOf('error') >= 0) {
+                      DBG && console.log("#templateObject: error getting result from renderer ");
+                  }
+                });
+          ]]></execution>
+      </variable>
+
+      <variable #custom
+        path="{{tpl.value}}"
+        [dependency]="tpl"
+        persist></variable>
+
+      <div *ngIf="custom.ready" absolute-fill fxLayout="column">
+          <div toolbar-content style="line-height: 30px; overflow: visible" fxLayout="row">
+              <i (click)="sidenavOpen2.value = !sidenavOpen2.value" class="material-icons icon-button" style="font-size: 44px;padding-right: 1px;margin-top: -7px;">menu</i>
+              <img src="{{root.app.url}}/images/logos/customer-logo_200x35.jpg" style="width: 200px; height: 35px; margin-top: -2.5px; cursor: pointer" (click)="root.app.openRoute('/print',$event)" /> <span fxFlex></span>
+              <h2 no-margin style="font-weight: normal; line-height: 30px; color: #c0c0c0"><span *ngIf="templateObject.value">{{templateObject.value.NAME}}</span></h2>
+              <span fxFlex></span>
+          </div>
+
+          <variable #generatedPreview persist
+            path="{{tpl.value}}"
+            [dependency]="tpl"
+            (valueChange)="localPresent.value=true"></variable>
+
+          <query schema="documents.document"
+                  where="id=:ID"
+                  properties="uuid"
+                  [params]="{ID: (generatedPreview.value || {})['id'] || 0}">
+
+                  <!-- find local document in the db if present -->
+
+                  <result #localPresent [dependency]="generatedPreview" (onReady)="postConfig.execute();"></result>
+          </query>
+
+          <execution #postConfig [params]="{
+              DBG:DEBUG.value,
+              tpl:tpl,custom:custom,
+              localPresent:localPresent,
+              generatedPreview:generatedPreview,
+              update:update,
+              baseURL:baseURL,
+              delay:delay}">
+              <![CDATA[
+              DBG && console.log('#postConfig: check conditions');
+              delay.done();
+            if (localPresent.objects.length === 0) {
+              return;
+            }
+
+            const msgpost = JSON.stringify({
+              tpl: tpl.value,
+              config: custom.value,
+              preview_uuid: localPresent.objects[0].uuid
+            });
+
+            var target = window.parent;
+            if (target !== null) {
+              DBG && console.log('#postConfig: posting data to parent ' + msgpost);
+              target.postMessage(msgpost, baseURL.value);
+            }
+
+          ]]></execution>
+
+          <div absolute-fill *ngIf="templateObject.value && templateObject.value.preview_document && localPresent.ready">
+              <!-- THE MAIN VIEWER + CUSTOMIZE TOOLBAR -->
+              <variable #timer></variable>
+              <variable #paused></variable>
+              <variable #reupdate></variable>
+
+              <variable #customjson [value]="custom.value|json" (valueChange)="custom.value = root.clone(custom.value)"></variable>
+              <execution #update
+                [params]="{DBG:DEBUG.value,
+                  update:update,
+                  root:root,
+                  paused:paused,
+                  reupdate:reupdate,
+                  custom:custom,
+                  timer:timer,
+                  generatedPreview:generatedPreview,
+                  templateObject:templateObject,
+                  postConfig:postConfig}"
+                (onReady)="initialExec.value=update"><![CDATA[
+                  if (timer.value) {
+                      clearTimeout(timer.value);
+                      timer.value=undefined;
+                  }
+                  if (!custom.value) {
+                      generatedPreview.value=null;
+                      return;
+                  }
+                  timer.value=root.setTimeout(function() {
+                      if (paused.value) {
+                          reupdate.value=true;
+                          return;
+                      }
+                      paused.value=true;
+
+                      DBG && console.log(JSON.stringify(custom.value));
+                      root.db.remote("web2print/renderer").renderTemplate(templateObject.value,custom.value).done(function(res) {
+                          DBG && console.log(`#update: got renderer response`);
+                          if (res === undefined) {
+                            console.error('#update: failed to receive reasonable response from server');
+                            return;
+                          }
+                          paused.value=false;
+                          generatedPreview.value=res;
+                          postConfig.execute();
+
+                          if (reupdate.value) {
+                              reupdate.value=false;
+                              update.execute();
+                          }
+                      });
+                  },generatedPreview.value === undefined ? 0 : 500);
+              ]]></execution>
+
+              <execution #initLocal [params]="{update:update,localPresent:localPresent,postConfig:postConfig}"><![CDATA[
+                  postConfig.execute();
+                  if (localPresent.objects.length === 0)
+                    update.execute();
+              ]]></execution>
+
+              <variable #initialExec
+                [value]="localPresent.objects.length"
+                (onReady)="initLocal.execute()"
+                [dependency]="localPresent">
+                  <!-- reactively trigger initial execution of generated preview -->
+              </variable>
+              <observe #onResetContent></observe>
+              <execution #resetContent [params]="{root:root,onResetContent:onResetContent,custom:custom,timer:timer,generatedPreview:generatedPreview,templateObject:templateObject}"><![CDATA[
+                  custom.value=null;
+                  generatedPreview.value=null;
+                  onResetContent.emit();
+              ]]></execution>
+
+              <mat-sidenav-container absolute-fill>
+                <mat-sidenav [style.width]="ldc.classList.contains('layout-detect-xs') ? '100%' : '240px'" [opened]="sidenavOpen2.value" mode="side" #sidenav style="padding:8px;border-left:1px solid #eee"
+                        [mode]="root.app.mediaSize == 'xs' ? 'over' : 'side'"
+                        fxLayout="column"
+                        style="overflow:hidden"
+                >
+                    <div *ngIf="templateObject.value && templateObject.value.contents && templateObject.value.contents.length"
+                        fxFlex fxLayout="column">
+                        <div fxFlex style="overflow:auto;padding:10px">
+                            <div *ngFor="let comp of templateObject.value.contents; let i = index">
+                                <variable #val [defaults]="{value : (custom.value||{})[comp.code] || templateObject.value.defaultData[i] }">
+                                    <observe [event]="onResetContent.dispatch" (dispatch)="val.value=templateObject.value.defaultData[i]"></observe>
+                                    <observe [event]="val.onChange">
+                                        <execution [params]="{update:update,val:val,custom:custom,root:root,def:templateObject.value.defaultData[i],code:comp.code}">
+                                          <![CDATA[
+                                            if (val.value === null)
+                                                return;
+                                            custom.value=custom.value||{};
+                                            custom.value[code]=val.value;
+                                            update.execute();
+                                          ]]>
+                                        </execution>
+                                    </observe>
+                                </variable>
+                                <include shared ref="/widgets/web2print/content/varchar"></include>
+                                <include shared ref="/widgets/web2print/content/text"></include>
+                                <include shared ref="/widgets/web2print/content/color"></include>
+                                <include shared ref="/widgets/web2print/content/image"></include>
+                           </div>
+                        </div>
+                        <div style="margin:10px">
+                              <button style="float:left" mat-button (click)="resetContent.execute()">
+                                  <mat-icon style="margin-right:4px">restore</mat-icon>
+                                  <i18n code="BUTTON_WEB_LOGIN_RESET"></i18n>
+                              </button>
+                              <button style="float:right" mat-button (click)="sidenav.close();sidenavOpen2.value = false">
+                                  <mat-icon>close</mat-icon>
+                      		      <span><i18n>BUTTON_WEB_CLOSE</i18n></span>
+                              </button>
+                        </div>
+                    </div>
+                </mat-sidenav>
+
+                <div absolute-fill fxLayout="column">
+                    <div *ngIf="DEBUG.value > 0">
+                      <li>DEBUG: {{DEBUG.value}}</li>
+                      <li>generated: {{generatedPreview.value|json}} </li>
+                      <li>custom: {{custom.value|json}} </li>
+                      <li>template: {{templateObject.value.preview_document|json}} </li>
+                      <li>localPresent: {{localPresent.objects.length}} </li>
+                      <li>[query params: {{ (generatedPreview.value || {})['id'] || 0}} ] </li>
+                      <li>viewer object: {{(
+                          (localPresent.objects.length ? generatedPreview.value : undefined) || templateObject.value.preview_document
+                        )|json
+                      }}</li>
+                    </div>
+                      <div fxFlex relative>
+                            <viewer #dynamicViewer
+                              [dependency]="templateObject"
+                              [initialPaddingPercents]="10"
+                              preserveBounds
+                              [object]="(localPresent.objects.length ? generatedPreview.value : undefined) || templateObject.value.preview_document"
+                              absolute-fill
+                              ></viewer>
+
+                              <div [style.display]="!sidenav.opened ? undefined : 'none'" style="position:absolute;right:6px;top:6px" fxLayout="row">
+
+                                <button mat-button class="mat-elevation-z2"
+                                  style="
+    background-color: rgba(236, 138, 36,0.9);
+    color: white;
+    padding: 10px;
+    font-weight: bold;"
+                                  type="button"
+                                  color="accent"
+                                  (click)="sidenav.open();sidenavOpen2.value = true">
+                                    <i18n code="INFO_CUSTOMIZE"><i18n>
+                                </button>
+                            </div>
+
+                            <div [style.display]="!sidenav.opened ? undefined : 'none'" style="position:absolute;left:6px;bottom:6px" fxLayout="row">
+                                <button mat-button class="mat-elevation-z2" *ngIf="root.loggedIn"
+                                  style="
+    background-color: rgba(236, 10, 10,0.9);
+    color: white;
+    padding: 10px;
+    font-weight: bold;"
+                                  type="button"
+                                  color="accent"
+                                  (click)="
+                                      root.openDialog('/dialogs/basic/question',{content:root.i18n('INFO_ARE_YOU_SURE_QUESTION')},deleteConfirmed.execute)
+                                  ">
+                                    <i18n code="INFO_DELETE"><i18n>
+                                </button>
+                                <button mat-button class="mat-elevation-z2" *ngIf="root.loggedIn"
+                                  style="
+                                  margin-left:10px;
+    background-color: rgba(236, 10, 10,0.9);
+    color: white;
+    padding: 10px;
+    font-weight: bold;"
+                                  type="button"
+                                  color="accent"
+                                  (click)="
+                                      root.openDialog('/dialogs/web2print/print_template/replace',{
+                                          code : tpl.value,
+                                          data : custom.value||{}
+                                      },update.execute)
+                                  ">
+                                    <i18n code="INFO_REPLACE_ZIP">
+                                        <en-US>Update template</en-US>
+                                        <de-DE>Vorlage aktualisieren</de-DE>
+                                        <bg-BG>Актуализация шаблон</bg-BG>
+                                    <i18n>
+                                </button>
+                            </div>
+
+                            <div [style.display]="!sidenav.opened ? undefined : 'none'" style="position:absolute;right:6px;bottom:6px" fxLayout="row">
+                              <button mat-button class="mat-elevation-z2" *ngIf="!root.loggedIn"
+                                style="margin-left:10px;
+  background-color: rgba(236, 138, 36,0.9);
+  color: white;
+  padding: 10px;
+  font-weight: bold;"
+                                type="button"
+                                color="accent"
+                                (click)="root.app.openRoute('/login')">
+                                <i18n code="BUTTON_WEB_LOGIN_LOGIN"></i18n>
+                              </button>
+                              <button mat-button class="mat-elevation-z2" *ngIf="root.loggedIn && !dialogRef.value"
+                                style="margin-left:10px;
+  background-color: rgba(236, 138, 36,0.9);
+  color: white;
+  padding: 10px;
+  font-weight: bold;"
+                                type="button"
+                                color="accent"
+                                (click)="root.app.openRoute('/admin/index')">
+                                  <i18n code="TEXT_ADMINISTRATION"></i18n>
+                              </button>
+                          </div>
+
+                      </div>
+                  </div>
+              </mat-sidenav-container>
+
+              <button *ngIf="dialogRef.value && !sidenavOpen2.value" class="mat-elevation-z1" mat-button dialog-close style="position:absolute;right:10px;bottom:10px;z-index:1000;background-color:white">
+                    <mat-icon>close</mat-icon>
+                    <span fxHide.xs><i18n>BUTTON_WEB_CLOSE</i18n></span>
+              </button>
+
+          </div>
+      </div>
+  </div>
+</delay-dialog>
+
+<execution #deleteConfirmed [params]="{templateObject:templateObject,root:root}"><![CDATA[
+    root.db.remote("web2print/template").deleteTemplate(templateObject.value).done(function(res) {
+        root.app.reloadRoot();
+    })
+]]></execution>

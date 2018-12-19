@@ -3,6 +3,8 @@
     style="width:100%"
     *ngIf="comp.type == 'text'"
     floatLabel="always"
+    [maxLinesBlur]="5"
+    [maxLines]="10"
     [label]="comp.NAME" [placeholder]="comp.placeholder"
     [(value)]="val.value"
     (focus)="dynamicViewer && dynamicViewer.gotoPage(comp.dest_page-1)" #inp>
