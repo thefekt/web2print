@@ -23,3 +23,18 @@ exports.deleteTemplate = function(template) {
         return;
     template.delete();
 };
+
+exports.updateTemplate = function(code,document)
+{
+    var tmpl = db.web2print.print_template.byCode(code);
+    if (!tmpl) return "not found";
+    if (!tmpl.ACCESS.updatable || !tmpl.SCHEMA.ACCESS.updatable)
+        return "access denied";
+    tmpl.document && !tmpl.document.DELETED && tmpl.document.deleted();
+    tmpl.document=document;
+    tmpl.code=code;
+    tmpl.commit();
+    document.parent= JSCORE.Exec.callVSC("doc.misc.getUserUploadFolder");
+    document.commit();
+    return tmpl;
+};
