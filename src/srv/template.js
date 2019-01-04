@@ -38,3 +38,10 @@ exports.updateTemplate = function(code,document)
     document.commit();
     return tmpl;
 };
+
+exports.setContentRegion = function(content,val) {
+    if (!content || !content.print_template) return;
+    if (!content.ACCESS.updatable) return;
+    if (!content.print_template.ACCESS.updatable) return;
+    content.region = val ? JSON.stringify(val) : undefined;
+};

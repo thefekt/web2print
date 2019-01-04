@@ -1,0 +1,203 @@
+<!-- @Abstract -->
+<!-- Requires #data -->
+<!-- Requires #columns -->
+
+<variable #libDone></variable>
+<variable #getData></variable>
+<execution #loadLibrary [params]="{root:root,libDone:libDone}" (onReady)="loadLibrary.execute()"><![CDATA[
+    if (typeof Handsontable != 'undefined') {
+        libDone.value=1;
+        return;
+    }
+    var c=0;
+    var bd = document.getElementsByTagName("body")[0];
+    function one()
+    {
+            var script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.async = true;
+            script.src = 'assets/handsontable.full.min.js';
+            script.onload = two;
+            bd.appendChild(script);
+            function two()
+            {
+                    var script = document.createElement('script');
+                    script.type = 'text/javascript';
+                    script.async = true;
+                    script.src = 'assets/numbro/languages.min.js';
+                    script.onload = last;
+                    bd.appendChild(script);
+                    function last() {
+                        libDone.value=1;
+                    }
+            }
+    }
+    var fileref = document.createElement("link");
+    fileref.setAttribute("rel", "stylesheet");
+    fileref.setAttribute("type", "text/css");
+    fileref.setAttribute("href", "forms/assets/handsontable.full.min.css");
+    fileref.onload = one;
+    bd.appendChild(fileref);
+]]></execution>
+
+<div *ngIf="libDone.value" #hot>
+    <execution #createTeable (onReady)="createTeable.execute()" [params]="{root:root,hot:hot,data:data.value,columns:columns.value,getData:getData}"><![CDATA[
+        var hcols = [];
+        var colWidths = [];
+        var colHeaders =[];
+        var formaters = [];
+        var parsers = [];
+        for (var i=0;i<columns.length;i++) {
+            var c = columns[i];
+            colWidths.push(Math.round((c.width || 100)*1.2));
+            colHeaders.push(c.name);
+            switch (c.type) {
+                case 'double' :
+                    hcols.push({
+                        renderer: getNumericRenderer(c.prefix,c.suffix),
+                        data:i,
+                        type: 'numeric',
+                        numericFormat: {
+                            pattern: '0,0.00',
+                            culture: 'de-DE'
+                        }
+                    });
+                    break;
+                case 'integer' :
+                    hcols.push({
+                        renderer: getNumericRenderer(c.prefix,c.suffix),
+                        data:i,
+                        type: 'numeric',
+                        numericFormat: {
+                            pattern: '0,0',
+                            culture: root.db.defaultInputFormatInteger[1] == ',' ? 'en-US' : 'de-DE'
+                        }
+                    });
+                break;
+                case 'time' :
+                case 'hoursMinutes' :
+                    hcols.push({
+                        renderer: getDateRenderer(c.prefix,c.suffix),
+                        data:i,
+                        type:'time',
+                        className: 'htRight htMiddle',
+                        timeFormat: root.db['defaultOutputFormat'+c.type.substring(0,1).toUpperCase()+c.type.substring(1)]
+                    });
+                    formaters[i]=((function(val) {
+                        return root[this](val);
+                    }).bind('format'+c.type.substring(0,1).toUpperCase()+c.type.substring(1)));
+                    parsers[i]=((function(val) {
+                        return root[this](val);
+                    }).bind('parse'+c.type.substring(0,1).toUpperCase()+c.type.substring(1)));
+                    break;
+                case 'date' :
+                case 'datetime' :
+                case 'datetimeHoursMinutes' :
+                    hcols.push({
+                        data:i,
+                        type:'date',
+                        renderer: getDateRenderer(c.prefix,c.suffix),
+                        className: 'htRight htMiddle',
+                        dateFormat: root.db['defaultOutputFormat'+c.type.substring(0,1).toUpperCase()+c.type.substring(1)]
+                    });
+                    formaters[i]=((function(val) {
+                        return root[this](val);
+                    }).bind('format'+c.type.substring(0,1).toUpperCase()+c.type.substring(1)));
+                    parsers[i]=((function(val) {
+                        return root[this](val);
+                    }).bind('parse'+c.type.substring(0,1).toUpperCase()+c.type.substring(1)));
+                    break;
+                default :
+                    hcols.push({
+                        data:i,
+                        type:'text'
+                    });
+            }
+        }
+        var copy = [];
+        for (var i=0;i<data.length;i++) {
+            var r = data[i];
+            var t = [];
+            for (var j=0;j<r.length;j++) {
+                var c = r[j];
+                if (c instanceof Date)
+                    t.push(formaters[j](c))
+                else
+                    t.push(c);
+            }
+            copy.push(t);
+        }
+        //console.log(hcols);
+        //---------------------------------------------------------------------------
+        var hotElement = hot;
+        var hotSettings = {
+          data: copy,
+          columns: hcols,
+          colWidths : colWidths,
+          height : Math.round(window.innerHeight*60/100),
+          autoWrapRow: true,
+          manualRowResize: true,
+          manualColumnResize: true,
+          rowHeaders: true,
+          colHeaders: colHeaders,
+          contextMenu: true
+        };
+        var tbl = new Handsontable(hotElement, hotSettings);
+        tbl.selectCell(0,0)
+        getData.value = function() {
+            var copy = [];
+            var data = tbl.getData();
+            for (var i=0;i<data.length;i++)
+            {
+                var r = data[i];
+                var t = [];
+                for (var j=0;j<r.length;j++)
+                {
+                    var c = r[j];
+                    if (parsers[j])
+                        t.push(parsers[j](c))
+                    else
+                        t.push(c);
+                }
+                copy.push(t);
+            }
+            return copy;
+        };
+        //---------------------------------------------------------------------------
+        function getNumericRenderer(prefix,suffix)
+        {
+            prefix=(prefix||'').trim();suffix=(suffix||'').trim();
+            if (!prefix && !suffix) return;
+            return (function(instance, td, row, col, prop, value, cellProperties) {
+               Handsontable.renderers.NumericRenderer.apply(this, arguments);
+               if (!td.innerText.trim()) return;
+               if (prefix) {
+                   var nd = document.createTextNode(prefix+" ");
+                   td.insertBefore(nd,td.firstChild);
+               }
+               if (suffix) {
+                   var nd = document.createTextNode(" "+suffix);
+                   td.appendChild(nd);
+               }
+            });
+        }
+        function getDateRenderer(prefix,suffix)
+        {
+            prefix=(prefix||'').trim();suffix=(suffix||'').trim();
+            if (!prefix && !suffix) return;
+            return (function(instance, td, row, col, prop, value, cellProperties) {
+               Handsontable.renderers.DateRenderer.apply(this, arguments);
+               var it = td.innerText.split('▼').join('');
+               if (!it) return;
+               if (prefix) {
+                   var nd = document.createTextNode(prefix+" ");
+                   td.insertBefore(nd,td.firstChild);
+               }
+               if (suffix) {
+                   var nd = document.createTextNode(" "+suffix);
+                   td.appendChild(nd);
+               }
+            });
+        }
+    ]]></execution>
+</div>

@@ -1,0 +1,39 @@
+<!-- NAME@en-US Select position -->
+<!-- NAME@de-DE Position wählen -->
+<!-- NAME@bg-BG Избор позиция -->
+
+<variable #schema export></variable>
+<variable #condition export></variable>
+<variable #queryParams export></variable>
+
+<data [schema]="schema.value" [where]="condition.value" [params]="queryParams.value" [limit]="2"
+      select="this,print_template.preview_document,region,dest_page">
+    <result #res></result>
+</data>
+<attach *ngIf="res.ready && res.objects.length > 1"
+    ref="/dialogs/basic/error"
+    [params]="{content : root.i18n('ERROR_SINGLE_SELECTION')}"></attach>
+<ng-container *ngIf="res.ready && res.objects.length == 1">
+    <variable #content [value]="res.objects[0][0]"></variable>
+    <variable #object [value]="res.objects[0][1]"></variable>
+    <variable #cropData [value]="root.JSON.parse(res.objects[0][2]||'null')"></variable>
+    <variable #page [value]="res.objects[0][3]"></variable>
+    <attach ref="/dialogs/documents/document/crop" [params]="{
+        fullscreen : root.app.mobile,
+        object : object.value,
+        page : root.Math.max(page.value-1,0),
+        customSubmit : setRegion.execute,
+        customButton : {
+            click : clearRegion.execute,
+            icon : 'delete',
+            label : root.i18n('BUTTON_WEB_REMOVE')
+        },
+        cropData : cropData.value || {}
+    }"></attach>
+    <execution #clearRegion [params]="{root:root,content:content}"><![CDATA[
+        root.remote("web2print/template").setContentRegion(content.value).done(root.return);
+    ]]></execution>
+    <execution #setRegion [params]="{root:root,content:content}"><![CDATA[
+        root.remote("web2print/template").setContentRegion(content.value,args[0]).done(root.return);
+    ]]></execution>
+</ng-container>

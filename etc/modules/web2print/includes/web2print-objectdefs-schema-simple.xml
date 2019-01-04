@@ -29,6 +29,23 @@
                     <bg-BG>Шаблон</bg-BG>
                 </name>
             </print_template>
+			<region>
+                <sort_id>4000</sort_id>
+                <category>main.basic</category>
+                <data_source>input</data_source>
+                <data_type>varchar</data_type>
+                <is_inmaintbl>true</is_inmaintbl>
+				<is_readonly>true</is_readonly>
+                <name>
+                    <en-US>Region</en-US>
+                </name>
+                <name>
+                    <de-DE>Bereich</de-DE>
+                </name>
+                <name>
+                    <bg-BG>Област</bg-BG>
+                </name>
+            </region>
 			<dest_page col="dpage">
                 <sort_id>2001</sort_id>
                 <category>main.basic</category>
@@ -173,6 +190,7 @@
         </time_content>
 
         <image_content parent_objectdef="web2print.abstract_content">
+
             <initial_value col="ival_vi">
                 <sort_id>2001</sort_id>
                 <category>main.basic</category>
@@ -190,6 +208,25 @@
                     <bg-BG>Начална стойност</bg-BG>
                 </name>
             </initial_value>
+
+			<proportion>
+                <sort_id>2001</sort_id>
+                <category>main.basic</category>
+                <data_source>input</data_source>
+				<data_type>double</data_type>
+                <is_inmaintbl>true</is_inmaintbl>
+                <is_obligatory>false</is_obligatory>
+                <name>
+                    <en-US>Proportion Width/Height</en-US>
+                </name>
+                <name>
+                    <de-DE>Verhältnis Brete/Höhe</de-DE>
+                </name>
+                <name>
+                    <bg-BG>Пропорция (ширина/височина)</bg-BG>
+                </name>
+            </proportion>
+
         </image_content>
 
         <qrcode_content parent_objectdef="web2print.abstract_content">
@@ -211,6 +248,66 @@
                 </name>
             </initial_value>
         </qrcode_content>
+
+		<table_content parent_objectdef="web2print.abstract_content">
+			<column_count>
+                <sort_id>2101</sort_id>
+                <category>main.basic</category>
+                <data_source>input</data_source>
+                <data_type>integer</data_type>
+                <is_inmaintbl>true</is_inmaintbl>
+                <is_obligatory>true</is_obligatory>
+                <name>
+                    <en-US>Column count</en-US>
+                </name>
+                <name>
+                    <de-DE>Anzahl Spalten</de-DE>
+                </name>
+                <name>
+                    <bg-BG>Брой колони</bg-BG>
+                </name>
+				<default_value>2</default_value>
+				<min_value_integer>1</min_value_integer>
+            </column_count>
+
+			<row_count>
+                <sort_id>2102</sort_id>
+                <category>main.basic</category>
+                <data_source>input</data_source>
+                <data_type>integer</data_type>
+                <is_inmaintbl>true</is_inmaintbl>
+                <is_obligatory>true</is_obligatory>
+                <name>
+                    <en-US>Row count</en-US>
+                </name>
+                <name>
+                    <de-DE>Anzahl Zeilen</de-DE>
+                </name>
+                <name>
+                    <bg-BG>Брой редове</bg-BG>
+                </name>
+				<default_value>2</default_value>
+				<min_value_integer>1</min_value_integer>
+            </row_count>
+
+			<table_data>
+				<sort_id>2202</sort_id>
+                <category>main.basic</category>
+                <data_source>input</data_source>
+                <data_type>text</data_type>
+                <is_inmaintbl>true</is_inmaintbl>
+                <is_readonly>true</is_readonly>
+                <name>
+                    <en-US>Table data</en-US>
+                </name>
+                <name>
+                    <de-DE>Tabellendaten</de-DE>
+                </name>
+                <name>
+                    <bg-BG>Данни табела</bg-BG>
+                </name>
+			</table_data>
+		</table_content>
 
         <indexed_color_content parent_objectdef="web2print.abstract_content">
 
@@ -356,6 +453,9 @@ if (!this.document) {
         this.preview_key=null;
     if (this.preview_document)
         this.preview_document=null;
+	if (this.OLD.document) {
+		require("web2print/renderer").forceStop(this.OLD);
+	}
     return;
 }
 require("web2print/renderer").initTemplateContents(this);

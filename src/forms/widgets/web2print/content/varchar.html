@@ -6,4 +6,5 @@
     [(value)]="val.value"
     (focus)="dynamicViewer && dynamicViewer.gotoPage(comp.dest_page-1)" #inp>
     <include shared ref="/widgets/web2print/content/edit-button"></include>
+    <observe [event]="dynamicViewer.overlayClick" (dispatch)="overlayClicked.execute(comp,inp,$event)"></observe>
 </input-varchar>

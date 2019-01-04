@@ -13,7 +13,7 @@
 	<!-- NEW trigger change detection of current context. Dispatch must be expression! -->
 	<observe [event]="root.app.mediaSizeChange" (dispatch)="0"></observe>
 
-	<remote require="dev/viewer" api="getPreviewSummary" #res
+	<remote require="server/forms/viewer" api="getPreviewSummary" #res
 	 		  	[args]="[object.value,200,
 						root.app.mediaSize == 'xs' ? 200 :
 						root.app.mediaSize == 'sm' ? 256

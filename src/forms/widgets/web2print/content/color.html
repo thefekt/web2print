@@ -1,5 +1,6 @@
 <!-- @Abstract -->
-<div *ngIf="comp.type == 'color'">
+<div *ngIf="comp.type == 'color'" #froot tabindex="-1" (click)="froot.focus()" (focus)="focused.value=true" (blur)="focused.value=false">
+    <variable #focused></variable>
     <variable #rgbcolor></variable>
     <variable #rgbcolorSec></variable>
     <variable #col [defaults]="{value: comp.code}">
@@ -20,8 +21,8 @@
             </execution>
         </observe>
     </variable>
-    <label style="font-size:13px;color:rgba(0,0,0,0.5)">Colors</label>
-    <div style="margin-top: 4px;margin-bottom:16px" fxLayout="row">
+    <label style="font-size:13px" [style.color]="focused.value ? 'rgba(236,138,36,1)':'rgba(0,0,0,0.5)'">{{comp.NAME}}</label>
+    <div style="margin-top: 4px;margin-bottom:16px;position:relative" fxLayout="row">
         <variable #colorSelection2 [defaults]="{value: 0}"></variable>
         <!--            [style.border]="colorSelection2.value ? '0' : '2px solid black'" -->
         <div style="width: 32px;height: 32px;border-radius: 100%;margin:5px"
@@ -47,6 +48,16 @@
             }
             DBG && console.log(`#chval + ${val.value}`);
         ]]></execution>
+        <button mat-button style="height:30px;background-color:white;font-size:14px;position:absolute;right:3px;top:6px;z-index:10" *ngIf="focused.value && root.loggedIn"
+            (click)="root.detailsDialog(comp.object,'web2print.abstract_content',{
+                fullscreen : root.app.phone,
+                type : 'edit'
+            },undefinded,undefined,reload.execute);root.app.blur()"
+            (mousedown)="$event.stopPropagation();$event.preventDefault();"
+            >
+            <mat-icon>edit</mat-icon>
+        </button>
+        <observe [event]="dynamicViewer.overlayClick" (dispatch)="overlayClicked.execute(comp,undefined,$event,froot)"></observe>
     </div>
 </div>
 

@@ -124,6 +124,17 @@
         </name>
     </object>
 
+	<object cond="module.code='web2print' AND code='table_content'"
+			module="core"
+			objectdef="objectdef"
+			mode="update">
+		<name>
+			<value><en-US>Table</en-US></value>
+			<value><de-DE>Tabelle</de-DE></value>
+			<value><bg-BG>Табела</bg-BG></value>
+		</name>
+	</object>
+
     <object cond="module.code='web2print' AND code='qrcode_content'"
             module="core"
             objectdef="objectdef"

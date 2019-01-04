@@ -51,7 +51,9 @@
       }
   ]]></execution>
 
-  <div absolute-fill style="background-color:white">
+  <div absolute-fill
+      [style.background-color]="dialogRef.value ? 'white' : 'transparent'"
+    >
       <variable #tpl export></variable>
       <div #ldc hidden class.xs="layout-detect-xs"> </div>
 
@@ -59,9 +61,22 @@
       <variable #templateObject [dependency]="tpl" (onReady)="reload.execute()">
           <execution [params]="{tpl:tpl,root:root,templateObject:templateObject,DBG:DEBUG.value}" #reload><![CDATA[
               root.db.remote("web2print/renderer").getTemplateDetails(tpl.value).done(function(res) {
-                  console.log(res);
                   DBG && console.log("#templateObject: got template " + res.object);
                   templateObject.value = res.object;
+                  var overlays=[];
+                  if (res.object.contents) for (var i=0;i<res.object.contents.length;i++) {
+                      var c = res.object.contents[i];
+                      if (c.region && c.dest_page > 0)
+                          overlays.push({
+                              code : c.code,
+                              page : c.dest_page-1,
+                              class : 'force-hover-opacity force-display-flex',
+                              style : 'opacity:0;font-size:20px;color:rgba(0,0,0,0.7);cursor:pointer;background-color:rgba(255, 255, 255, 0.8);border:2px dashed black;box-sizing:border-box;justify-content: center;align-items: center',
+                              region : c.region,
+                              content : c.NAME
+                          });
+                  }
+                  res.object.overlays=overlays.length ? overlays : undefined;
                   if (res.NAME && res.NAME.indexOf('error') >= 0) {
                       DBG && console.log("#templateObject: error getting result from renderer ");
                   }
@@ -160,7 +175,7 @@
                       }
                       paused.value=true;
 
-                      DBG && console.log(JSON.stringify(custom.value));
+                      DBG && console.log(JSON.stringify(custom.value,null,4));
                       root.db.remote("web2print/renderer").renderTemplate(templateObject.value,custom.value).done(function(res) {
                           DBG && console.log(`#update: got renderer response`);
                           if (res === undefined) {
@@ -191,7 +206,7 @@
                 [dependency]="localPresent">
                   <!-- reactively trigger initial execution of generated preview -->
               </variable>
-              <observe #onResetContent></observe>
+              <observe #onResetContent [async]="false"></observe>
               <execution #resetContent [params]="{root:root,onResetContent:onResetContent,custom:custom,timer:timer,generatedPreview:generatedPreview,templateObject:templateObject}"><![CDATA[
                   custom.value=null;
                   generatedPreview.value=null;
@@ -199,7 +214,9 @@
               ]]></execution>
 
               <mat-sidenav-container absolute-fill>
-                <mat-sidenav [style.width]="ldc.classList.contains('layout-detect-xs') ? '100%' : '240px'" [opened]="sidenavOpen2.value" mode="side" #sidenav style="padding:8px;border-left:1px solid #eee"
+                <mat-sidenav
+                        [disableClose]="true"
+                        [style.width]="ldc.classList.contains('layout-detect-xs') ? '100%' : '240px'" [opened]="sidenavOpen2.value" mode="side" #sidenav style="padding:8px;border-left:1px solid #eee;background-color:transparent !important"
                         [mode]="root.app.mediaSize == 'xs' ? 'over' : 'side'"
                         fxLayout="column"
                         style="overflow:hidden"
@@ -207,13 +224,17 @@
                     <div *ngIf="templateObject.value && templateObject.value.contents && templateObject.value.contents.length"
                         fxFlex fxLayout="column">
                         <div fxFlex style="overflow:auto;padding:10px">
+                            <variable #lastResetTime></variable>
+                            <observe [event]="onResetContent.dispatch" (dispatch)="lastResetTime.value=root.app.date.now()"></observe>
                             <div *ngFor="let comp of templateObject.value.contents; let i = index">
                                 <variable #val [defaults]="{value : (custom.value||{})[comp.code] || templateObject.value.defaultData[i] }">
                                     <observe [event]="onResetContent.dispatch" (dispatch)="val.value=templateObject.value.defaultData[i]"></observe>
                                     <observe [event]="val.onChange">
-                                        <execution [params]="{update:update,val:val,custom:custom,root:root,def:templateObject.value.defaultData[i],code:comp.code}">
+                                        <execution [params]="{lastResetTime:lastResetTime,update:update,val:val,custom:custom,root:root,def:templateObject.value.defaultData[i],code:comp.code}">
                                           <![CDATA[
                                             if (val.value === null)
+                                                return;
+                                            if (lastResetTime.value && (new Date()).getTime()-lastResetTime.value.getTime() < 1000)
                                                 return;
                                             custom.value=custom.value||{};
                                             custom.value[code]=val.value;
@@ -226,7 +247,29 @@
                                 <include shared ref="/widgets/web2print/content/text"></include>
                                 <include shared ref="/widgets/web2print/content/color"></include>
                                 <include shared ref="/widgets/web2print/content/image"></include>
+                                <include shared ref="/widgets/web2print/content/table"></include>
                            </div>
+                           <execution #overlayClicked [params]="{sidenavOpen2:sidenavOpen2,root:root}"><![CDATA[
+                               var comp = args[0];
+                               var inp = args[1];
+                               var event = args[2];
+                               var froot = args[3];
+                               if (event.code != comp.code) return;
+                               function doIt() {
+                                   if (froot) {
+                                        froot.focus();
+                                        froot.scrollIntoView();
+                                   } else {
+                                       inp.setFocused(true);
+                                       inp.element.scrollIntoView();
+                                   }
+                               }
+                               if (sidenavOpen2.value) doIt();
+                               else {
+                                   sidenavOpen2.value=true;
+                                   root.setTimeout(doIt,300);
+                               }
+                           ]]></execution>
                         </div>
                         <div style="margin:10px">
                               <button style="float:left" mat-button (click)="resetContent.execute()">
@@ -256,9 +299,12 @@
                     </div>
                       <div fxFlex relative>
                             <viewer #dynamicViewer
+                              disableClickZoom
                               [dependency]="templateObject"
                               [initialPaddingPercents]="10"
+                              [overlays]="templateObject.value.overlays"
                               preserveBounds
+
                               [object]="(localPresent.objects.length ? generatedPreview.value : undefined) || templateObject.value.preview_document"
                               absolute-fill
                               ></viewer>
@@ -356,6 +402,30 @@
           </div>
       </div>
   </div>
+  <!--
+  <variable #focused></variable>
+  <div absolute-fill style="z-index:1000;background-color:rgba(255,0,0,0.1);cursor:pointer" fxLayout="column">
+        <div fxFlex></div>
+        <div fxLayout="row">
+            <div fxFlex></div>
+            <div>
+                <button mat-button class="mat-elevation-z2"
+                  style="
+                  pointer-events:none;
+    background-color:rgba(255,255,255,0.7);
+    color:rgba(0,0,0,0.6);
+    padding: 10px;
+    font-size : 20px;
+    font-weight: bold;"
+                  type="button"
+                  >
+                    Click to navigate
+                </button>
+            </div>
+            <div fxFlex></div>
+        </div>
+        <div fxFlex></div>
+  </div>-->
 </delay-dialog>
 
 <execution #deleteConfirmed [params]="{templateObject:templateObject,root:root}"><![CDATA[

@@ -44,6 +44,17 @@ exports.initTemplateContents = function(tmpl) {
                 case "image" :
                     var c = tmpl instanceof db ? new db.web2print.image_content() : {type:e.type};
                     c.code=e.code;
+                    c.proportion = e.proportion;
+                    if (tmpl instanceof db) c.template=tmpl;
+                    c.commit && c.commit();
+                    arr.push(c);
+                    break;
+                case "table" :
+                    var c = tmpl instanceof db ? new db.web2print.table_content() : {type:e.type};
+                    c.code=e.code;
+                    c.column_count = e.columns;
+                    c.table_data = e.data;
+                    c.row_count = e.rows;
                     if (tmpl instanceof db) c.template=tmpl;
                     c.commit && c.commit();
                     arr.push(c);
@@ -73,8 +84,6 @@ exports.renderTemplateOnce = function(tmpl,data) {
 exports.renderTemplate = function(tmpl,data)
 {
     //console.info(`render.js: render ${tmpl.document.code} with ${JSON.stringify(data)} `);
-    log.warn("OPPP "+JSON.stringify(tmpl,null,4));
-
     if (!tmpl.document) {
       return { error : "document not existing or corrupted!"};
       console.error("document not existing or corrupted!");
@@ -130,11 +139,20 @@ exports.getTemplateJSON = function(tmpl,data,doNotRender) {
             else
                 d="";
             toReplace[e.code]=d;
-        } else if (e.type == "date" || e instanceof db.web2print.image_content) {
+        } else if (e.type == "image" || e instanceof db.web2print.image_content) {
             var d = data[e.code]!== undefined ? data[e.code] : e.initial_value;
+            var region = undefined;
+            if (d && d.region)
+                region=d.region;
+            if (d && d.document)
+                d=d.document;
             if (d instanceof db.documents.file) {
                 if (!doNotRender) {
-                    JSCORE.Exec.callVSC("java.util.copyInTempDirectory","rndr-"+tmpl.document.id, d, e.code);
+                    if (!region) {
+                        JSCORE.Exec.callVSC("java.util.copyInTempDirectory","rndr-"+tmpl.document.id, d, e.code);
+                    } else {
+                        JSCORE.Exec.callVSC("java.util.copyImageInTempDirectory","rndr-"+tmpl.document.id, d, e.code,region);
+                    }
                 } else {
                     // JUST A KEY
                     toReplace[e.code]=d.update_time||d.insert_time||0;
@@ -160,6 +178,50 @@ exports.getTemplateJSON = function(tmpl,data,doNotRender) {
             var h = d.toUpperCase().indexOf(" RGB");
             if (h > 0) d=d.substring(0,h);
             toReplace[e.code]=d;
+        } else if (e.type == "table" || e instanceof db.web2print.table_content ) {
+             if (e.table_data) {
+                 var td = VSERVER.mod.js.JSConverter.JSON2JS(VSERVER.mod.js.JSConverter.VR2JSON(JSON.parse(e.table_data)));
+                 var columns = td.columns;
+                 var bdata = data[e.code] || td.data;
+                 for (var row=0;row<bdata.length;row++) {
+                     var r = bdata[row];
+                     for (var col=0;col<r.length;col++) {
+                         var val = r[col];
+                         var key = e.code+"."+String.fromCharCode(65+col)+(row+1);
+                         var cd = columns[col];
+                         var type = cd.type;
+                         var suffix = cd.suffix||'';
+                         var prefix = cd.prefix||'';
+                         if (suffix) suffix=" "+suffix;
+                         if (prefix) prefix+=" ";
+                         if (val != undefined && val !== '')
+                         {
+                             switch (type)
+                             {
+                                 case 'double' :
+                                    val=misc.formatDouble(val);break;
+                                 case 'integer':
+                                    val=misc.formatInteger(val);break;
+                                 case 'time':
+                                    val=misc.formatTime(val);break;
+                                 case 'hoursMinutes' :
+                                    val=misc.formatHoursMinutes(val);break;
+                                 case 'date' :
+                                    val=misc.formatDate(val);break;
+                                 case 'datetime' :
+                                    val=misc.formatDatetime(val);break;
+                                 case 'datetimeHoursMinutes' :
+                                    val=misc.formatDatetimeHoursMinutes(val);break;
+                            }
+                            val = prefix+val+suffix;
+                            //log.warn(type+" | "+key+" | "+val+" | "+(typeof val));
+                            toReplace[key]=val;
+                        } else {
+                            toReplace[key]='';
+                        }
+                     }
+                 }
+             }
         }
     }
     return toReplace;
@@ -306,7 +368,8 @@ exports.getContentsData = function(tpl) {
                 NAME : misc.OBJSTR(e),
                 type : 'varchar',
                 dest_page : e.dest_page,
-                placeholder : e.initial_value
+                placeholder : e.initial_value,
+                region : e.region ? JSON.parse(e.region).region : undefined
             });
         } else if (e instanceof db.web2print.text_content) {
             res.push({
@@ -315,7 +378,8 @@ exports.getContentsData = function(tpl) {
                 NAME : misc.OBJSTR(e),
                 type : 'text',
                 dest_page : e.dest_page,
-                placeholder : e.initial_value
+                placeholder : e.initial_value,
+                region : e.region ? JSON.parse(e.region).region : undefined
             });
         } else if (e instanceof db.web2print.date_content) {
             res.push({
@@ -324,7 +388,8 @@ exports.getContentsData = function(tpl) {
                 NAME : misc.OBJSTR(e),
                 type : 'date',
                 dest_page : e.dest_page,
-                placeholder : e.initial_value
+                placeholder : e.initial_value,
+                region : e.region ? JSON.parse(e.region).region : undefined
             });
         } else if (e instanceof db.web2print.time_content) {
             res.push({
@@ -333,7 +398,8 @@ exports.getContentsData = function(tpl) {
                 NAME : misc.OBJSTR(e),
                 type : 'time',
                 dest_page : e.dest_page,
-                placeholder : e.initial_value
+                placeholder : e.initial_value,
+                region : e.region ? JSON.parse(e.region).region : undefined
             });
         } else if (e instanceof db.web2print.datetime_content) {
             res.push({
@@ -342,7 +408,8 @@ exports.getContentsData = function(tpl) {
                 NAME : misc.OBJSTR(e),
                 type : 'datetime',
                 dest_page : e.dest_page,
-                placeholder : e.initial_value
+                placeholder : e.initial_value,
+                region : e.region ? JSON.parse(e.region).region : undefined
             });
         } else if (e instanceof db.web2print.image_content) {
             res.push({
@@ -351,7 +418,19 @@ exports.getContentsData = function(tpl) {
                 NAME : fixName(misc.OBJSTR(e)),
                 type : 'image',
                 dest_page : e.dest_page,
-                placeholder : e.initial_value
+                proportion : e.proportion,
+                placeholder : { document : e.initial_value , region : exports.getInitialImageRegion(e.initil_value,e.proportion) },
+                region : e.region ? JSON.parse(e.region).region : undefined
+            });
+        } else if (e instanceof db.web2print.table_content && e.table_data) {
+            res.push({
+                object : e,
+                code : e.code,
+                NAME : fixName(misc.OBJSTR(e)),
+                type : 'table',
+                dest_page : e.dest_page,
+                placeholder : VSERVER.mod.js.JSConverter.JSON2JS(VSERVER.mod.js.JSConverter.VR2JSON(JSON.parse(e.table_data))),
+                region : e.region ? JSON.parse(e.region).region : undefined
             });
         } else if (e instanceof db.web2print.qrcode_content) {
             res.push({
@@ -360,7 +439,8 @@ exports.getContentsData = function(tpl) {
                 code : e.code,
                 type : 'qrcode',
                 dest_page : e.dest_page,
-                placeholder : e.initial_value
+                placeholder : e.initial_value,
+                region : e.region ? JSON.parse(e.region).region : undefined
             });
         } else if (e instanceof db.web2print.indexed_color_content) {
             var colors = e.available_colors;
@@ -383,7 +463,8 @@ exports.getContentsData = function(tpl) {
                 type : 'color',
                 dest_page : e.dest_page,
                 placeholder : e.initial_value,
-                colors: e.available_colors && e.available_colors.split("\n")
+                colors: e.available_colors && e.available_colors.split("\n"),
+                region : e.region ? JSON.parse(e.region).region : undefined
             });
         }
     }
@@ -458,3 +539,45 @@ exports.deleteTemplateDocuments = function(template,documents,isEveryone) {
         }
     }
 };
+
+exports.getInitialImageRegion = function(document,proportion) {
+    if (!document)
+        return;
+    var dims = JSCORE.Exec.callVSC("java.util.getDocumentDimensions",document);
+    if (!dims || !dims[0] || !dims[1])
+        return;
+    var width;
+    var height;
+
+    if (proportion > 0) {
+        var dw1 = dims[0];
+        var dh1 = dims[0]/proportion;
+        var dw2 = dims[1]*proportion;
+        var dh2 = dims[1];
+        if (dh1 <= dims[1]) {
+            width=dw1;
+            height=dh1;
+        } else {
+            width=dw2;
+            height=dh2;
+        }
+    } else {
+        width=dims[0];
+        height=dims[1];
+    }
+    var res = {
+        x : Math.round(dims[0]/2-width/2),
+        y : Math.round(dims[1]/2-height/2),
+        w : Math.round(width),
+        h : Math.round(height),
+        dw : Math.round(width),
+        dh : Math.round(height),
+        p : 0,
+        z : 0,
+        f : document.uuid,
+    };
+    res.url="/tmp/documents/"+res.f+".uuid?operation=resizeImage"+
+        "&width=400"+
+        "&f="+encodeURIComponent(res.f);
+    return res;
+}

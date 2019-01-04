@@ -1,0 +1,21 @@
+<variable #initial export></variable>
+<variable #data export></variable>
+<variable #columns export></variable>
+
+<observe #onsubmit></observe>
+<mat-dialog-content style="position: relative;width:60vw" simplebar>
+    <include shared ref="/widgets/forms/table"></include>
+</mat-dialog-content>
+<mat-dialog-actions fxLayout="row">
+  <span fxFlex></span>
+  <button style="background-color:white" class="mat-elevation-z1" mat-button dialog-close tabindex="-1">
+	<mat-icon>close</mat-icon>
+    <span fxHide.xs><i18n>BUTTON_WEB_CLOSE</i18n></span>
+  </button>
+  <button color="primary" style="background-color:white" class="mat-elevation-z1" mat-button tabindex="-1"
+    dialog-submit (submit)="root.return(getData.value())"
+    >
+      <mat-icon style="margin-right:3px">done</mat-icon>
+      <span fxHide.xs><i18n>BUTTON_WEB_SAVE</i18n></span>
+  </button>
+</mat-dialog-actions>

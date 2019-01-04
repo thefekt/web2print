@@ -76,7 +76,19 @@ forms.define({
         viewParams :
         {
             edit : {
-                columns : 'code,name,dest_page,initial_value,dest_page,objectdef,available_colors'
+                columns : 'code,name,dest_page,initial_value,dest_page,objectdef,available_colors,proportion,region,table_data'
+            }
+        },
+        executions : {
+            'select-view-box' : function(details) {
+                return {
+                    icon : 'border_outer',
+                    ref : '/dialogs/web2print/print_template/select-view-box',
+                    selection : true,
+                    params : {
+                        test : 'TEST!'
+                    }
+                };
             }
         }
     }
