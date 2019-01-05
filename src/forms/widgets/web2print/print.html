@@ -134,7 +134,7 @@
             });
 
             var target = window.parent;
-            if (target !== null) {
+            if (target && target !== window) {
               DBG && console.log('#postConfig: posting data to parent ' + msgpost);
               target.postMessage(msgpost, baseURL.value);
             }
@@ -299,6 +299,7 @@
                     </div>
                       <div fxFlex relative>
                             <viewer #dynamicViewer
+                              [zoomPerScroll]="!root.app.mobile && root.app.window.parent && root.app.window.parent !== root.app.window ? 1 : 1.2"
                               disableClickZoom
                               [dependency]="templateObject"
                               [initialPaddingPercents]="10"
@@ -363,6 +364,26 @@
                                         reload.execute();
                                     </execution>
                                 </button>
+                                <button mat-button class="mat-elevation-z2" *ngIf="root.loggedIn"
+                                  style="
+                                  margin-left:10px;
+                                background-color: rgba(128, 128, 128,0.9);
+                                color: white;
+                                padding: 10px;
+                                font-weight: bold;"
+                                  type="button"
+                                  color="accent"
+                                  (click)="downloadTemplate.execute()">
+                                      {{root.db.web2print.print_template}}
+                                      <execution #downloadTemplate [params]="{root:root, templateObject:templateObject}"><![CDATA[
+                                          root.db.getObject(templateObject.value,"code,document.uuid",function(res) {
+                                              if (res.document && res.document.uuid) {
+                                                  var url = "/documents/"+res.document.uuid+".uuid?operation=download&filename="+encodeURIComponent(res.code+".zip");
+                                                  root.app.downloadUrl(url);
+                                              }
+                                          })
+                                      ]]></execution>
+                                </button>
                             </div>
 
                             <div [style.display]="!sidenav.opened ? undefined : 'none'" style="position:absolute;right:6px;bottom:6px" fxLayout="row">
@@ -385,13 +406,27 @@
   font-weight: bold;"
                                 type="button"
                                 color="accent"
-                                (click)="root.app.openRoute('/admin/index')">
+                                (click)="root.app.openRouteNewWindow('/admin/index')">
                                   <i18n code="TEXT_ADMINISTRATION"></i18n>
                               </button>
                           </div>
 
                       </div>
                   </div>
+
+                  <button mat-button class="mat-elevation-z2" *ngIf="root.loggedIn && sidenavOpen2.value"
+                    (click)="dynamicViewer.download(templateObject.value.NAME+'.pdf')"
+                    style="position:absolute;right:10px;top:10px;
+                  background-color: rgba(128, 128, 128,0.9);
+                  color: white;
+                  padding: 10px;
+                  font-weight: bold;"
+                    type="button"
+                    color="accent"
+                    >
+                    <mat-icon>file_download</mat-icon>
+                    PDF
+                  </button>
               </mat-sidenav-container>
 
               <button *ngIf="dialogRef.value && !sidenavOpen2.value" class="mat-elevation-z1" mat-button dialog-close style="position:absolute;right:10px;bottom:10px;z-index:1000;background-color:white">

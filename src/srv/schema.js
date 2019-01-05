@@ -84,10 +84,8 @@ forms.define({
                 return {
                     icon : 'border_outer',
                     ref : '/dialogs/web2print/print_template/select-view-box',
-                    selection : true,
-                    params : {
-                        test : 'TEST!'
-                    }
+                    selection : true
+                    //,params : {}
                 };
             }
         }

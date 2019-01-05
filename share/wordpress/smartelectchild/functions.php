@@ -45,15 +45,14 @@ function pechatar_open_div() {
     global $product;
 
     echo '<h3> Дизайн и съдържание </h3>';
-    $pid = $product->get_id();
+    $pid = $product->get_sku(); // or get_id()
     $baseURL = home_url();
 
     $visionr_location = get_option("visionr_location")."/#/print?".join([
       "tpl=$pid",
       "DEBUG=".(int)$PET_DEBUG,
       "baseURL=".$baseURL], '&');
-
-    if ($PET_DEBUG) echo "<B> PID: $pid </b>";
+    //if ($PET_DEBUG) echo "<B> PID: $pid </b>";
     echo '<div class="visionr-container"><iframe src="'.$visionr_location.'"> </iframe></h3>';
 }
 

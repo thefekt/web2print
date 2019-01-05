@@ -16,7 +16,7 @@
             var script = document.createElement('script');
             script.type = 'text/javascript';
             script.async = true;
-            script.src = 'assets/handsontable.full.min.js';
+            script.src = '/forms/assets/handsontable.full.min.js';
             script.onload = two;
             bd.appendChild(script);
             function two()
@@ -24,7 +24,7 @@
                     var script = document.createElement('script');
                     script.type = 'text/javascript';
                     script.async = true;
-                    script.src = 'assets/numbro/languages.min.js';
+                    script.src = '/forms/assets/numbro/languages.min.js';
                     script.onload = last;
                     bd.appendChild(script);
                     function last() {
@@ -35,7 +35,7 @@
     var fileref = document.createElement("link");
     fileref.setAttribute("rel", "stylesheet");
     fileref.setAttribute("type", "text/css");
-    fileref.setAttribute("href", "forms/assets/handsontable.full.min.css");
+    fileref.setAttribute("href", "/forms/assets/handsontable.full.min.css");
     fileref.onload = one;
     bd.appendChild(fileref);
 ]]></execution>
