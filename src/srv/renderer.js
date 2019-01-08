@@ -565,6 +565,21 @@ exports.getInitialImageRegion = function(document,proportion) {
         width=dims[0];
         height=dims[1];
     }
+    // max rendered image dimension (NOT pdf)
+    if (width > height)
+    {
+        if (width > 2048) {
+            var t = width/height;
+            width=2048;
+            height=2048/t;
+        }
+    } else {
+        if (height > 2048) {
+            var t = height/width;
+            height=2048;
+            width=2048/t;
+        }
+    }
     var res = {
         x : Math.round(dims[0]/2-width/2),
         y : Math.round(dims[1]/2-height/2),

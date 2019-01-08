@@ -44,7 +44,7 @@ function pechatar_open_div() {
     global $PET_DEBUG;
     global $product;
 
-    echo '<h3> Дизайн и съдържание </h3>';
+    //echo '<h3> Дизайн и съдържание </h3>';
     $pid = $product->get_sku(); // or get_id()
     $baseURL = home_url();
 

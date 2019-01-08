@@ -298,8 +298,8 @@
                       }}</li>
                     </div>
                       <div fxFlex relative>
+                          <!--[zoomPerScroll]="!root.app.mobile && root.app.window.parent && root.app.window.parent !== root.app.window ? 1 : 1.2"-->
                             <viewer #dynamicViewer
-                              [zoomPerScroll]="!root.app.mobile && root.app.window.parent && root.app.window.parent !== root.app.window ? 1 : 1.2"
                               disableClickZoom
                               [dependency]="templateObject"
                               [initialPaddingPercents]="10"

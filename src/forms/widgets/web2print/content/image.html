@@ -20,7 +20,7 @@
             }"
             [dependency]="templateObject"
             condition="
-                extension.code IN ('JPEG','JPG','PNG','SVG','PNG','PDF') AND
+                extension.code IN ('JPEG','J2K','JP2','JPG','PNG','SVG','PNG','PDF') AND
                 id IN (
                     SELECT id WHERE parent.code=:UUID AND parent.parent.code='web2print' AND parent.parent.parent.code='/' AND parent.parent.parent.parent IS NULL
                     {{

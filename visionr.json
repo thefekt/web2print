@@ -33,6 +33,7 @@
     {
         "core.import.languages" : "en-US,de-DE,bg-BG",
         "web.image.jpeg.quality" : 0.92,
+		"web.deep_zoom.vips.jpeg.quality" : 92,
         "document.upload.anonymous.allow" : true,
         "web.scribus.path" : "d:/scribus/scribus.exe",
         "core.vscript.src.debug" : true
