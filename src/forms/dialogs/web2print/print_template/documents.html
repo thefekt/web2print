@@ -34,7 +34,7 @@
     <variable #crrTab export persist [defaults]="{value:0}"></variable>
     <mat-tab-group #tgrp [dynamicHeight]="true" [(selectedIndex)]="crrTab.value">
             <mat-tab label@i18n="LABEL_BUILT_IN">
-                <objectsview placeholder="{{root.db.documents.file_upload}}" style="margin-top:5px"
+                <objectsview style="margin-top:5px"
                     [queryParams]="{UUID : inst.values.uuid}"
                     [dependency]="cond"
                     [where]="cond.value"
@@ -45,7 +45,7 @@
                 </objectsview>
             </mat-tab>
 	       <mat-tab label@i18n="LABEL_OWN">
-               <objectsview placeholder="{{root.db.documents.file_upload}}" style="margin-top:5px"
+               <objectsview style="margin-top:5px"
                    [where]="storageCondition.value"
                    type="columns"
                    schema="documents.file_upload" #view2
