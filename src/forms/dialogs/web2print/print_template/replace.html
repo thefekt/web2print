@@ -28,7 +28,7 @@
     </div>
 
 
-    <execution #openDialog [params]="{root:root,code:code,data:data}"><![CDATA[
+    <script #openDialog [params]="{root:root,code:code,data:data}">
         root.openDialog("/dialogs/web2print/print_template/create-from-file",{
                 document:args[0][0],
                 code:code.value,
@@ -36,7 +36,7 @@
             },function(r) {
                 root.return(r);
         })
-   ]]></execution>
+   </script>
 </mat-dialog-content>
 
 <mat-dialog-actions fxLayout="row">

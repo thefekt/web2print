@@ -1,9 +1,0 @@
-<variable #tpl export></variable>
-<variable #name value@i18n="INFO_WEB_LOGIN_TITLE"></variable>
-<include shared ref="/widgets/forms/dashboard/common"></include>
-<ng-template #main>
-    <variable #loggedIn [value]="root.loggedIn"
-        (onReady)="loggedIn.value && tpl.value ? root.app.openRoute('/print',{tpl:tpl.value}) : 0"
-        (valueChange)="loggedIn.value && tpl.value ? root.app.openRoute('/print',{tpl:tpl.value}) : 0"
-    ></variable>
-</ng-template >

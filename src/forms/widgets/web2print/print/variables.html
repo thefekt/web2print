@@ -1,0 +1,32 @@
+<!-- @Abstract -->
+	
+<variable #tpl export></variable>
+	
+<variable #DEBUG export [value]="0"></variable>
+<variable #sidenavOpen2 [value]="true"></variable>
+
+<!-- base url provided by external param or defaulting to localhost  -->
+<variable #baseURL export value="http://localhost"></variable>
+
+
+<!-- local variables -->
+<variable #storageCondition></variable>
+
+<!-- json data retrieved from server load (object,entries by category etc) -->
+<variable #templateObject></variable>
+
+<!-- changes made by user
+	 proxy : track nested changes (map, object) -->
+<variable 
+	#custom proxy [value]="{}" path="{{tpl.value}}" 
+	(valueChange)="changed.value = root.keys(custom.value).length > 0" 
+	persist
+></variable>
+<variable #changed></variable>
+
+<!-- generated document temp, should be not downloadable by system setting -->	
+<variable #generatedPreview></variable>
+
+<!-- refresh helpers -->
+<variable #paused></variable>
+<variable #reupdate></variable>

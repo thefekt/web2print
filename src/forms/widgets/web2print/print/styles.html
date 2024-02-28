@@ -1,0 +1,34 @@
+<!-- @Abstract -->
+
+<style>
+	
+	 .w2p-print-entry-overlay
+	 {
+		font-size: 20px;
+		color: rgba(0, 0, 0, 0.7);
+		cursor: pointer;
+		box-sizing: border-box;
+		justify-content: center;
+		align-items: center;
+		background-color: transparent;
+		border-color:transparent;
+		background-color: rgba(255, 255, 255, 0.5);border-color:rgba(0,0,0,0.65);
+		opacity:0;
+		transition:500ms;
+		transition-property:opacity,outline,box-shadow;
+		
+		box-shadow: 0 0 0 4px rgba(255,255,255,0.65);
+  		outline: dashed 4px rgba(0,0,0,0.65);
+	}
+
+	.w2p-print-entry-overlay:hover,
+	.w2p-print-entry-overlay.w2p-print-entry-focused {
+		opacity : 1;
+	}
+	
+	.w2p-print-entry-overlay.w2p-print-entry-focused {
+		box-shadow: 0 0 0 4px white;
+  		outline: dashed 4px var(--vr-colors-primary);
+	}
+	
+</style>

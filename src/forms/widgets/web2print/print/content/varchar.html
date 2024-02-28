@@ -1,0 +1,12 @@
+<!-- @Abstract -->
+<input-varchar *ngIf="comp.type == 'varchar' || comp.type == 'qrcode'"
+    [hasClear]="false"
+	[barCodeEnabled]="false" 
+    style="width:100%"
+    floatLabel="always"
+    [label]="comp.NAME" [placeholder]="comp.placeholder"
+    [(value)]="val.value"
+    (focus)="dynamicViewer && dynamicViewer.gotoPage(comp.dest_page-1)" #inp>
+    <include shared ref="/widgets/web2print/print/content/handle-edit-entry"></include>
+	<observe [event]="dynamicViewer.overlayClick" (dispatch)="$event.code == comp.code ? overlayClicked.execute(comp,inp,$event) : 0"></observe>
+</input-varchar>

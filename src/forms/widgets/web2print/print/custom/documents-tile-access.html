@@ -1,0 +1,69 @@
+<!-- default tile template -->
+
+<variable #component export></variable>
+<variable #viewParams export></variable>
+<variable #properties export value="code,NAME{{
+		viewParams.value.displayString ? '@' + viewParams.value.displayString : ''
+}},description,OICON_NOEXP@{{(viewParams.value||{}).iconSize || 128}}x{{(viewParams.value||{}).iconSize || 128}},parent.path"></variable>
+
+<!-- NG template -->
+<ng-template #template export let-entry="entry" let-index="index" let-list="list">
+	<div fxLayout="column"
+	 	 (dblclick)="component.value.onObjectDblClick(entry)"
+	 	 style="overflow:hidden;padding:8px;padding-bottom:5px;position:relative"
+	 	 class="listview-item-width"
+	 	 [style.width.px]="((viewParams.value||{}).width || (viewParams.value||{}).iconSize || 128)+16+32"
+		>
+		<div style="margin:0 auto">
+			<img style="pointer-events:none;float:left"
+				[style.width.px]="(viewParams.value||{}).iconSize || 128"
+				[style.height.px]="(viewParams.value||{}).iconSize || 128"
+				[src]="entry.ICON || entry.icon" />			
+		</div>
+		<div fxLayout="row">
+			<div style="padding:6px 0" *ngIf="!list.singleSelect" >
+				<list-item-checkbox [value]="entry" [index]="index" [list]="list" style="width:18px;padding:2px;"></list-item-checkbox>
+			</div>
+			<div style="color:rgba(0,0,0,0.5);height:32px" fxLayout="column" autoTooltipOverflow>
+				<div fxFlex></div>
+				<div style="font-size:12px;line-height:14px;max-height:32px;overflow:hidden;">
+					{{entry.NAME || entry.name}}
+				</div> 
+				<div fxFlex></div>
+			</div>
+		</div>
+		<div *ngIf="entry?.parent?.path == '/web2print/'+viewParams.value.uuid+'/public'; else elseBlock" class="mat-elevation-z1" 
+			style="
+				position: absolute;
+				left: 0;
+				top: 0;
+				padding: 4px;
+				border-radius: 6px;
+				border-top-right-radius: 0;
+				border-bottom-left-radius: 0;
+			    color: #b1b1b1;
+			    background: #ffffffd8;
+			" fxLayout="row">Public<mat-icon style="    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    margin: -3px 0;
+    margin-left: 3px;">public</mat-icon></div>		
+		<ng-template #elseBlock>
+			<div class="mat-elevation-z1" style="
+				position: absolute;
+			    left: 0;
+			    top: 0;
+			    padding: 4px;
+			    border-radius: 6px;
+			    border-top-right-radius: 0;
+			    border-bottom-left-radius: 0;
+				color: white;
+				background: #b1b1b1d8;
+			" fxLayout="row">Private<mat-icon style="    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    margin: -3px 0;
+    margin-left: 3px;">verified_user</mat-icon></div>
+		</ng-template>
+	</div>
+</ng-template>

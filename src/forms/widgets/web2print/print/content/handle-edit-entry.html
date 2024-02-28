@@ -1,0 +1,42 @@
+<!-- @Abstract -->
+<observe #openEdit 
+	(onInit)="
+		root.db.session.admin ? 
+			inp.executions=[ {
+				callback : openEdit.emit,
+				name : root.i18n('INFO_EDIT'),
+				icon : 'edit' 
+		 	},{
+				callback : resetToDefault.emit,
+				name : root.i18n('INFO_RESET_TO_DEFAULT'),
+				icon : 'restart_alt' 
+		 	}] 
+		 : 	inp.executions=[ {
+				callback : resetToDefault.emit,
+				name : root.i18n('INFO_RESET_TO_DEFAULT'),
+				icon : 'restart_alt' 
+		 	}]
+	"
+	(dispatch)="
+		root.detailsDialog(comp.object,'web2print.abstract_content',{
+        	fullscreen : root.app.phone,
+        	type : 'edit'
+    	},undefinded,undefined,reload.execute);root.app.blur()	
+	"
+></observe>
+<observe #resetToDefault (dispatch)="val.value=undefined")></observe>
+<observe [event]="inp.focusedChange">
+	 <script [params]="{inp:inp,comp:comp}" #handleFocusChange>
+		 setTimeout(function(){
+			var el = root.element.querySelector(`#${comp.code.replace(/([^\w-])/g, '\\$1')}.w2p-print-entry-overlay`);
+			if (el) {
+				if (args[0])
+					el.classList.add("w2p-print-entry-focused");
+				else
+					el.classList.remove("w2p-print-entry-focused");
+			}
+			 
+		 },0);
+	 </script>
+ </observe>
+ <observe [event]="dynamicViewer.overlayClick" (dispatch)="$event.code == comp.code ? handleFocusChange.execute(true):0"></observe>

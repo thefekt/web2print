@@ -3,74 +3,19 @@
 <!-- NAME@bg-BG Преглед -->
 
 <variable #object export></variable>
+
 <variable #context export></variable>
+<style>
+	.overview-container {
+		padding : 0 3px;
+	}
+</style>
 <runtime api="objectdetails.component" #component></runtime>
+<include shared ref="/widgets/forms/object/overview-error-data"></include>
+<include shared ref="/widgets/forms/object/overview-update-custom-event"></include>
+<include shared ref="/widgets/forms/layout/media-sizes-measured"></include> <!-- support for embedded media size defines mXS mSM mMD mXL mLG variables -->
 
-<!-- gallery-overview -->
-
-<!-- Requires variable #object -->
-<delay-dialog #delay>
-	<!-- NEW trigger change detection of current context. Dispatch must be expression! -->
-	<observe [event]="root.app.mediaSizeChange" (dispatch)="0"></observe>
-
-	<remote require="server/forms/viewer" api="getPreviewSummary" #res
-	 		  	[args]="[object.value,200,
-						root.app.mediaSize == 'xs' ? 200 :
-						root.app.mediaSize == 'sm' ? 256
-											   	   : 400,true]" [dependency]="object" (onReady)="delay.done()">
-	</remote>
-	<ng-container *ngIf="res.value">
-		<div style="margin:10px 0">
-			<a target="_blank" href="/forms/#/print?tpl={{root.app.escape.encodeURIComponent(object.value.code)}}">http://pechatarnik.com/forms/#/print?tpl={{root.app.escape.encodeURIComponent(object.value.code)}}</a>
-		</div>
-		<div #overviewContent style="font-size:14px" [innerHTML]="res.value.html"></div>
-		<div relative style="height:200px;margin-bottom:10px;min-width:200px" *ngIf="res.value.geometry">
-			<viewer [object]="res.value.geometry.object" [selected]="object.value"></viewer>
-		</div>
-		<div>
-			<div style="position:relative;overflow:hidden;margin-right:10px;padding-top:8px" *ngIf="res.value.documents && res.value.documents.length">
-					<swiper #swiper [config]="{
-					        	pagination : {
-		        					el: '.swiper-pagination',
-		        					clickable: true
-		      					},
-		      					keyboard: {
-		        					enabled: true
-		      					},
-		        				freeMode: true,
-					        	slidesPerView: 'auto',
-		      					spaceBetween: 10
-		     				}">
-							<div class="swiper-wrapper">
-								<div *ngFor="let element of res.value.documents" class="swiper-slide" style="width:auto;margin-bottom:10px" fxLayout="column">
-									<div *ngIf="res.value.documents.length > 1"
-										style="overflow:hidden;white-space:nowrap;font-size:14px;text-overflow: ellipsis;padding-bottom:2px;text-align:left;opacity:0.75"
-										[style.width]="element.width+'px'">{{element.type != 'gfx' ? element.NAME : root.db.graphics.geometry+''  }}
-                 					</div>
-									<div>
-									<!--
-										[style.padding-top]="element.paddingTop ? element.paddingTop+'px' : undefined"
-									 -->
-										<img [src]="element.ICON"
-											 [style.height]="element.height+'px'"
-											 [style.width]="element.width+'px'"
-											 style="display:block;cursor:pointer"
-                       (click)="root.openDialog('/pages/print',{
-                       		tpl : object.value.code
-                       	})"
-											 ></img>
-									</div>
-								</div>
-							</div>
-							<div class="swiper-pagination" style="bottom:0;top:auto" [style.visibility]="res.value.documents.length > 1 ? undefined : 'hidden'"></div>
-					</swiper>
-			</div>
-		</div>
-	</ng-container>
-</delay-dialog>
-
-
-
+<variable #done [value]="overviewReady.value" export></variable> 
 <variable #data export [value]="{
 	context : context.value
 }"></variable>
@@ -80,13 +25,58 @@
 	   	<include shared ref="/widgets/forms/object/buttons/edit"></include>
 	</ng-container>
 	<ng-container *ngIf="context && context.buttons && context.buttons.admin">
-	   	<include shared ref="/widgets/forms/object/buttons/admin"></include>
+	   	<include shared ref="/widgets/forms/object/buttons/admin-provider"></include>
 	</ng-container>
+	<include shared ref="/widgets/forms/object/form/execution-pane-overview"></include>
 </ng-template>
 
-<ng-template #rightButtons export>
-   <button mat-button dialog-close>
-	 	    <mat-icon>close</mat-icon>
-		<span fxHide.xs><i18n>BUTTON_WEB_CLOSE</i18n></span>
-   </button>
+<ng-template #rightButtons export let-context="context">
+	<ng-container *ngIf="context && context.buttons && context.buttons.copy">
+	   	<include shared ref="/widgets/forms/object/buttons/copy-provider"></include>
+	</ng-container>
+	<provider api="object.details.refresh" (menuItemSelected)="component.value.update()" icon="refresh" name@i18n="INFO_REFRESH" [priority]="1" group="0"></provider>		
 </ng-template>
+
+
+<!-- @Abstract -->
+
+<style>
+.overview-content {
+	font-size : 13px;
+}
+</style> 
+
+<observe [event]="root.app.mediaSizeChange" (dispatch)="0"></observe>
+<observe *ngIf="component.value" [event]="component.value.updated" (dispatch)="res.call();updateOverview.emit()"></observe>
+
+<remote require="server/forms/viewer" api="getPreviewSummary" #res
+ 		  	[args]="[object.value,200,
+					root.app.mediaSize == 'xs' ? 200 :
+					root.app.mediaSize == 'sm' ? 256
+										   	   : 400]" [dependency]="object">
+</remote>
+<include shared ref="/widgets/forms/object/overview-inner"></include>
+<div *ngIf="res.value" [fxHide]="!overviewReady.value">
+	<!-- bridge angular DomSanitizer  -->
+	<div relative style="height:200px;margin-bottom:10px;margin-top:8px;min-width:200px" *ngIf="res.value.geometry">
+		<viewer [object]="res.value.geometry.object" #viewer (onInit)="viewer.selection=object.value ? [object.value] : undefined"></viewer>
+	</div>
+	<div>
+		<include shared ref="/widgets/forms/object/gallery/pane"></include>
+		
+		<observe (onReady)="galleryCustomClickHandler.value=onClick.execute">
+			<script #onClick [params]="{object:object,root:root}">
+				//var doc = args[0];
+				var obj = object.value;
+				root.db.getObject(obj,"code",function(res){
+					if (res.code)
+						root.openDialog('/pages/main/print',{
+			           		tpl : res.code,
+			           		fullscreen : true
+			           	})
+				})
+			</script>
+		</observe>
+	</div>
+</div>
+

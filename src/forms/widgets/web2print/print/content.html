@@ -1,0 +1,25 @@
+<!-- @Abstract -->
+<div fxFlex style="position:relative">
+	<div *ngIf="DEBUG.value > 0">
+		<li>DEBUG: {{DEBUG.value}}</li>
+		<li>generated: {{generatedPreview.value|json}} </li>
+		<li>custom: {{custom.value|json}} </li>
+		<li>template: {{templateObject.value.preview_document|json}} </li>
+		<li>[query params: {{ (generatedPreview.value || {})['id'] || 0}} ] </li>
+		<li>viewer object: {{(
+			templateObject.value.preview_document
+			)|json
+			}}</li>
+	</div>
+	<div fxFlex relative>
+		<!--[zoomPerScroll]="!root.app.mobile && root.app.window.parent && root.app.window.parent !== root.app.window ? 1 : 1.2"-->
+		<viewer #dynamicViewer disableClickZoom absolute-fill
+			[keepPageOnChangeObject]="true"
+			[initialPaddingPercents]="10"
+			[initialPaddingPercentsFitOverlay]="60"
+			[dependency]="templateObject" 
+			[overlays]="templateObject.value.overlays" preserveBounds
+			[object]="generatedPreview.value"
+		></viewer>
+	</div>
+</div>

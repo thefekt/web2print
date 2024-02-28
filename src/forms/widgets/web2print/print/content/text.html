@@ -1,0 +1,16 @@
+<!-- @Abstract -->
+<input-text
+    [hasClear]="false"
+    style="width:100%"
+    *ngIf="comp.type == 'text'"
+    floatLabel="always"
+    [maxLinesBlur]="5"
+    [maxLines]="10"
+    [label]="comp.NAME" [placeholder]="comp.placeholder"
+    [(value)]="val.value"
+    (focus)="dynamicViewer && dynamicViewer.gotoPage(comp.dest_page-1)" #inp
+    (keydown.enter)="val.value=inp.text"
+    >
+    <include shared ref="/widgets/web2print/print/content/handle-edit-entry"></include>
+    <observe [event]="dynamicViewer.overlayClick" (dispatch)="$event.code == comp.code ? overlayClicked.execute(comp,inp,$event) : 0"></observe>
+</input-text>

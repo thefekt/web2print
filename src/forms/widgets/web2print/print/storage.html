@@ -1,0 +1,15 @@
+<!-- @Abstract -->
+<variable #storage [path]="'/session-documents'" storage="shared" persist>
+	<observe>
+		<script #calcStorageCondition [params]="{storage:storage,root:root,storageCondition:storageCondition}">
+			var tmp = storage.value;
+			if (!tmp || !tmp.length) {
+				storageCondition.value = undefined;
+				return;
+			}
+			var t = [];
+			for (var i = 0; i < tmp.length; i++) t[i] = "'" + tmp[i] + "'";
+			storageCondition.value = "uuid IN (" + t.join(",") + ")";
+		</script>
+	</observe>
+</variable>

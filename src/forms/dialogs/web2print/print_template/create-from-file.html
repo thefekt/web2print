@@ -1,6 +1,9 @@
-<variable #document export></variable>
+<variable #documents export></variable>
 <variable #code export></variable>
 <variable #force export></variable>
+<!-- TODO ERR MSG -->
+<variable #document [value]="documents.value[0]"></variable>
+
 <mat-dialog-content simplebar style="min-width:400px" ngStyle.xs="min-width:initial">
 	<div style="padding-bottom: 8px">
 		<mat-icon style="font-size: 26px;display: inline-block;width:26px;height: 26px;color: rgba(0,0,0,0.4);vertical-align: top;padding-right: 8px" mat-list-icon>attach_file</mat-icon>
@@ -12,10 +15,9 @@
         <remote #res1
 				[dependency]="document"
 				[disabled]="force.value"
-			    api="initTemplateContents" require="web2print/renderer"  [args]="[{
-                document:document.value,
-                code : document.value.code.substring(0,document.value.code.lastIndexOf('.'))
-            }]">
+			    api="initTemplateContentsUploaded" require="web2print/template"  [args]="[document.value]"
+		>
+			   
             <remote #res2
 				[dependency]="res1"
 				require="web2print/renderer"
@@ -52,7 +54,7 @@
 		<mat-icon>done</mat-icon>
 		<span fxHide.xs><i18n>INFO_ACCESS_UPDATE</i18n></span>	<!-- TODO ADD ANOTHER MESSAGE,CODE NOT OK -->
 	</button>
-	<execution #onSubmit [params]="{root:root,document:document,code:code.value,force:force}"><![CDATA[
+	<script #onSubmit [params]="{root:root,document:document,code:code.value,force:force}">
 		code = code || document.value.code.substring(0,document.value.code.lastIndexOf('.'));
 		if (force.value)
 			return root.remote("web2print/template").updateTemplate(code,document.value).done(function(res) {
@@ -81,5 +83,5 @@
 				root.return(true);
 			});
 		}
-	]]></execution>
+	</script #onSubm>
 </mat-dialog-actions>

@@ -1,7 +1,7 @@
 <!-- @Abstract -->
 
-<include shared ref="/widgets/forms/dashboard/common"></include>
-<ng-template #main>
+<include shared ref="/app/layouts/common"></include>
+<ng-template #content>
     <div fxFlex fxLayout="column">
         <div style="padding:10px;font-size:24px">
             <div>{{tpl.value}}</div>
@@ -29,9 +29,9 @@
     </div>
 
 
-    <execution #openDialog [params]="{root:root,res:res,tpl:tpl}"><![CDATA[
+    <script #openDialog [params]="{root:root,res:res,tpl:tpl}">
         root.openDialog("/dialogs/web2print/print_template/create-from-file",{document:args[0][0],code:tpl.value},function(r) {
             res.update();
         })
-   ]]></execution>
+   </script>
 </ng-template>

@@ -1,41 +1,50 @@
 {
-    "code": "W2P",
-    "initial": {
-        "template": "default-postgre-1.0"
+    "code": "11_W2P",
+    "scripting": {
+        "srcDirs": [
+            "src/srv"
+        ]
     },
-    "files" : {
-        "module" : "web2print",
-        "loader" : "src/srv/loader.js",
-        "formsDir" : "src/forms"
+    "logging": {
+        "level": "info"
     },
-    "server" : {
-		"mode" : "test",
-        "devel" : true,
-        "debugger" : true,
-        "javaDebugPort" : 8999,
-        "ports" :
-        {
-            "http" : 8585
-        }
+    "db": {
+        "engine": "sqlite"
+    },
+    "server": {
+        "chromeDebugPort": 0,
+        "ports": {
+            "http": 8585,
+            "https": 8383
+        },
+        "registration": {
+            "enabled": false
+        },
+        "devel": false
+    },
+    "files": {
+        "formsDir": "src/forms",
+        "loader": "src/srv/loader.js",
+        "model": "src/model/index.js",
+		"module" : "web2print",
+		"schemaSrc" : ["src/schema"],
+		"jarDir" : "target",
+		"classLoader" : "com.planvision.web2print.Bootstrap"
     },
     "modules": [],
     "project": {
         "files": [
             ".gitignore",
-            "visionr.json",
-            "src",
-            "share",
-            "etc",
-            "target/client"
+            "src/srv",
+            "share/public",
+            "target/client",
+            "target/forms",
+            "target/import",
+            "target/doc.sync"
         ]
     },
-    "additional" :
-    {
-        "core.import.languages" : "en-US,de-DE,bg-BG",
-        "web.image.jpeg.quality" : 0.92,
-		"web.deep_zoom.vips.jpeg.quality" : 92,
-        "document.upload.anonymous.allow" : true,
-        "web.scribus.path" : "d:/scribus/scribus.exe",
-        "core.vscript.src.debug" : true
-    }
+    "additional" : {
+		"scribus.dir" : "C:/Program Files/Scribus 1.6.1",
+		"web2print.submit.action" : "download"
+	}
 }

@@ -1,0 +1,32 @@
+{
+	"message:LABEL_CLICK_TO_SELECT_CROP_REGION" : {
+		"en-US" : "Click to select region!"
+	},
+	"message:SUFFIX_CONTENTS" : {
+		"en-US" : "contents"
+	},
+	"message:FILE_DOWNLOAD_STARTED" : {
+		"en-US" : "Download of template configuration started"
+	},
+	"message:QUESTION_YOU_ARE_GOING_TO_OVERRIDE_CURRENT_SURE" : {
+		"en-US" : "You are going to override current settings. Are you sure?"
+	},
+	"message:ERR_FILE_IS_CORRUPTED" : {
+		"en-US" : "Unable to load settings : file format mismatch or file is corrupted"
+	},
+	"message:ERR_CONFIG_DIFFERENT_TEMPLATE" : {
+		"en-US" : "Unable to load settings : file contains settings for different template"
+	},
+	"message:INFO_SAVE_AS_FILE" : {
+		"en-US" : "Save as file"
+	},
+	"message:INFO_LOAD_FROM_FILE" : {
+		"en-US" : "Load from file"
+	},
+	"message:INFO_SHARE_LINK" : {
+		"en-US" : "Share link"
+	},
+	"message:INFO_RESET_TO_DEFAULT" : {
+		"en-US" : "Reset to default"
+	}
+}

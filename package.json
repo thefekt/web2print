@@ -1,20 +1,30 @@
 {
-    "name": "Web2Print",
+    "name": "web2print",
     "version": "1.0.0",
     "scripts": {
-        "build": "node node_modules/visionr-dev/src/build/build.prod.js",
-        "debug": "node node_modules/visionr-dev/src/build/build.debug.js",
+		"reset:all" : "vr s clean data work target log upload -force && npm run build && npm run import",
+		"reset" : "vr s clean data work target log -force && npm run build && npm run import",
+	
+		"build" : "vr mvn package && vr s compile",
+		"import" : "vr s import",
+
+		"start" : "vr s start",
+		"devel" : "vr s start -devel",
+		"debug" : "vr s start -devel -chromedebugport 9000",
+
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": "",
     "license": "ISC",
     "description": "",
     "dependencies": {
-        "express": "^4.16.4",
-        "http-proxy-middleware": "^0.19.1",
-        "visionr-dev": "*"
     },
-    "bin": {
-        "reset-print": "./src/bin/reset-print.js"
-    }
+    "files" : [
+		"/*.md",
+		"/*.txt",
+		"/pom.xml",
+		"/visionr.json",
+		"/package.json",
+		"/src"
+	]
 }

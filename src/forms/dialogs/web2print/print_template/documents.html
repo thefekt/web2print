@@ -1,139 +1,80 @@
-<variable #mode export [defaults]="{value:'multiple-picture-pdf'}"></variable>
-<variable #storage [path]="'/session-documents'" persist>
-    <observe>
-        <execution #calcStorageCondition [params]="{storage:storage,root:root,storageCondition:storageCondition}"><![CDATA[
-            var tmp = storage.value;
-            if (!tmp || !tmp.length) {
-                storageCondition.value="0=1";
-                return;
-            }
-            var t = [];
-            for (var i=0;i<tmp.length;i++) t[i]="'"+tmp[i]+"'";
-            storageCondition.value="uuid IN ("+t.join(",")+")";
-        ]]></execution>
-    </observe>
-</variable>
-<variable #storageCondition></variable>
-<variable #template export>
-    <instance #inst [dependency]="template" properties="code,id,uuid">
-        <variable #cond [dependency]="inst" value="
-            id IN (
-                SELECT id WHERE parent.code=:UUID AND parent.parent.code='web2print' AND parent.parent.parent.code='/' AND parent.parent.parent.parent IS NULL
-            )
-        "></variable>
-    </instance>
-</variable>
+<variable #mode export [defaults]="{value:'image,pdf,office'}"></variable>
+<!-- template reference -->
+<variable #template export></variable>
 
-<mat-dialog-content simplebar>
+<!-- load template code & uuid -->
+<instance #inst [source]="template" properties="code,uuid"></instance>
+<variable #entry export></variable>
+<!-- selection condition own, snows also optimized query without OR : self join by id -->
+<variable #cond [dependency]="inst" value="
+	id IN (
+		SELECT id WHERE parent.path = '/web2print/{{inst.values.uuid}}/public' 
+			UNION ALL 
+		SELECT id WHERE parent.path = '/web2print/{{inst.values.uuid}}/private' 
+			UNION ALL 
+		SELECT id WHERE parent.path = :__ENV_UPLDIRPATH
+	)"></variable>
+
+<!-- delaying display till delay.done() -->
+<delay-dialog #delay><mat-dialog-content simplebar> 
     <div fxLayout="row" style="color:rgba(0,0,0,0.4)">
         <mat-icon style="font-size: 33px;display: inline-block;width:33px;height: 33px;vertical-align: top;padding-right: 8px" mat-list-icon>collections</mat-icon>
-        <h4 fxFlex mat-dialog-title style="margin-bottom:0;line-height: 33px;font-size: 20px;display: inline-block;font-weight:normal;margin: 0overflow:hidden;text-overflow:ellipsis;white-space:nowrap" mat-line>
-            {{root.db.library}}
+        <h4 fxFlex mat-dialog-title style="margin-bottom:0;line-height: 33px;font-size: 20px;display: inline-block;font-weight:normal;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" mat-line>
+            {{entry.value?.NAME || root.db.library}} 
         </h4>
     </div>
-    <variable #crrTab export persist [defaults]="{value:0}"></variable>
-    <mat-tab-group #tgrp [dynamicHeight]="true" [(selectedIndex)]="crrTab.value">
-            <mat-tab label@i18n="LABEL_BUILT_IN">
-                <objectsview style="margin-top:5px"
+    <variable #crrTab export persist [defaults]="{value:0}"></variable>    
+
+               <objectsview style="margin-top:5px" 
+               		[ngStyle.xs]="{'max-width':'initial'}"
+               		[ngStyle.sm]="{'max-width':'394px'}"
+               		[ngStyle.md]="{'max-width':'584px'}"
+               		[ngStyle.lg]="{'max-width':'772px'}"
+               		[ngStyle.xl]="{'max-width':'960px'}"
+               		(objectDblClick)="root.return($event)"
+               		[fileDrop]="true"
+               		(handleFileDrop)="onUpload.execute($event)"
+               		minHeight="min(40vh,400px)"
                     [queryParams]="{UUID : inst.values.uuid}"
                     [dependency]="cond"
                     [where]="cond.value"
-                    type="columns"
-                    schema="documents.file_upload" #view1
-                    orderBy="update_time DESC"
-                    >
-                </objectsview>
-            </mat-tab>
-	       <mat-tab label@i18n="LABEL_OWN">
-               <objectsview style="margin-top:5px"
-                   [where]="storageCondition.value"
-                   type="columns"
-                   schema="documents.file_upload" #view2
-                   orderBy="update_time DESC"
-                   >
-               </objectsview>
-	       </mat-tab>
-           <mat-tab label@i18n="INFO_UPLOAD">
-               <div style="height:8px"></div>
-               <action #dropAction style="display: block;position: relative" (onDrop)="ondUpload.execute($event)" provider="file">
-             		<div fxLayout="column" style="min-height: 200px;border: 1px dashed rgba(0,0,0,0.6);border-radius: 18px">
-             			<div fxFlex></div>
-             			<div fxLayout="row">
-             				<div fxFlex></div>
-             				<div style="font-size: 20px">
-             					<i18n>LABEL_DROP_FILES_HERE</i18n>
-             				</div>
-             				<div fxFlex></div>
-             			</div>
-             			<div fxFlex></div>
-             		</div>
-                    <input-varchar class="force-input-height-full"
-                        style="opacity:0;background-color:rgba(0,0,0,0.2);z-index:1;position:absolute;top:0;left:0;width:100%;bottom:0"
-                        [upload]="mode.value||true" #dupload  (valueChange)="ondUpload.execute()">
-                        <execution #ondUpload [params]="{storage:storage,root:root,tgrp:tgrp,upload:dupload,template:template,view1:view1}"><![CDATA[
-
-                            if (args[0] && args[0].dataTransfer)
-                            {
-                                var dt = args[0].dataTransfer;
-                        		var f = dt.files;
-                        		var formData = new FormData();
-                        		for (var i=0; i < f.length; i++) {
-                        			var name = 'file' + i;
-                        			formData.append(name, f[i]);
-                        		}
-                        		var xhr = new XMLHttpRequest();
-                        		xhr.open( 'POST', '/visionr.vsp?create=true&ajax=true&operation=upload&sid='+root.context.db._socket.authSessionId, true);
-                        		xhr.onload = () => {
-                        			var arr=xhr.responseText.split("\n");
-                        			var files=[];
-                        			var i=0;
-                        			var fvalue;
-                        			while (true) {
-                        				var text=arr[i];
-                        				var value=arr[i+1];
-                        				if (!text || !value) break;
-                        				files.push({text:text,value:value});
-                        				i+=2;
-                        			}
-                        			if (files.length < 1) return;
-                        			if (files.length == 1) {
-                        				fvalue=files[0].value;
-                        			} else {
-                        				var trr=[];
-                        				for (var ie in files) {
-                        					var e = files[ie];
-                        					trr.push(e.value);
-                        				}
-                        				fvalue=trr.join("@");
-                        			}
-                        			uidsOk(fvalue);
-                        		};
-                                xhr.onerror = console.error;
-                        		xhr.send( formData );
-                            } else {
-                                uidsOk(upload.value)
-                            }
-
-                            function uidsOk(uid)
-                            {
-                                if (!uid) return;
-                                root.db.remote("web2print/renderer").uploadTemplateDocuments(template.value,uid.split("@"),true).done(function(res) {
-                                    if (res) {
-                                        // OK
-                                        storage.value=(storage.value||[]).concat(uid.split("@"));
-                                        tgrp.selectedIndex=1;
-                                    }
-                                });
-                            }
-                        ]]></execution>
-                    </input-varchar>
-              </action>
-          </mat-tab>
+                    type="tiles"
+                    schema="documents.file_upload" #oview
+                    orderBy="
+                    	(CASE WHEN parent.path = '/web2print/{{inst.values.uuid}}/public' THEN 2 ELSE 0 END),
+	                    update_time DESC
+                    "
+                    [viewParams]="{
+						tiles:{
+							template : '/widgets/web2print/print/custom/documents-tile-access',
+							uuid : inst.values.uuid,
+							disableFlatListMediaSizeXS : root.app.mediaSize != 'xs'
+						}
+					}"
+                    [newEnabled]="false"
+                    [detailsEnabled]="false"
+                    [editEnabled]="false"
+                    [reportEnabled]="false"
+                    [printEnabled]="false"
+                    [executeEnabled]="false"
+                    [uploadEnabled]="false"
+                    [deleteEnabled]="false"
+                    [exportEnabled]="false"
+                    [footerLeftTemplate]="false"
+                    [footerRightTemplate]="false"
+                    [hidePaginatorFooter]="true"
+                    (onReady)="delay.done()"
+                    [templateEmpty]="templateEmpty"
+                ></objectsview>
+    <ng-template #templateEmpty>
+		<div style="position:absolute;left:0;right:0;top:0;bottom:0" fxLayout="column">
+			<div style="margin:auto"><span style="font-size:20px;color:rgba(0,0,0,0.45)"><i18n>INFO_NO_DATA_FOUND_EXM</i18n></span></div>
+		</div>			
+	</ng-template>            
     </mat-tab-group>
-
-</mat-dialog-content>
+</mat-dialog-content></delay-dialog>
 <mat-dialog-actions fxLayout="row">
-    <button mat-button *ngIf="tgrp.selectedIndex == 1 || root.loggedIn" (click)="
+    <button mat-button (click)="
         upload.element.querySelector('input').focus();
         upload.element.querySelector('input').click()
         ">
@@ -141,30 +82,21 @@
 		<span fxHide.xs><i18n>INFO_UPLOAD</i18n></span>
         <span style="position:absolute;z-index:1;top:0;left:0;right:0;bottom:0;opacity:0;cursor:pointer">
             <input-varchar style="width: 100%;height: 30px;" [upload]="mode.value||true" #upload (valueChange)="onUpload.execute()">
-                <execution #onUpload [params]="{storage:storage,root:root,tgrp:tgrp,upload:upload,template:template,view1:view1}"><![CDATA[
+                <script #onUpload [params]="{root:root,upload:upload,template:template,oview:oview}">
                     var uid = upload.value;
-                    var isEveryone = tgrp.selectedIndex == 1;
-                    if (!uid) return;
-                    root.db.remote("web2print/renderer").uploadTemplateDocuments(template.value,uid.split("@"),isEveryone).done(function(res) {
-                        if (res) {
-                            // OK
-                            if (isEveryone) {
-                                storage.value=(storage.value||[]).concat(uid.split("@"));
-                            } else {
-                                view1.update();
-                            }
-                        }
+                    root.db.remote("web2print/template").uploadUserDocument(template.value,uid.split("@")).done(function(res) {
+						oview.update();
+						if (res) 
+							oview.selection=[res];
+						else oview.selection=[];
                     });
-                ]]></execution>
+                </script>
             </input-varchar>
         </span>
 	</button>
-    <button mat-button color="error"
-        *ngIf="tgrp.selectedIndex == 1 || root.loggedIn"
-        [disabled]="
-        (tgrp.selectedIndex == 0 ? view1 : view2).selectionLength < 1
-        " (click)="deleteSelection.execute()">
-		<mat-icon>delete_forever</mat-icon>
+    <button mat-button 
+        [disabled]="oview.selectionLength < 1" (click)="deleteSelection.execute()">
+		<mat-icon>delete</mat-icon>
 		<span fxHide.xs><i18n>INFO_DELETE</i18n></span>
 	</button>
 	<span fxFlex></span>
@@ -173,50 +105,31 @@
 		<span fxHide.xs><i18n>BUTTON_WEB_CLOSE</i18n></span>
 	</button>
     <button mat-button color="primary" dialog-close style="margin-left:8px"
-        (click)="root.return(
-            (tgrp.selectedIndex == 0 ? view1 : view2).selected
-        )"
-        [disabled]="
-            (tgrp.selectedIndex == 0 ? view1 : view2).selectionLength != 1
-        ">
+        (click)="root.return(oview.selected)"
+        [disabled]="!oview.selected || oview.selection?.length > 1">
         <mat-icon>done</mat-icon>
 	    <span fxHide.xs><i18n>BUTTON_WEB_SELECT</i18n></span>
 	</button>
 </mat-dialog-actions>
 
-<execution #deleteSelection [params]="{template:template,storage:storage,root:root,view: tgrp.selectedIndex == 0 ? view1 : view2,tgrp:tgrp}"><![CDATA[
-    var cond = view.getSelectionAsCondition();
-    var isEveryone = tgrp.selectedIndex == 1;
+<script #deleteSelection [params]="{template:template,root:root,oview:oview}">
+    var cond = oview.getSelectionAsCondition();
     root.db.documents.file_upload.SELECT(cond,{properties:'uuid'}).done(function(res) {
         if (!res || !res.length) return;
         root.openDialog("/dialogs/basic/question",{content:root.i18n('INFO_ARE_YOU_SURE_QUESTION')},function() {
-            if (storage.value) {
-                var skip={};for (var i in res) skip[res[i].uuid]=true;
-                var arr=[];
-                for (var i=0;i<storage.value.length;i++) if (!skip[storage.value[i]])
-                    arr.push(storage.value[i]);
-                deleteSelection(function() {
-                    view.selection=undefined;
-                    if (!arr.length)
-                        arr=undefined;
-                    if (JSON.stringify(storage.value) != JSON.stringify(arr)) {
-                        storage.value=arr;
-                    } else {
-                        view.update();
-                    }
-                });
-            } else {
-                deleteSelection(function(){
-                    view.selection=undefined;
-                    view.update();
-                });
-            }
-            function deleteSelection(onDone) {
-                root.db.remote("web2print/renderer").deleteTemplateDocuments(template.value,res,isEveryone).done(onDone);
-            }
+            root.db.remote("web2print/template").deleteTemplateDocuments(template.value,res).done(function(err){
+				if (err)
+		            root.openDialog('/dialogs/basic/error',{
+		                content : err
+		            });
+		        else {
+	                oview.selection=undefined;
+	                oview.update();
+				}
+			});
         });
     });
-]]></execution>
+</script>
 
 <i18n hidden CODE="LABEL_BUILT_IN">
     <en-US>Built-in</en-US>

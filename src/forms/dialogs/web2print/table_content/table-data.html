@@ -1,11 +1,84 @@
 <variable #initial export></variable>
-<variable #data export></variable>
-<variable #columns export></variable>
+<script #initData [params]="{data:data}">
+	// add ID = rownum
+	var dv = data.value = (data.value||[]).slice();
+	for (var i=0;i<dv.length;i++) (dv[i]=dv[i].slice()).unshift(i);
+</script>
+<variable #data export (onReady)="initData.execute()"></variable>
+<script #initColumns [params]="{data:data,columns:columns,root:root}">
+	// remove ID = rownum
+	var cols = [];
+	var cval = columns.value;
+	for (var i=0;i<cval.length;i++) {
+		var e = cval[i];
+		var c = {
+			code : `${i}`, 
+			name : e.name,
+			width : e.width,
+			prefix : e.prefix,
+			suffix : e.suffix,
+			readonly : e.readonly,
+			obligatory : e.obligatory,
+			maxLength : e.maxLength 
+		};
+		switch (e.type) {
+			case "datetime" :
+				c.datetime=true;
+				c.inputFormat=root.db.defaultInputFormatDatetime;
+				c.outputFormat=root.db.defaultOutputFormatDatetime;
+				break;
+			case "date" :
+				c.datetime=true;
+				c.inputFormat=root.db.defaultInputFormatDate;
+				c.outputFormat=root.db.defaultOutputFormatDate;
+				break;
+			case "datetimeHoursMinutes" :
+				c.datetime=true;
+				c.inputFormat=root.db.defaultInputFormatDatetimeHoursMinutes;
+				c.outputFormat=root.db.defaultOutputFormatDatetimeHoursMinutes;
+				break;
+			case "hoursMinutes" :
+				c.datetime=true;
+				c.inputFormat=root.db.defaultInputFormatHoursMinutes;
+				c.outputFormat=root.db.defaultOutputFormatHoursMinutes;
+				break;
+			case "time" :
+				c.datetime=true;
+				c.inputFormat=root.db.defaultInputFormatTime;
+				c.outputFormat=root.db.defaultOutputFormatTime;
+				break;
+			case "double" :
+				c.double=true;
+			case "integer" :
+				c.number=true;
+				break;
+			case "text" :
+				c.text=true;
+				c.string=true;
+				break;
+			default : 
+				c.varchar=c.string=true;
+		}
+		cols.push(c);
+		columns.value=cols;
+	}
+</script>
+<variable #columns export (onReady)="initColumns.execute()"></variable>
 
+<variable #entry export></variable>
 <observe #onsubmit></observe>
-<mat-dialog-content style="position: relative;width:60vw" simplebar>
-    <include shared ref="/widgets/forms/table"></include>
-</mat-dialog-content>
+<mat-dialog-content simplebar style="min-width:40vw">
+	<h2 style="color:rgba(0,0,0,0.4);font-weight:normal" mat-dialog-title>{{entry.value.NAME}}</h2>
+
+	<variable #state persist></variable>
+	<datatable #dt [sortable]="false"
+		[schema]="columns.value" 
+		[data]="data.value" 
+		[(state)]="state.value" 
+		(objectDblClick)="dt.startEditCell()"
+	></datatable>
+
+</mat-dialog-content> 
 <mat-dialog-actions fxLayout="row">
   <span fxFlex></span>
   <button style="background-color:white" class="mat-elevation-z1" mat-button dialog-close tabindex="-1">
@@ -13,7 +86,7 @@
     <span fxHide.xs><i18n>BUTTON_WEB_CLOSE</i18n></span>
   </button>
   <button color="primary" style="background-color:white" class="mat-elevation-z1" mat-button tabindex="-1"
-    dialog-submit (submit)="root.return(getData.value())"
+    dialog-submit (submit)="root.return(data.value)"
     >
       <mat-icon style="margin-right:3px">done</mat-icon>
       <span fxHide.xs><i18n>BUTTON_WEB_SAVE</i18n></span>

@@ -1,0 +1,20 @@
+<!-- @Abstract -->
+<input-number *ngIf="comp.type == 'integer' || comp.type == 'double'"
+    style="width:100%"
+    floatLabel="always"
+    [hasClear]="false"
+    [label]="comp.NAME" 
+    [placeholder]="
+    	!comp.placeholder ? ' ' 
+    	:comp.type == 'double' ? 
+    		root.formatDouble(comp.placeholder,comp.outputFormat) 
+    		: root.formatInteger(comp.placeholder,comp.outputFormat) 
+    "
+    [(value)]="val.value"
+    [double]="comp.type == 'double'"
+    [inputFormat]="comp.inputFormat"
+    [outputFormat]="comp.outputFormat"
+    (focus)="dynamicViewer && dynamicViewer.gotoPage(comp.dest_page-1)" #inp>
+    <include shared ref="/widgets/web2print/print/content/handle-edit-entry"></include>
+	<observe [event]="dynamicViewer.overlayClick" (dispatch)="$event.code == comp.code ? overlayClicked.execute(comp,inp,$event) : 0"></observe>
+</input-number>

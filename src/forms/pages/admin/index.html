@@ -6,8 +6,8 @@
 <variable #hierarchy persist></variable>
 
 <variable #name value="Administration"></variable>
-<include shared ref="/widgets/forms/dashboard/common"></include>
-<ng-template #main>
+<include shared ref="/app/layouts/common"></include>
+<ng-template #content>
 	<objectsview embed menu
 		[dependency]="[openPaths,selectionPaths,hierarchy,state]"
 		[(sidenavOpen)]="sidenavOpen.value" [(hierarchy)]="hierarchy.value"

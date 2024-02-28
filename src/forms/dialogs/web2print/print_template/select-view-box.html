@@ -5,7 +5,7 @@
 <variable #schema export></variable>
 <variable #condition export></variable>
 <variable #queryParams export></variable>
-
+<variable #fullscreen export></variable>
 <data [schema]="schema.value" [where]="condition.value" [params]="queryParams.value" [limit]="2"
       select="this,print_template.preview_document,region,dest_page">
     <result #res></result>
@@ -19,7 +19,7 @@
     <variable #cropData [value]="root.JSON.parse(res.objects[0][2]||'null')"></variable>
     <variable #page [value]="res.objects[0][3]"></variable>
     <attach ref="/dialogs/documents/document/crop" [params]="{
-        fullscreen : root.app.mobile,
+        fullscreen : root.app.phone || root.app.mediaSize == 'xs' || root.app.mediaSize == 'sm',
         object : object.value,
         page : root.Math.max(page.value-1,0),
         customSubmit : setRegion.execute,

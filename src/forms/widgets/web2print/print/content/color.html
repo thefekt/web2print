@@ -1,0 +1,61 @@
+<!-- @Abstract -->
+<div *ngIf="comp.type == 'color'" #froot tabindex="-1" (click)="froot.focus()" (focus)="focused.value=true" (blur)="focused.value=false">
+    <variable #focused></variable>
+    <variable #rgbcolor></variable>
+    <variable #rgbcolorSec></variable>
+    <variable #col [defaults]="{value: comp.code}">
+        <observe>
+            <script [params]="{col:col,root:root,comp:comp,rgbcolor:rgbcolor,rgbcolorSec:rgbcolorSec}">             
+                var result = {};
+                var rgb = root.app.color.parse(comp.placeholder||'green').rgb;
+                rgbcolor.value = {r:rgb[0],g:rgb[1],b:rgb[2]};
+                var result2 = [];
+                for (var color of comp.colors||[]) {
+	                rgb = root.app.color.parse(color||'red').rgb;
+                    result2.push({r:rgb[0],g:rgb[1],b:rgb[2]});
+				}
+                rgbcolorSec.value = result2;
+            </script>
+        </observe>
+    </variable>
+    <label style="font-size:13px" [style.color]="focused.value ? 'rgba(236,138,36,1)':'rgba(0,0,0,0.5)'">{{comp.NAME}}</label>
+    <div style="margin-top: 4px;margin-bottom:16px;position:relative" fxLayout="row">
+        <variable #colorSelection2 [defaults]="{value: 0}"></variable>
+        
+        <!--            [style.border]="colorSelection2.value ? '0' : '2px solid black'" -->
+        <div style="width: 32px;height: 32px;border-radius: 100%;margin:5px;cursor:pointer"
+            class="mat-elevation-z1"
+            (click)="chval.execute(0)"
+            [style.filter]="!colorSelection2.value ? 'drop-shadow(0px 0px 8px rgb(' + rgbcolor.value.r + ',' + rgbcolor.value.g + ',' + rgbcolor.value.b +'))' : undefined"
+            [style.background-color]="'rgb(' + rgbcolor.value.r + ',' + rgbcolor.value.g + ',' + rgbcolor.value.b +')'"
+            ></div>
+        <ng-template let-sc let-i="index" ngFor [ngForOf]="rgbcolorSec.value" style="display: inline-block">
+            <!--[style.border]="(colorSelection2.value == i+1) ? '2px solid black' : '0'" -->
+            <div (click)="chval.execute(i+1)"
+                style="width: 32px;height: 32px;border-radius: 100%;margin:5px;cursor:pointer"
+                class="mat-elevation-z1"
+                [style.filter]="colorSelection2.value == i+1 ? 'drop-shadow(0px 0px 8px rgb(' + sc.r + ',' + sc.g + ',' + sc.b +'))' : undefined"
+                [style.background-color]="'rgb(' + sc.r + ',' + sc.g + ',' + sc.b +')'"></div>
+        </ng-template>
+        <button mat-button style="height:30px;background-color:white;font-size:14px;position:absolute;right:3px;top:6px;z-index:10" 
+        		*ngIf="focused.value && root.loggedIn && (root.db.session.admin || root.db.session.customerAdmin)"
+            (click)="root.detailsDialog(comp.object,'web2print.abstract_content',{
+                fullscreen : root.app.phone,
+                type : 'edit'
+            },undefinded,undefined,reload.execute);root.app.blur()"
+            (mousedown)="$event.stopPropagation();$event.preventDefault();"
+            >
+            <mat-icon>edit</mat-icon>
+        </button>			
+        <script #chval [params]="{DBG:DEBUG.value,val:val,comp:comp,colorSelection2:colorSelection2}">
+            colorSelection2.value = args[0];
+            if (!args[0]) {
+                val.value = comp.placeholder;
+            } else {
+                val.value = comp.colors[args[0]-1];
+            }
+            DBG && console.log(`#chval + ${val.value}`);
+        </script>
+        <observe [event]="dynamicViewer.overlayClick" (dispatch)="$event.code == comp.code ? overlayClicked.execute(comp,undefined,$event,froot) : 0"></observe>
+    </div>
+</div>

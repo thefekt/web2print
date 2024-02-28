@@ -1,0 +1,34 @@
+<!-- @Abstract -->
+<div *ngIf="comp.type == 'table'" #froot tabindex="-1" (click)="froot.focus()" (focus)="focused.value=true" (blur)="focused.value=false" relative style="margin-bottom:14px">
+    <variable #focused></variable>
+    <observe [event]="dynamicViewer.overlayClick" (dispatch)="$event.code == comp.code ?
+        [btn._elementRef.nativeElement.click(),btn._elementRef.nativeElement.scrollIntoView()]
+         : 0"></observe>
+    <label style="font-size:13px" [style.color]="focused.value ? 'rgba(236,138,36,1)':'rgba(0,0,0,0.5)'">{{comp.NAME}}</label>
+    <button mat-button style="width:100%;margin-top:7px;line-height:30px" #btn
+        (click)="root.openDialog('/dialogs/web2print/table_content/table-data',{
+			entry : comp,
+            data : val.value && val.value.length ? val.value :
+                   comp.placeholder && comp.placeholder.data ? comp.placeholder.data : [],
+            columns : comp.placeholder && comp.placeholder.columns || [],
+            initial : comp.placeholder && comp.placeholder.data || []
+        },submitData.execute)">
+        <mat-icon style="margin-right:4px">launch</mat-icon>
+        {{  val.value && val.value.length ? val.value.length :
+            comp.placeholder && comp.placeholder.data ? comp.placeholder.data.length :
+            0 }} <i18n>SUFFIX_CONTENTS</i18n>
+    </button>
+    <button mat-button style="height:30px;background-color:white;font-size:14px;position:absolute;right:3px;top:0;z-index:10"
+        *ngIf="focused.value && root.loggedIn"
+        (click)="root.detailsDialog(comp.object,'web2print.abstract_content',{
+            fullscreen : root.app.phone,
+            type : 'edit'
+        },undefinded,undefined,reload.execute);root.app.blur()"
+        (mousedown)="$event.stopPropagation();$event.preventDefault();"
+        >
+        <mat-icon>edit</mat-icon>
+    </button>
+    <script #submitData [params]="{root:root,val:val}">
+        val.value=args[0];
+    </script>
+</div>

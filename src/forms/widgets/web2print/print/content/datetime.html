@@ -1,0 +1,38 @@
+<!-- @Abstract -->
+<input-date *ngIf="comp.type == 'date' || comp.type == 'datetime' || comp.type == 'time'"
+    style="width:100%"
+    floatLabel="always"
+    [hasClear]="false"
+    [label]="comp.NAME" 
+    [placeholder]="
+    	!comp.placeholder ? ' ': 
+    	root.formatDatetime(comp.placeholder,
+	        	comp.outputFormat || 
+	    	comp.type == 'date' ? 
+	    		root.db.defaultOutputFormatDate : 
+	    	comp.type == 'time' ? 
+	    		root.db.defaultOutputFormatHoursMinutes : 
+	    	root.db.defaultOutputFormatDatetimeHoursMinutes
+		)
+    "
+    [(value)]="val.value"
+    [inputFormat]="
+    	comp.inputFormat || 
+    	comp.type == 'date' ? 
+    		root.db.defaultInputFormatDate : 
+    	comp.type == 'time' ? 
+    		root.db.defaultInputFormatHoursMinutes : 
+    	root.db.defaultInputFormatDatetimeHoursMinutes
+    "
+    [outputFormat]="
+    	comp.outputFormat || 
+    	comp.type == 'date' ? 
+    		root.db.defaultOutputFormatDate : 
+    	comp.type == 'time' ? 
+    		root.db.defaultOutputFormatHoursMinutes : 
+    	root.db.defaultOutputFormatDatetimeHoursMinutes
+    "
+    (focus)="dynamicViewer && dynamicViewer.gotoPage(comp.dest_page-1)" #inp>
+    <include shared ref="/widgets/web2print/print/content/handle-edit-entry"></include>
+	<observe [event]="dynamicViewer.overlayClick" (dispatch)="$event.code == comp.code ? overlayClicked.execute(comp,inp,$event) : 0"></observe>
+</input-date>

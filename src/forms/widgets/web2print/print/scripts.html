@@ -1,0 +1,268 @@
+<!-- @Abstract -->
+
+
+<script #loadTemplateAndUpdate [params]="{tpl:tpl,root:root,templateObject:templateObject,update:update}">
+	root.db.remote("web2print/template").getTemplateDetails(tpl.value).done(function (res) {
+		templateObject.value = res;
+		var overlays = [];
+		for (var cat of res.contents||[]) {
+			for (var e of cat.entries) {
+				if (e.region && e.dest_page > 0)
+					overlays.push({
+						code: e.code,
+						page: e.dest_page - 1,
+						class: 'w2p-print-entry-overlay force-display-flex',
+						region: e.region,
+						content: ' '//e.NAME
+					});
+			}
+		}
+		res.overlays = overlays.length ? overlays : undefined;
+		update.execute();
+	});
+</script>
+
+<!-- executed upon change of user configured content. send to template -->
+<script #contentChange [params]="{baseURL:baseURL}">
+	let [br, img, form] = args;
+	var curtumb = JSON.stringify(((br.files || [])[0] || {})['name']);
+	if (br.files && br.files[0]) {
+		var reader = new FileReader();
+		reader.onloadend = function () {
+			img.src = reader.result;
+			var data = new FormData();
+			data.append('file', br.files[0]);
+			fetch(`${baseURL.value}/visionr.vsp?ajax=true&operation=upload`, {
+				method: 'POST',
+				body: data
+			});
+		}
+		reader.readAsDataURL(br.files[0]);
+	}
+</script>
+
+<!-- post to the iframe parent -->
+<script #postConfig [params]="{
+	tpl:tpl,custom:custom,
+	generatedPreview:generatedPreview,
+	update:update,
+	baseURL:baseURL,
+	delay:delay
+}">
+	delay.done();
+	//console.log(">>>> POST CONFIG ",tpl.value,' |||| ',custom.value);
+	const msgpost = JSON.stringify({
+		tpl: tpl.value,
+		config: custom.value,
+		preview_uuid: generatedPreview.value.uuid
+	});
+	/* SEND TO PARENT */
+	var target = window.parent;
+	if (target && target !== window) 
+		target.postMessage(msgpost, baseURL.value);
+</script>
+
+
+<script #update [params]="{
+	update:update,
+	root:root,
+	paused:paused,
+	reupdate:reupdate,
+	custom:custom,
+	generatedPreview:generatedPreview,
+	templateObject:templateObject,
+	postConfig:postConfig
+}">
+	var cv = custom.value||{};
+	if (paused.value) {
+		reupdate.value = true;
+		return;
+	}	
+	paused.value = true;
+	root.setTimeout(function () {
+		if (reupdate.value) {
+			paused.value = false;
+			reupdate.value = false;
+			update.execute();
+		} else root.db.remote("web2print/renderer").renderTemplate(templateObject.value,cv).done(function (res) {
+			paused.value = false;
+			if (res === undefined) {
+				console.error('#update: failed to receive reasonable response from server');
+			} else {
+				generatedPreview.value = res;
+				postConfig.execute();
+			}
+			if (reupdate.value) {
+				reupdate.value = false;
+				update.execute();
+			}
+		});
+	}, generatedPreview.value === undefined ? 0 : 500);
+</script>
+ 
+<script #resetContent [params]="{root:root,custom:custom,generatedPreview,loadTemplateAndUpdate:loadTemplateAndUpdate}">
+	for (var i in custom.value) custom.value[i]=undefined;
+	generatedPreview.value = null;
+	loadTemplateAndUpdate.execute();
+</script>
+
+<script #deleteConfirmed [params]="{templateObject:templateObject,root:root}">
+	root.db.remote("web2print/template").deleteTemplate(templateObject.value).done(function (res) {
+		root.app.reloadRoot();
+	})
+</script>
+
+<script #downloadTemplate [params]="{root:root, templateObject:templateObject}">
+	root.db.getObject(templateObject.value, "code,document.uuid", function (res) {
+		if (res.document && res.document.uuid) {
+			var url = "/documents/" + res.document.uuid + ".uuid?operation=download&filename=" + encodeURIComponent(res.code + ".zip");
+			root.app.downloadUrl(url);
+		}
+	})
+</script>
+
+<script #overlayClicked [params]="{root:root}">
+	var comp = args[0];
+	var inp = args[1];
+	var event = args[2];
+	var froot = args[3];
+	if (event.code != comp.code) return;
+	setTimeout(function(){
+		if (froot) {
+			froot.focus();
+			froot.scrollIntoView();
+		} else {
+			if (!inp.focused)
+				inp.setFocused(true);
+			inp.element.scrollIntoView();
+		}
+	},250);
+</script>
+
+
+<!-- download configuration as file -->
+<script #exportAsFile [params]="{root:root,custom:custom,templateObject:templateObject}">
+	function downloadObjectAsJson(exportObj, exportName){
+	    var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(json,null,4));
+	    var downloadAnchorNode = document.createElement('a');
+	    downloadAnchorNode.setAttribute("href",     dataStr);
+	    downloadAnchorNode.setAttribute("download", exportName);
+	    document.body.appendChild(downloadAnchorNode); // required for firefox
+	    downloadAnchorNode.click();
+	    downloadAnchorNode.remove();
+	}
+	var tmpl = templateObject.value;
+	var data = {};
+	for (var i in custom.value) {
+		var e = custom.value[i];
+		if (e instanceof Date) 
+			e = e.toISOString();
+		else if (typeof e == "object") {
+			e = {...e}; // clone
+			delete e.document; 
+			delete e.url;
+			if (e.region) {
+				e.region={...e.region}; //clone
+				delete e.region.url;
+			}
+		}
+		data[i]=e;
+	}
+	var json = {
+		template : {
+			name : tmpl.name,
+			uuid : tmpl.uuid
+		},
+		data : data 
+	};
+	var filename = `${tmpl.name}-${root.formatDate(new Date(),"YYYYMMDD-HHmm")}.json`;
+	downloadObjectAsJson(json,filename);
+	root.showSnack(4000,"/dialogs/widgets/form/simple-notify",{
+        caption : `${root.i18n("FILE_DOWNLOAD_STARTED")} : ${filename}`
+    });
+</script>
+
+<!-- loads configuration from uploaded file -->
+<script #importFromFile [params]="{root:root,custom:custom,templateObject:templateObject,update:update,changed:changed}">
+	var file = args[0];
+	if (!file) return;
+	
+	var cdata = custom.value;
+	if (!changed.value) {
+		cdata = {};
+		confirmed();
+	} else {
+		cdata = {...cdata}; // clone
+		root.openDialog("/dialogs/basic/question",{caption:root.i18n("QUESTION_YOU_ARE_GOING_TO_OVERRIDE_CURRENT_SURE")},confirmed);
+	}
+	function confirmed() {
+		var reader = new FileReader();
+		var entriesByCode = {};
+		for (var e of templateObject?.value?.contents||[]) {
+			for (var x of e.entries||[]) 
+				entriesByCode[x.code]=x;
+		}		
+	    reader.onload = function(ev) {
+			try {
+				var json;
+				try {
+					json = JSON.parse(ev.target.result);
+				} catch (ex) {
+					throw root.i18n('ERR_FILE_IS_CORRUPTED');
+				}
+				if (json?.template?.uuid != templateObject.value.uuid) 
+					throw `${root.i18n('ERR_CONFIG_DIFFERENT_TEMPLATE')} : ${json?.template?.name || json?.template?.uuid}}`;
+				var imgs = [];
+				var iuds = []; // image uuids
+				for (var i in json.data||{}) {
+					var n = entriesByCode[i];
+					if (!n) continue;
+					var val = json.data[i]; 
+					if (val != undefined) {
+						switch (n.type) {
+							case 'date':
+							case 'datetime':
+							case 'time':
+								val = new Date(val);
+								break;
+							case 'image' : 
+								imgs.push(val);
+								if (val?.region) 
+									iuds.push(val.region.f);
+								break;
+						}					
+					}
+					cdata[i]=val;
+				}
+				if (!imgs.length) finalize();
+				else root.db.documents.document.SELECT({where:'uuid IN (:UUIDS)',UUIDS:iuds,properties:'uuid'}).done(function(objs){
+					 var u2o={}; 
+					 for (var o of objs||[]) u2o[o.uuid]=o;
+					 for (var e of imgs) {
+						 var u = e?.region?.f; //uuid
+						 if (u) {
+						 	e.document=u2o[u];
+						 	e.region.url=`/tmp/documents/${u}.uuid.png?operation=resizeImage&width=480&f=OpEqy3bJQ8mMbwwMVjOcug`;
+						 }
+					 }
+					 finalize();
+	 			});
+			} catch (ex) {
+				root.openDialog('/dialogs/basic/error',{
+					caption : root.i18n('ERROR_WEB_WIN_CAPTION'),
+		        	content : ex.toString()
+		        });
+			}
+	    };
+	    reader.readAsText(file); // Read the file as text		
+	}
+	
+	function finalize() {
+		custom.value=cdata;
+		update.execute();	
+	}
+</script>
+<!-- SUBMIT -->
+<script #onSubmit [params]="{root:root,custom:custom,templateObject:templateObject}">	
+	console.log("SUBMIT ",custom.value,templateObject.value);
+</script>

@@ -1,2 +1,2 @@
-<variable #embed [defaults]="{value : (root.app.route.path == '/index' || root.app.route.path == '/print')}"></variable>
+<variable #embed [value]="root.app.route.path == '/main/print'"></variable> 
 <include shared ref="/widgets/app/layout"></include>

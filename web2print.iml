@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module version="4">
+  <component name="AdditionalModuleElements">
+    <content url="file://$MODULE_DIR$/../visionr-engine">
+      <sourceFolder url="file://$MODULE_DIR$/../visionr-engine/components/build-tools/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../visionr-engine/components/core/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../visionr-engine/components/ftmpl2ng/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../visionr-engine/components/host/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../visionr-engine/components/native-tools/forms.tmpl2ng/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../visionr-engine/components/native-tools/libreoffice/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../visionr-engine/components/server/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../visionr-engine/components/visionr-engine.js/src/main/java" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/../visionr-engine/.visionr" />
+      <excludeFolder url="file://$MODULE_DIR$/../visionr-engine/bin" />
+      <excludeFolder url="file://$MODULE_DIR$/../visionr-engine/work" />
+    </content>
+    <content url="file://$MODULE_DIR$" dumb="true">
+      <excludeFolder url="file://$MODULE_DIR$/data" />
+      <excludeFolder url="file://$MODULE_DIR$/log" />
+      <excludeFolder url="file://$MODULE_DIR$/upload" />
+      <excludeFolder url="file://$MODULE_DIR$/work" />
+    </content>
+  </component>
+</module>
