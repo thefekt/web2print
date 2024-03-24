@@ -17,11 +17,12 @@
 	</build>
 	<dependencies>
 		<dependency>
-		    <groupId>jakarta.servlet</groupId>
-		    <artifactId>jakarta.servlet-api</artifactId>
-		    <version>6.1.0-M1</version>
+		    <groupId>org.eclipse.jetty.toolchain</groupId>
+		    <artifactId>jetty-jakarta-servlet-api</artifactId>
+		    <version>5.0.2</version>
 		    <scope>provided</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>com.planvision</groupId>
 			<artifactId>oscript</artifactId>

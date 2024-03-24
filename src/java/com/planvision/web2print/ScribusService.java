@@ -667,13 +667,25 @@ public class ScribusService {
 	            	DBObjectDef ko = DBObjectDef.g(vd.getMember("SCHEMA").getMember("KEY").asString());
 	            	if (DBModule.g("documents").getSchemaByCode("file").allInheritedFromContains(ko)) {
 	            		// instanceof od documents file
-		                if (!doNotRender) {
+	                	boolean isDisabled = disabled != null && disabled.asBoolean();
+	                	// KEY for image tag 
+	            		if (tmpDir == null) {
+	            			// during cache key calc, not during render (do not add hashes to the real replace set)
+		                	long k1 = 0;
+		                	Value t = vd.getMember("update_time");
+		                	if (t.isNull()) t = vd.getMember("insert_time");
+		                	if (t.isDate()) k1 = t.as(Date.class).getTime();
+		                	String key = HostImpl.me.getSHA256(vd.getMember("id").asLong()+'_'+k1+'_'+(isDisabled ? '1' : '0')+'_'+JSEngine.jsonStringify(region).asString());
+		                    toReplace.putMember(code,key);
+	            		}
+	                    //---------------------------
+	            		if (!doNotRender) {
 		                	Value ve = vd.getMember("get_file").execute();
 		                	if (ve.isString()||ve.isNull()) {
 		                		// DELETED FILE TODO CLEANUP + ERROR LOG
 		                		continue;
 		                	}
-		                	if (disabled != null && disabled.asBoolean()) {
+		                	if (isDisabled) {
 		                    	File outImage = new File(tmpDir,code);
 		                		String ext = outImage.getName().substring(outImage.getName().lastIndexOf('.')+1);
 		                		if (ext.equalsIgnoreCase("PDF")) {
@@ -713,14 +725,7 @@ public class ScribusService {
 			                        //JSCORE.Exec.callVSC("java.util.copyImageInTempDirectory","rndr-"+tmpl.document.id, d, e.code,region);
 			                    }
 		                	}
-		                } else {
-		                	 // JUST A KEY
-		                	Value t = vd.getMember("update_time");
-		                	if (t.isNull()) t = vd.getMember("insert_time");
-		                	if (t.isDate()) t = JSEngine.primitiveToJS(t.as(Date.class).getTime());
-		                	if (t.isNull()) t = JSEngine.primitiveToJS(0);
-		                    toReplace.putMember(code,t);
-		                }
+		                } 
 	            	}
 	            }
 	            /*{
@@ -830,8 +835,13 @@ public class ScribusService {
 		// check for cached document
 		final String ckey = getCachedResultKey(tmpl,data);
 		ObjectReference cref = Utils.getCachedResult(ckey);
-		if (cref != null) 
-			return cref.getJSObj();
+		if (cref != null) {
+			Value jso = cref.getJSObj();
+			String duuid = jso.getMember("uuid").asString();
+			// ADD TEMP READ 
+			HostImpl.me.addDocumentTempReadAccessSession(null/*current session*/, duuid);
+			return jso;
+		}
 		//------------------------------------------------------------------------------
 		final String key =  "rndr-"+tmpl.getMember("document").getMember("id").asLong();
 		Callback cb = new Callback() {
@@ -851,7 +861,11 @@ public class ScribusService {
 		        } else {
 				    com.planvision.visionr.host.core.scripting.oscript.api.io.File vf = result.getMember("get_file").execute().as(com.planvision.visionr.host.core.scripting.oscript.api.io.File.class);
 				    File outf = vf.getFile();
-			        Utils.putCachedResult(ckey,outf,result.getMember("_ref").as(ObjectReference.class));
+				    ObjectReference resr = result.getMember("_ref").as(ObjectReference.class);
+			        Utils.putCachedResult(ckey,outf,resr);
+					// ADD TEMP READ 
+			        String duuid = (String) resr.getObject().getSimpleValueByCodeUnsafe("uuid");
+			        HostImpl.me.addDocumentTempReadAccessSession(null/*current session*/, duuid);
 		        }
 		        return result;
 			}
