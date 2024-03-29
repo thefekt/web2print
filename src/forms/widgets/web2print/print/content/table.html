@@ -6,10 +6,12 @@
          : 0"></observe>
     <label style="font-size:13px" [style.color]="focused.value ? 'rgba(236,138,36,1)':'rgba(0,0,0,0.5)'">{{comp.NAME}}</label>
     <button mat-button style="width:100%;margin-top:7px;line-height:30px" #btn
-        (click)="root.openDialog('/dialogs/web2print/table_content/table-data',{
+        (click)="
+        dynamicViewer && dynamicViewer.gotoPage(comp.dest_page-1);
+        
+        root.openDialog('/dialogs/web2print/table_content/table-data',{
 			entry : comp,
-            data : val.value && val.value.length ? val.value :
-                   comp.placeholder && comp.placeholder.data ? comp.placeholder.data : [],
+            data : val.value && val.value.length ? val.value : comp.placeholder && comp.placeholder.data || [],
             columns : comp.placeholder && comp.placeholder.columns || [],
             initial : comp.placeholder && comp.placeholder.data || []
         },submitData.execute)">
@@ -29,6 +31,7 @@
         <mat-icon>edit</mat-icon>
     </button>
     <script #submitData [params]="{root:root,val:val}">
-        val.value=args[0];
+		if (JSON.stringify(val.value) != JSON.stringify(args[0])) 
+	        val.value=args[0];
     </script>
 </div>

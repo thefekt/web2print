@@ -778,49 +778,55 @@ public class ScribusService {
 	                     for (var col=0;col<(int)r.getArraySize();col++) {
 	                         Value val = r.getArrayElement(col);
 	                         String key = code+"."+(char)(65+col)+(row+1);
-	                         Value cd = columns.getArrayElement(col);
-	                         String ctype = cd.getMember("type").asString();
-	                         Value t = cd.getMember("suffix");
-	                         String suffix = t != null && !t.isNull() ? t.asString(): "";
-	                         t = cd.getMember("prefix");
-	                         String prefix = t != null && !t.isNull() ? t.asString(): "";
-	                         if (!suffix.isEmpty()) suffix=" "+suffix;
-	                         if (!prefix.isEmpty()) prefix+=" ";
-	                         if (!val.isNull())
-	                         {
-	                        	 Object v;
-	                             switch (ctype)
-	                             {
-	                                 case "double" :
-	                                	v=Common.convertValueByCoreFormat("default_output_format_double",JSConverter.JS2VR(val.asDouble()),null);
-	                                    break;
-	                                 case "integer":
-		                                v=Common.convertValueByCoreFormat("default_output_format_integer",JSConverter.JS2VR(val.asLong()),null);
-	                                    break;
-	                                 case "time":
-			                            v=Common.convertValueByCoreFormat("default_output_format_time",JSConverter.JS2VR(val.as(Date.class)),null);
-	                                    break;
-	                                 case "hoursMinutes" :
-				                        v=Common.convertValueByCoreFormat("default_output_format_hours_minutes",JSConverter.JS2VR(val.as(Date.class)),null);
-	                                    break;
-	                                 case "date" :
-					                    v=Common.convertValueByCoreFormat("default_output_format_date",JSConverter.JS2VR(val.as(Date.class)),null);
-	                                    break;
-	                                 case "datetime" :
-	                                 case "datetimeHoursMinutes" :
-						                v=Common.convertValueByCoreFormat("default_output_format_datetime_hour_minutes",JSConverter.JS2VR(val.as(Date.class)),null);
-						                if (v == null)
-						                	v="";
-	                                    break;
-	                                default :
-	                                	v=val.isNull() ? "" : val.getMember("toString").execute().asString();
-	                            }
-	                            String sval = prefix+v+suffix;
-	                            //log.warn(type+" | "+key+" | "+sval);
-	                            toReplace.putMember(key,sval);
-	                        } else {
-	                            toReplace.putMember(key,"");
-	                        }
+	                         String sval = "";
+	                         try {
+		                         Value cd = columns.getArrayElement(col);
+		                         String ctype = cd.getMember("type").asString();
+		                         Value t = cd.getMember("suffix");
+		                         String suffix = t != null && !t.isNull() ? t.asString(): "";
+		                         t = cd.getMember("prefix");
+		                         String prefix = t != null && !t.isNull() ? t.asString(): "";
+		                         if (!suffix.isEmpty()) suffix=" "+suffix;
+		                         if (!prefix.isEmpty()) prefix+=" ";
+		                         if (!val.isNull())
+		                         {
+		                        	 if (!val.isString()) {
+			                        	 Object v;
+			                             switch (ctype)
+			                             {
+			                                 case "double" :
+			                                	v=val.isNumber() ? Common.convertValueByCoreFormat("default_output_format_double",JSConverter.JS2VR(val.asDouble()),null) : "";
+			                                    break;
+			                                 case "integer":
+				                                v=val.isNumber() ? Common.convertValueByCoreFormat("default_output_format_integer",JSConverter.JS2VR(val.asLong()),null) : "";
+			                                    break;
+			                                 case "time":
+					                            v=val.isDate() ? Common.convertValueByCoreFormat("default_output_format_time",JSConverter.JS2VR(val.as(Date.class)),null) : "";
+			                                    break;
+			                                 case "hoursMinutes" :
+						                        v=val.isDate() ? Common.convertValueByCoreFormat("default_output_format_hours_minutes",JSConverter.JS2VR(val.as(Date.class)),null) : "";
+			                                    break;
+			                                 case "date" :
+							                    v=val.isDate() ? Common.convertValueByCoreFormat("default_output_format_date",JSConverter.JS2VR(val.as(Date.class)),null) : "";
+			                                    break;
+			                                 case "datetime" :
+			                                 case "datetimeHoursMinutes" :
+								                v=val.isNumber() ? Common.convertValueByCoreFormat("default_output_format_datetime_hour_minutes",JSConverter.JS2VR(val.as(Date.class)),null) : "";
+			                                    break;
+			                                default :
+			                                	v=val.toString();
+			                            }
+			                            if (v == null) v="";
+			                            sval = prefix+v+suffix;
+		                        	 } else {
+		                        		sval = val.asString();
+		                        	 }
+		                            //log.warn(type+" | "+key+" | "+sval);
+		                        } 
+	                         } catch (Exception ex) {
+	                        	 HostImpl.me.getLogger().error(ex);
+	                         }
+	                         toReplace.putMember(key,sval);
 	                     }
 	                 }
 	             }

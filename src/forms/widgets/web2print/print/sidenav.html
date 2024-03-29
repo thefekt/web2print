@@ -66,7 +66,8 @@
 			<span [fxHide.xs]="true" [fxHide.sm]="true"><i18n>LABEL_SETTINGS</i18n></span>
 		</button>
 		<div fxFlex></div>			
-		<button mat-raised-button color="primary" (click)="onSubmit.execute()" [disabled]="!changed.value">
+		<!-- [disabled]="!changed.value" -->
+		<button mat-raised-button color="primary" (click)="onSubmit.execute()">
 			<mat-icon>
 				download
 			</mat-icon>

@@ -1,7 +1,7 @@
 <variable #initial export></variable>
 <script #initData [params]="{data:data}">
 	// add ID = rownum
-	var dv = data.value = (data.value||[]).slice();
+	var dv = data.value = root.clone(data.value||[],true/*deep*/);
 	for (var i=0;i<dv.length;i++) (dv[i]=dv[i].slice()).unshift(i);
 </script>
 <variable #data export (onReady)="initData.execute()"></variable>
@@ -59,9 +59,9 @@
 			default : 
 				c.varchar=c.string=true;
 		}
-		cols.push(c);
-		columns.value=cols;
+		cols.push(c);		
 	}
+	columns.value=cols;
 </script>
 <variable #columns export (onReady)="initColumns.execute()"></variable>
 
@@ -80,15 +80,26 @@
 
 </mat-dialog-content> 
 <mat-dialog-actions fxLayout="row">
+  <button style="background-color:white" class="mat-elevation-z1" mat-button tabindex="-1" (click)="
+  	data.value=initial.value;initData.execute();dt.reloadData()">
+	<mat-icon>restart_alt</mat-icon>
+    <span fxHide.xs><i18n>INFO_RESET_TO_DEFAULT</i18n></span> 
+  </button>	
   <span fxFlex></span>
   <button style="background-color:white" class="mat-elevation-z1" mat-button dialog-close tabindex="-1">
 	<mat-icon>close</mat-icon>
     <span fxHide.xs><i18n>BUTTON_WEB_CLOSE</i18n></span>
   </button>
   <button color="primary" style="background-color:white" class="mat-elevation-z1" mat-button tabindex="-1"
-    dialog-submit (submit)="root.return(data.value)"
+    dialog-submit (submit)="returnResult.execute()"
     >
       <mat-icon style="margin-right:3px">done</mat-icon>
       <span fxHide.xs><i18n>BUTTON_WEB_SAVE</i18n></span>
   </button>
+  <script #returnResult [params]="{root:root,data:data}">
+	  var a = data.value; /* remove first column (object) */
+	  for (var x of a) 
+		  x.shift();
+	  root.return(a);	  
+  </script>
 </mat-dialog-actions>
