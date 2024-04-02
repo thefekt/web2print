@@ -53,35 +53,39 @@
 	<button mat-button (click)="onSubmit.execute()" *ngIf="force.value">
 		<mat-icon>done</mat-icon>
 		<span fxHide.xs><i18n>INFO_ACCESS_UPDATE</i18n></span>	<!-- TODO ADD ANOTHER MESSAGE,CODE NOT OK -->
-	</button>
+	</button> 
 	<script #onSubmit [params]="{root:root,document:document,code:code.value,force:force}">
-		code = code || document.value.code.substring(0,document.value.code.lastIndexOf('.'));
-		if (force.value)
-			return root.remote("w2p.remote").updateTemplate(code,document.value).done(function(res) {
-				if (typeof res == "string")
-					return root.openDialog("/dialogs/basic/error",{
-						content : res
-					});
-				root.return(true);
-			});
-
-        root.db.web2print.print_template.byCode(code,function(res) {
-            if (res) {
-                root.openDialog("/dialogs/basic/question",{
-        			content : 'Template '+code+" already exists. Do you want to override it?"
-        		},work);
-            } else work();
-        });
-        //--------------------------------------------------------------
-        function work()
-		{
-			root.remote("w2p.remote").createTemplate(code,document.value).done(function(res) {
-				if (typeof res == "string")
-					return root.openDialog("/dialogs/basic/error",{
-						content : res
-					});
-				root.return(true);
-			});
-		}
+		root.db.getObject(document.value,"NAME").done(function(rs) {
+			if (!rs) return;
+			var cd = code || rs.NAME;
+			if (cd.endsWith(".zip")) cd=cd.substring(0,cd.length-4);
+			if (force.value)
+				return root.remote("w2p.remote").updateTemplate(code,document.value).done(function(res) {
+					if (typeof res == "string")
+						return root.openDialog("/dialogs/basic/error",{
+							content : res
+						});
+					root.return(true);
+				});
+	
+	        root.db.web2print.print_template.byCode(cd,function(res) {
+	            if (res) {
+	                root.openDialog("/dialogs/basic/question",{
+	        			content : root.i18n('INFO_ALREADY_EXISTS')+' : '+cd
+	        		},work);
+	            } else work();
+	        }); 
+	        //--------------------------------------------------------------
+	        function work()
+			{
+				root.remote("w2p.remote").createTemplate(cd,document.value).done(function(res) {
+					if (typeof res == "string")
+						return root.openDialog("/dialogs/basic/error",{
+							content : res
+						});
+					root.return(true);
+				});
+			}
+		});	
 	</script #onSubm>
 </mat-dialog-actions>

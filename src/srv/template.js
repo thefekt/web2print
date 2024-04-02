@@ -4,16 +4,19 @@ const docapi = require("server/documents/document");
 
 exports.initTemplateContentsUploaded = function(doc) {
 	if (!session.isAdmin && !session.isUserGroup("customer:admin")) return;
+
+	// TODO : fix without reset | only if impoorting is cancelled then error on reimport
+	renderer.resetTempDir(); 
+
 	return renderer.initTemplateContents({code:doc.code.substring(0,doc.code.lastIndexOf('.')),document:doc});
 };
 exports.createTemplate = function(code,document) {
 	
 	if (!session.isAdmin && !session.isUserGroup("customer:admin")) return;
-    var err = db.web2print.print_template.byCode(code) ? require("server/transaction").checkDeleteObjectsConstraints("web2print.print_template","code=:CODE",{CODE:code}) : undefined;
+    var err = db.web2print.print_template.byCode(code) ? require("server/form").tryDeleteObjects("web2print.print_template","code=:CODE",{CODE:code}) : undefined;
     if (err &&
         (
             (err.access && err.access.length) ||
-            (err.locked && err.locked.length) ||
             err.dependencyError
         )
     ) {

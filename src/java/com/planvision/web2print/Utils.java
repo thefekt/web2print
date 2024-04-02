@@ -52,6 +52,11 @@ public class Utils {
 		tmpCachedDir.mkdirs();
 	}
 	
+	public static void resetTmpDir() {
+		for (File f : tmpCachedDir.listFiles()) if (f.isFile()) 
+			f.delete();
+	}
+	
 	public static ObjectReference getCachedResult(String key) {
 		File f = new File(tmpCachedDir,key);
 		if (!f.exists()) 

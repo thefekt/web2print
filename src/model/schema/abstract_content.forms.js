@@ -2,7 +2,7 @@ const misc = require("server/misc");
 const forms = require("server/forms");
 
 forms.define({
-	"web2print.print_template" :  
+	"web2print.abstract_content" :  
 	{      
 	    viewParams :
 	    { 

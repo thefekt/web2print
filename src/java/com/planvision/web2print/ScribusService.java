@@ -35,6 +35,7 @@ import com.planvision.visionr.core.api.FileAndWebPath;
 import com.planvision.visionr.core.api.HostImpl;
 import com.planvision.visionr.core.api.RuntimeConfig;
 import com.planvision.visionr.core.misc.StringUtils;
+import com.planvision.visionr.core.schema.DBConstants;
 import com.planvision.visionr.core.schema.DBLang;
 import com.planvision.visionr.core.schema.DBModule;
 import com.planvision.visionr.core.schema.DBObjectDef;
@@ -765,14 +766,23 @@ public class ScribusService {
         		break; }
         	case "varchar" : /* i18n */
         	case "text" : 
-        		if (isInst) 
-    	        if (initial != null && !initial.isNull()) {
-    	        	for (DBLang l : HostImpl.me.getActiveLanguages()) {
-    	        		Object v = initial.getMember(l.getCode());
-    	        		if (v != null)
-    	        			c.getMember("setI18n").execute("initial_value",l.getCode(),v);
-    	        	}
-    	        }   
+        		if (isInst) {
+        	        if (initial != null && !initial.isNull()) {
+        	        	for (DBLang l : HostImpl.me.getActiveLanguages()) {
+        	        		Object v = initial.getMember(l.getCode());
+        	        		if (v != null)
+        	        			c.getMember("setI18n").execute("initial_value",l.getCode(),v);
+        	        	}
+        	        }   
+        		} else {
+        			 if (initial != null && !initial.isNull()) {
+     	        		Value v = initial.getMember(DBLang.g(VRSessionContext.getCurrentLang()).getCode());
+     	        		if (v == null || v.isNull())
+     	        			v = initial.getMember(DBLang.g(RuntimeConfig.defaultLang).getCode());
+     	        		if (v != null && !v.isNull())
+     	        			c.putMember("initial_value", v.asString());
+         	        }   
+        		}
         		break;
         	default :
         		c.putMember("initial_value", code);
@@ -1048,6 +1058,10 @@ public class ScribusService {
 	    return toReplace;
 	}
 	
+	@HostAccess.Export 
+	public void resetTmpDir() {
+		Utils.resetTmpDir();
+	}
 	
 	@HostAccess.Export 
 	public Value renderTemplate(Value tmpl,Value data) throws VException {

@@ -5,7 +5,7 @@ var service = JSCORE.Exec.resolveHostAPI("web2print.ScribusService");
 exports.initTemplateContents = service.initTemplateContents;
 exports.renderTemplate = service.renderTemplate;
 exports.getTemplateJSON = service.getTemplateJSON;
-
+exports.resetTempDir = service.resetTmpDir;
 exports.forceStop = function(tmpl) {
     var key =  "rndr-"+tmpl.document.id;
     service.forceStop(key);
@@ -55,7 +55,7 @@ exports.checkPreview = function(tmpl) {
     } catch (e) {
         console.error(e);
     }
-    console.warn(" >> PREVIEW UPDATED : "+tmpl+" | "+key+" | "+tmpl.preview_document);
+    //console.warn(" >> PREVIEW UPDATED : "+tmpl+" | "+key+" | "+tmpl.preview_document);
 }
 
 exports.getRootCategoriesWithDetails = function(id)

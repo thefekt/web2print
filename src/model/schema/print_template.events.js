@@ -124,4 +124,5 @@ exports.onDeleteObject = function() {
 		    e.delete(doc);
 	    }
 	}
+	require("web2print/renderer").resetTempDir();
 }
