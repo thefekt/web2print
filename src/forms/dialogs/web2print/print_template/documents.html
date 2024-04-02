@@ -84,7 +84,7 @@
             <input-varchar style="width: 100%;height: 30px;" [upload]="mode.value||true" #upload (valueChange)="onUpload.execute()">
                 <script #onUpload [params]="{root:root,upload:upload,template:template,oview:oview}">
                     var uid = upload.value;
-                    root.db.remote("web2print/template").uploadUserDocument(template.value,uid.split("@")).done(function(res) {
+                    root.db.remote("w2p.remote").uploadUserDocument(template.value,uid.split("@")).done(function(res) {
 						oview.update();
 						if (res) 
 							oview.selection=[res];
@@ -117,7 +117,7 @@
     root.db.documents.file_upload.SELECT(cond,{properties:'uuid'}).done(function(res) {
         if (!res || !res.length) return;
         root.openDialog("/dialogs/basic/question",{content:root.i18n('INFO_ARE_YOU_SURE_QUESTION')},function() {
-            root.db.remote("web2print/template").deleteTemplateDocuments(template.value,res).done(function(err){
+            root.db.remote("w2p.remote").deleteTemplateDocuments(template.value,res).done(function(err){
 				if (err)
 		            root.openDialog('/dialogs/basic/error',{
 		                content : err

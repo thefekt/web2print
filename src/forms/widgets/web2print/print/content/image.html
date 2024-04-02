@@ -4,7 +4,7 @@
     <div>
         <script #updateImage [params]="{root:root,inp:inp,val:val,comp:comp}">
 			if (!args[0]) return val.value=undefined;
-            root.db.remote("web2print/template").getInitialImageRegion(args[0],comp.proportion).done(function(region) {
+            root.db.remote("w2p.remote").getInitialImageRegion(args[0],comp.proportion).done(function(region) {
                 val.value={
                     document:args[0],
                     region:region
@@ -65,10 +65,10 @@
 				            <input-varchar #upload style="width: 100%;height: 30px;" upload="image,pdf,office" (valueChange)="onUpload.execute()">
 				                <script #onUpload [params]="{root:root,openCrop:openCrop,upload:upload,comp:comp,templateObject:templateObject,inp:inp,val:val}">
 				                    var uid = upload.value;
-				                    root.db.remote("web2print/template").uploadUserDocument(templateObject.value,uid.split("@")).done(function(doc) {
+				                    root.db.remote("w2p.remote").uploadUserDocument(templateObject.value,uid.split("@")).done(function(doc) {
 										if (!doc) return;
 										inp.closePanel();
-										root.db.remote("web2print/template").getInitialImageRegion(doc,comp.proportion).done(function(region) {
+										root.db.remote("w2p.remote").getInitialImageRegion(doc,comp.proportion).done(function(region) {
 											var nval = {document:doc,region:region};
 											openCrop.execute(nval,function(res) {
 												// onSubmit
@@ -113,7 +113,7 @@
         <script #applyValue [params]="{val:val,inp:inp,comp:comp}">
 	        var doc = args[0];
 	        inp.auto.closePanel();
-	        root.db.remote("web2print/template").getInitialImageRegion(args[0],comp.proportion).done(function(region) {
+	        root.db.remote("w2p.remote").getInitialImageRegion(args[0],comp.proportion).done(function(region) {
 	            val.value={document:args[0],region:region};
 		        inp.object=doc;	            
 	        });

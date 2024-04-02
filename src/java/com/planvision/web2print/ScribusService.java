@@ -10,6 +10,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,6 +35,7 @@ import com.planvision.visionr.core.api.FileAndWebPath;
 import com.planvision.visionr.core.api.HostImpl;
 import com.planvision.visionr.core.api.RuntimeConfig;
 import com.planvision.visionr.core.misc.StringUtils;
+import com.planvision.visionr.core.schema.DBLang;
 import com.planvision.visionr.core.schema.DBModule;
 import com.planvision.visionr.core.schema.DBObjectDef;
 import com.planvision.visionr.host.JavaHost;
@@ -135,19 +137,51 @@ public class ScribusService {
 
 	private static Value returnErrorAsDocument(File ofile, String name) throws VException {
 		try {
-			FileUtils.copyFile(new File(RuntimeConfig.projectDir+"/src/python/internal-error.pdf"), ofile);
+			FileUtils.copyFile(new File(RuntimeConfig.projectDir+"/src/bin/python/internal-error.pdf"), ofile);
 		} catch (IOException e) {
 			HostImpl.me.getLogger().error(e);
 		}
 		return returnFileAsFocument(ofile, name);
 	}
+	
+	private static Collection<Map<String,Object>> transformExcel(File f) {
+		if (!f.exists()) return null;
+	    Excel excl = new Excel();
+	    Map<String,Object> cdata = excl.readExcelData(f, true);
+		Collection<Map<String,Object>> cols = (Collection)cdata.get("columns");
+		String cnames[] = new String[cols.size()];
+		int pos=0;
+		for (Map<String,Object> col : cols) {
+			cnames[pos++]=(String)col.get("name");
+		}
+		Vector<Map<String,Object>> res = new Vector();
+		Collection<Collection<Object>> data = (Collection)cdata.get("data");
+		for (Collection<Object> row : data) {
+			int ccol=0;
+			HashMap<String,Object> rh = new HashMap();
+			for (Object v : row) {
+				rh.put(cnames[ccol], v);
+				ccol++;
+			}
+			res.add(rh);
+		}
+		return res;
+	}
 
 	@HostAccess.Export 
 	public Value getAvailableContents(String tmpDirKey) {
 		try {
+			// template file
 		    String path = resolve(tmpDirKey,"template.sla");
-		     
-			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		    // optional i18n data for content (also table txt data)
+		    String i18nPath = resolve(tmpDirKey,"i18n.xlsx");
+		    // optional initial values (initial_values) 
+		    String defaultsPath = resolve(tmpDirKey,"defaults.xlsx");
+
+		    Collection<Map<String,Object>> i18nData = transformExcel(new File(i18nPath));
+		    Collection<Map<String,Object>> defaultsData = transformExcel(new File(defaultsPath));
+
+		    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			Document document = builder.parse(new File(path));
 			Vector<Map<String, Object>> entries = new Vector();
@@ -159,17 +193,37 @@ public class ScribusService {
 			HashMap<String, Integer> tableMaxCol = new HashMap();
 
 			extractContents(tmpDirKey, document.getFirstChild(), used, entries, tables, tablesData, tableMaxRow,
-					tableMaxCol,null);
+					tableMaxCol,null,i18nData,defaultsData);
 			return JSConverter.VR2JS(entries);
 		} catch (Exception e) {
 			HostImpl.me.getLogger().error(e);
 			return null;
 		}
 	}
+	
+	private static Map<String,Object> getI18nName(String code,Collection<Map<String,Object>> i18nData) {
+		if (i18nData != null)
+		for (Map<String,Object> row : i18nData) {
+			String tc = (String)row.get("CODE"); 
+			if (code.equals(tc)) {
+				HashMap<String,Object> res = new HashMap();
+				for (DBLang l : HostImpl.me.getActiveLanguages()) {
+					Object v = row.get(l.getCode());
+					if (v != null) {
+						res.put(l.getCode(), v.toString());
+					}
+				}
+				if (!res.isEmpty()) 
+					return res;
+				break;
+			}
+		}
+		return null;
+	}
 
 	private static void extractContents(String tmpDirKey, Node n, HashSet<String> used,
 			Vector<Map<String, Object>> entries, HashMap<String, Boolean> tables, HashMap<String, HashMap> tablesData,
-			HashMap<String, Integer> tableMaxRow, HashMap<String, Integer> tableMaxCol,Integer page) {
+			HashMap<String, Integer> tableMaxRow, HashMap<String, Integer> tableMaxCol,Integer page,Collection<Map<String,Object>> i18nData,Collection<Map<String,Object>> defaultsData) {
 		if (n.getNodeName().equals("PAGEOBJECT")) {
 			Node ownp = n.getAttributes().getNamedItem("OwnPage");
 			if (ownp != null) {
@@ -184,7 +238,7 @@ public class ScribusService {
 		if (cn != null) {
 			int l = cn.getLength();
 			for (int i = 0; i < l; i++)
-				extractContents(tmpDirKey, cn.item(i), used, entries, tables, tablesData, tableMaxRow, tableMaxCol,page);
+				extractContents(tmpDirKey, cn.item(i), used, entries, tables, tablesData, tableMaxRow, tableMaxCol,page,i18nData,defaultsData);
 		}
 		String t = n.getNodeValue();
 		if (t != null) {
@@ -210,12 +264,7 @@ public class ScribusService {
 					if (!ov.isEmpty() && used.add(ov)) {
 						int k = ov.indexOf(".");
 						if (k < 0) {
-							HashMap<String, Object> va = new HashMap();
-							va.put("type", "varchar");
-							va.put("code", ov);
-							if (page != null)
-								va.put("page", page);
-							entries.add(parseInputField(ov,page));
+							entries.add(parseInputField(ov,page,i18nData,defaultsData));
 						} else {
 							String tbl = ov.substring(0, k);
 							String v = ov.substring(k + 1);
@@ -236,12 +285,77 @@ public class ScribusService {
 										if (page != null)
 											va.put("page", page);
 										org.graalvm.polyglot.Value res = JSConverter.VR2JS((new Excel()).readExcelData(fe, true));
-										String jsonData = JSEngine.jsonStringify(res).asString();
-										va.put("data", jsonData);
+										Object g = getI18nName(tbl,i18nData);
+										if (g != null)
+											va.put("name",g);
+										
+										HashMap<String,Map<String,Object>> i18nLookup = new HashMap(); 
+										for (Map<String,Object> tr : i18nData) {
+											String tc = (String)tr.get("CODE"); 
+											if (tc != null)
+												i18nLookup.put(tc, tr);
+										}
+
+										StringBuilder sb = new StringBuilder("{");
+										boolean clf = true;
+										for (DBLang cl : HostImpl.me.getActiveLanguages()) {
+											if (clf) clf=false;
+											else sb.append(",");
+											sb.append("\"");
+											sb.append(cl.getCode());
+											sb.append("\":{\"columns\":[");
+											
+											org.graalvm.polyglot.Value cols = res.getMember("columns");
+											for (int ci=0;ci<cols.getArraySize();ci++) {
+												if (ci != 0) sb.append(",");
+												org.graalvm.polyglot.Value ccol = cols.getArrayElement(ci);
+												sb.append("{\"name\":");
+												String name = ccol.getMember("name").asString();
+												Map<String,Object> tr = i18nLookup.get(name);
+												String tname;
+												if (tr != null && tr.containsKey(cl.getCode()) && !(tname=tr.get(cl.getCode()).toString()).isBlank()) {
+													name=tname; // TRANSLATION FOUND
+												}
+												StringUtils.stringToJSONToStringBuilder(name, sb);
+												for (String ks : ccol.getMemberKeys()) if (!ks.equals("name")) {
+													sb.append(",");
+													StringUtils.stringToJSONToStringBuilder(ks, sb);
+													sb.append(":");
+													sb.append(JSEngine.jsonStringify(ccol.getMember(ks)));
+												}
+												sb.append("}");
+											}
+											sb.append("],\"data\":[");
+											org.graalvm.polyglot.Value dat = res.getMember("data");
+											for (int ci=0;ci<dat.getArraySize();ci++) {
+												if (ci != 0) sb.append(",");
+												org.graalvm.polyglot.Value crow = dat.getArrayElement(ci);
+												sb.append("[");
+												for (int cj=0;cj<crow.getArraySize();cj++) {
+													if (cj != 0) sb.append(",");
+													org.graalvm.polyglot.Value ce = crow.getArrayElement(cj);
+													if (ce.isString()) {
+														String name = ce.asString();
+														Map<String,Object> tr = i18nLookup.get(name);
+														String tname;
+														if (tr != null && tr.containsKey(cl.getCode()) && !(tname=tr.get(cl.getCode()).toString()).isBlank()) {
+															StringUtils.stringToJSONToStringBuilder(tname,sb); // TRANSLATION FOUND
+														} else 
+															StringUtils.stringToJSONToStringBuilder(name, sb);
+													} else 
+														sb.append(JSEngine.jsonStringify(ce));
+												}
+												sb.append("]");
+											}
+											sb.append("]}");
+										}
+										sb.append("}");
+										// table data BY LANGUAGE!
+										va.put("data", sb.toString());
 										entries.add(va);
 										tablesData.put(tbl, va);
 									}
-								}
+								} 
 								boolean isTbl = tables.get(tbl);
 								if (isTbl) {
 									// table cell
@@ -254,11 +368,11 @@ public class ScribusService {
 									vk.put("rows", tableMaxRow.get(tbl));
 								} else {
 									// not a table cell
-									entries.add(parseInputField(ov,page));
+									entries.add(parseInputField(ov,page,i18nData,defaultsData));
 								}
 							} else {
 								// not a table cell
-								entries.add(parseInputField(ov,page));
+								entries.add(parseInputField(ov,page,i18nData,defaultsData));
 							}
 						}
 					}
@@ -276,6 +390,9 @@ public class ScribusService {
 									HashMap<String, Object> x = new HashMap();
 									x.put("type", "image");
 									x.put("code", v);
+									Object g = getI18nName(v,i18nData);
+									if (g != null)
+										x.put("name",g);									
 									if (page != null)
 										x.put("page", page);
 									File f = new File(path);
@@ -301,12 +418,13 @@ public class ScribusService {
 			}
 		}
 	}
-	private static HashMap<String, Object> parseInputField(String code,Integer page) {
+	private static HashMap<String, Object> parseInputField(String code,Integer page,Collection<Map<String,Object>> i18nData,Collection<Map<String,Object>> defaultsData) {
 		HashMap<String, Object> va = new HashMap();
+		boolean isstr=false;
 		if (code.startsWith("COLOR") || code.startsWith("CL."))
 			va.put("type", "indexed_color");
 		else if (code.startsWith("TX."))
-			va.put("type", "text");
+			{va.put("type", "text");isstr=true;}
 		else if (code.startsWith("DT."))
 			va.put("type", "date");
 		else if (code.startsWith("TM."))
@@ -318,7 +436,34 @@ public class ScribusService {
 		else if (code.startsWith("FP."))
 			va.put("type", "double");
 		else 
-			va.put("type", "varchar");
+			{va.put("type", "varchar");isstr=true;}
+		
+		Object t = getI18nName(code,i18nData);
+		if (t != null)
+			va.put("name",t);
+		
+		if (defaultsData != null) {
+			for (Map<String,Object> c : defaultsData) {
+				String cd = (String)c.get("CODE");
+				if (code.equals(cd)) {
+					if (isstr) // full i18n value
+						va.put("initial",c); 
+					else {
+						// search for any lang value (NOT STR, i18n value calculated based on primitive type)
+						for (String k : c.keySet()) {
+							if ("CODE".equals(k)) continue;
+				    		Object a = c.get(k);
+				    		if (a != null && !(a instanceof String && a.toString().isBlank())) {
+				    			va.put("initial",a); 
+				    			break;
+				    		}
+				    	}
+					}
+					break;
+				}
+			}
+		}
+
 		va.put("code", code);
 		if (page != null)
 			va.put("page", page);
@@ -341,7 +486,7 @@ public class ScribusService {
 				return null;
 			ProcessBuilder pb = new ProcessBuilder();
 			// --no-gui -ns -g -py scrbserv2.py -pa 9988 -- good1.sla
-			String pySrc = RuntimeConfig.projectDir+"/src/python/scribserv.py";
+			String pySrc = RuntimeConfig.projectDir+"/src/bin/python/scribserv.py";
 
 			HostImpl.me.getLogger().warn(">>>> \"" + getExecutable() + "\" \"" + resolve(key,"template.sla")+"\" --no-gui -ns -g -py \"" + pySrc + "\" " + pi.port);
 
@@ -446,7 +591,7 @@ public class ScribusService {
 		            	case "date" : 
 		            	case "text" : 
 		                case "varchar" : {
-		                	Value c = _genCommonInput(code,type,p,tmpl);
+		                	Value c = _genCommonInput(code,type,p,tmpl,e);
 		                	Value cc = c.getMember("commit");
 			                if (cc != null) cc.execute();
 		                    arr.setArrayElement(arr.getArraySize(),c);
@@ -456,6 +601,7 @@ public class ScribusService {
 		                    if (JSEngine.isInstance(tmpl)) {
 		                    	c = ((DBObjectDefImpl)DBModule.g("web2print").getSchemaByCode("indexed_color_content").impl()).getJSProxy().newInstance();
 		                    	c.putMember("template", tmpl);
+		                    	_genCommonName(c,tmpl,e);
 		                    } else {
 		                    	c = JSEngine.newEmptyObject();
 		                    	c.putMember("type",type);
@@ -473,6 +619,7 @@ public class ScribusService {
 		                    if (isi=JSEngine.isInstance(tmpl)) {
 		                    	c = ((DBObjectDefImpl)DBModule.g("web2print").getSchemaByCode("image_content").impl()).getJSProxy().newInstance();
 		                    	c.putMember("template", tmpl);
+		                    	_genCommonName(c,tmpl,e);
 		                    } else {
 		                    	c = JSEngine.newEmptyObject();
 		                    	c.putMember("type",type);
@@ -508,14 +655,26 @@ public class ScribusService {
 		                    if (JSEngine.isInstance(tmpl)) {
 		                    	c = ((DBObjectDefImpl)DBModule.g("web2print").getSchemaByCode("table_content").impl()).getJSProxy().newInstance();
 		                    	c.putMember("template", tmpl);
+		                    	_genCommonName(c,tmpl,e);
+		                    	
+		                    	// TABLE DATA, JSON BY LANGUAGE 
+			                    Value dta = e.getMember("data"); 
+			                    if (dta != null && dta.isString()) {
+			                    	dta = JSEngine.jsonParse(dta.asString());
+				                    for (DBLang l : HostImpl.me.getActiveLanguages()) {
+				                    	Value tda = dta.getMember(l.getCode());
+				                    	if (!tda.isNull())
+					                    c.getMember("setI18n").execute("table_data",l.getCode(),JSEngine.jsonStringify(tda));
+				                    }
+			                    }
 		                    } else {
 		                    	c = JSEngine.newEmptyObject();
 		                    	c.putMember("type",type);
+		                    	c.putMember("table_data", e.getMember("data"));
 		                    }
 		                    c.putMember("code", code);
 		                    c.putMember("dest_page", p);
 		                    c.putMember("column_count", e.getMember("columns"));
-		                    c.putMember("table_data", e.getMember("data"));
 		                    c.putMember("row_count", e.getMember("rows"));
 
 		                    Value cc = c.getMember("commit");
@@ -527,13 +686,14 @@ public class ScribusService {
 		                    if (JSEngine.isInstance(tmpl)) {
 		                    	c = ((DBObjectDefImpl)DBModule.g("web2print").getSchemaByCode("qrcode_content").impl()).getJSProxy().newInstance();
 		                    	c.putMember("template", tmpl);
+		                    	_genCommonName(c,tmpl,e);
 		                    } else {
 		                    	c = JSEngine.newEmptyObject();
 		                    	c.putMember("type",type);
 		                    }
 		                    c.putMember("code", code);
 		                    c.putMember("dest_page", p);
-		                    c.putMember("initial_value", "http://boss.4ou");
+		                    c.putMember("initial_value", CorePrefs.getServerHostExternal());
 		                    Value cc = c.getMember("commit");
 		                    if (cc != null) cc.execute();
 		                    arr.setArrayElement(arr.getArraySize(),c);
@@ -557,9 +717,21 @@ public class ScribusService {
 		return _getTemplateJSON(tmpl,data,null);
 	}
 	
-	private Value _genCommonInput(String code,String type,Value page,Value tmpl) {
+	private void _genCommonName(Value c,Value tmpl,Value data) {
+        Value name = data.getMember("name");
+        if (name != null && !name.isNull()) {
+        	for (String k : name.getMemberKeys()) {
+        		DBLang l = DBLang.g(k);
+        		if (l != null) 
+        			c.getMember("setI18n").execute("name",l.getCode(),name.getMember(k));
+        	}
+        }
+	}
+	
+	private Value _genCommonInput(String code,String type,Value page,Value tmpl,Value data) {
         Value c;
-        if (JSEngine.isInstance(tmpl)) {
+        boolean isInst = JSEngine.isInstance(tmpl);
+        if (isInst) {
         	c = ((DBObjectDefImpl)DBModule.g("web2print").getSchemaByCode(type+"_content").impl()).getJSProxy().newInstance();
         	c.putMember("template", tmpl);
         } else {
@@ -568,17 +740,39 @@ public class ScribusService {
         }
         c.putMember("code", code);
         c.putMember("dest_page", page);
+        
+        if (isInst)
+        	_genCommonName(c,tmpl,data);
+        
+        Value initial = data.getMember("initial");
         switch (type) {
-        	case "double":
+        	case "double": {
+        		Object ij = getInitialNotI18n(initial);
+        		if (!(ij instanceof Number)) ij = 1;
+        		c.putMember("initial_value", ij);
+        		break; }
+        	case "integer": {
+         		Object ij = getInitialNotI18n(initial);
+        		if (!(ij instanceof Number)) ij = 1;        		
         		c.putMember("initial_value", 1);
-        		break;
-        	case "integer":
-        		c.putMember("initial_value", 1);
-        		break;
-        	case "time":
+        		break; }
+        	case "time": 
         	case "date":
-        	case "datetime":
-        		c.putMember("initial_value", new Date()); // TODO?
+        	case "datetime": {
+         		Object ij = getInitialNotI18n(initial);
+        		if (ij instanceof Date)
+        			c.putMember("initial_value", ij); 
+        		break; }
+        	case "varchar" : /* i18n */
+        	case "text" : 
+        		if (isInst) 
+    	        if (initial != null && !initial.isNull()) {
+    	        	for (DBLang l : HostImpl.me.getActiveLanguages()) {
+    	        		Object v = initial.getMember(l.getCode());
+    	        		if (v != null)
+    	        			c.getMember("setI18n").execute("initial_value",l.getCode(),v);
+    	        	}
+    	        }   
         		break;
         	default :
         		c.putMember("initial_value", code);
@@ -587,6 +781,20 @@ public class ScribusService {
         if (cc != null) cc.execute();
         return c;
 	}
+
+	private static Object getInitialNotI18n(Value a) {
+		if (a == null || a.isNull()) return null;
+		if (a.isString()) {
+			String as = a.asString();
+			if (as.isBlank()) return null;
+			return as;
+		}
+		if (a.isNumber()) return a.as(Number.class);
+		if (a.isDate()) return a.as(Date.class);
+		return a;
+    	
+	}
+	
 
 	private Value _getTemplateJSON(Value tmpl,Value data,File tmpDir) throws VException {
 		boolean doNotRender = tmpDir == null;
@@ -680,8 +888,9 @@ public class ScribusService {
 	            		}
 	                    //---------------------------
 	            		if (!doNotRender) {
-		                	Value ve = vd.getMember("get_file").execute();
-		                	if (ve.isString()||ve.isNull()) {
+		                	String uuid = vd.getMember("uuid").asString();
+						    File file = HostImpl.me.resolveResourceURL("/documents/"+uuid+".uuid",VRSessionContext.accessContextAdmin);
+						    if (file == null) {
 		                		// DELETED FILE TODO CLEANUP + ERROR LOG
 		                		continue;
 		                	}
@@ -703,14 +912,12 @@ public class ScribusService {
 									}
 		                		}
 		                	} else {
-		           		     	com.planvision.visionr.host.core.scripting.oscript.api.io.File file = 
-		           		     			ve.as(com.planvision.visionr.host.core.scripting.oscript.api.io.File.class);
 			                    if (region == null || region.isNull()) {
 			                    	if (!Utils.isImage(file.getName())){
 			                    		HostImpl.me.getLogger().error("Trying to add non image file as image : "+file.getPath()+" >> "+new File(tmpDir,code).getPath());
 			                    	} else {
 				           		     	try {
-											FileUtils.copyFile(file.getFile(), /* dest */new File(tmpDir,code));
+											FileUtils.copyFile(file, /* dest */new File(tmpDir,code));
 										} catch (IOException e1) {
 											HostImpl.me.getLogger().error(e1);;
 										}
@@ -771,8 +978,14 @@ public class ScribusService {
 	            	 Value td = JSConverter.transportJSON2JS(_td);
 	                 Value columns = td.getMember("columns");
 	                 Value bdata = data.getMember(code);
-	                 if (bdata == null || bdata.isNull())
+	                 if (bdata == null || bdata.isNull()) {
 	                	 bdata = td.getMember("data");
+	                	 if (bdata == null) { // fallback for temporary preview on admin insert template
+	                		 Value za = td.getMember(DBLang.g(VRSessionContext.getCurrentLang()).getCode());
+	                		 columns = za.getMember("columns");
+	                		 bdata=za.getMember("data");
+	                	 }
+	                 }
 	                 for (int row=0;row<(int)bdata.getArraySize();row++) {
 	                     Value r = bdata.getArrayElement(row);
 	                     for (var col=0;col<(int)r.getArraySize();col++) {
@@ -864,9 +1077,9 @@ public class ScribusService {
 		            result = convert(key,tmpl.getMember("toString").execute().asString(),JSEngine.jsonStringify(toReplace).asString());
 		            if (result == null || result.isNull())
 		                HostImpl.me.getLogger().error("!!!! Scribus generator returned EMPTY result : "+code);
-		        } else {
-				    com.planvision.visionr.host.core.scripting.oscript.api.io.File vf = result.getMember("get_file").execute().as(com.planvision.visionr.host.core.scripting.oscript.api.io.File.class);
-				    File outf = vf.getFile();
+		        } else { 
+		        	String uuid = result.getMember("uuid").asString();
+				    File outf = HostImpl.me.resolveResourceURL("/documents/"+uuid+".uuid",VRSessionContext.accessContextAdmin);
 				    ObjectReference resr = result.getMember("_ref").as(ObjectReference.class);
 			        Utils.putCachedResult(ckey,outf,resr);
 					// ADD TEMP READ 
@@ -909,14 +1122,15 @@ public class ScribusService {
 				 forceStop(key);
 			     HostImpl.me.getLogger().warn("render.js: updating -> service key ["+key+"]\n\t update time ["+upd+"]\n\t template ["+tmpl.getMember("code").asString()+"]\n\t file ["+doc.getMember("toString").execute().asString()+"]");
 			     HostImpl.me.getLogger().warn("java.util.extractInTempDirectory, "+key+", "+doc.getMember("toString").execute());
-			     Value td = doc.getMember("get_file").execute();
-			     com.planvision.visionr.host.core.scripting.oscript.api.io.File file = td.as(com.planvision.visionr.host.core.scripting.oscript.api.io.File.class);
+			     
+			     String uuid = doc.getMember("uuid").asString();
+			     File file = HostImpl.me.resolveResourceURL("/documents/"+uuid+".uuid",VRSessionContext.accessContextAdmin);
 			     
 			     File outDirTmp=new File(outdir.getParentFile(),outdir.getName()+".tmp");
 			     if (outDirTmp.exists()) 
 			    	Utils.deleteDir(outDirTmp);
 			     outDirTmp.mkdirs();
-			     Utils.unzip(file.getFile(), outDirTmp);		     
+			     Utils.unzip(file, outDirTmp);		     
 				 if (outdir.exists())
 					Utils.deleteDir(outdir);
 			     outDirTmp.renameTo(outdir);
@@ -932,15 +1146,7 @@ public class ScribusService {
 		 }
 		 return outdir;
 	}
-	
-	@HostAccess.Export 
-	public Value getTemplateImageEntryAsFile(Value tmpl,String code) throws VException {
-		 Value doc = tmpl.getMember("document");
-	     Value td = doc.getMember("get_file").execute();
-	     com.planvision.visionr.host.core.scripting.oscript.api.io.File file = td.as(com.planvision.visionr.host.core.scripting.oscript.api.io.File.class);
-	     return JSConverter.VR2JS(file.extractZipEntry(code));
-	}
-
+		
 	private final static byte[] emptyPNG = new byte[] {(byte)0x89, (byte)0x50, (byte)0x4e, (byte)0x47, (byte)0x0d, (byte)0x0a, (byte)0x1a, (byte)0x0a, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x0d, (byte)0x49, (byte)0x48, (byte)0x44, (byte)0x52, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x01, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x01, (byte)0x01, (byte)0x03, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x25, (byte)0xdb, (byte)0x56, (byte)0xca, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x03, (byte)0x50, (byte)0x4c, (byte)0x54, (byte)0x45, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0xa7, (byte)0x7a, (byte)0x3d, (byte)0xda, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x01, (byte)0x74, (byte)0x52, (byte)0x4e, (byte)0x53, (byte)0x00, (byte)0x40, (byte)0xe6, (byte)0xd8, (byte)0x66, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x0a, (byte)0x49, (byte)0x44, (byte)0x41, (byte)0x54, (byte)0x08, (byte)0xd7, (byte)0x63, (byte)0x60, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x02, (byte)0x00, (byte)0x01, (byte)0xe2, (byte)0x21, (byte)0xbc, (byte)0x33, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x49, (byte)0x45, (byte)0x4e, (byte)0x44, (byte)0xae, (byte)0x42, (byte)0x60, (byte)0x82};
 	private final static byte[] emptyPDF = """
 %PDF-1.0

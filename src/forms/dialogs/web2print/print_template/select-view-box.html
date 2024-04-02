@@ -31,9 +31,9 @@
         cropData : cropData.value || {}
     }"></attach>
     <execution #clearRegion [params]="{root:root,content:content}"><![CDATA[
-        root.remote("web2print/template").setContentRegion(content.value).done(root.return);
+        root.remote("w2p.remote").setContentRegion(content.value).done(root.return);
     ]]></execution>
     <execution #setRegion [params]="{root:root,content:content}"><![CDATA[
-        root.remote("web2print/template").setContentRegion(content.value,args[0]).done(root.return);
+        root.remote("w2p.remote").setContentRegion(content.value,args[0]).done(root.return);
     ]]></execution>
 </ng-container>

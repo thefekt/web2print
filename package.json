@@ -10,7 +10,7 @@
 
 		"start" : "vr s start",
 		"devel" : "vr s start -devel",
-		"debug" : "vr s start -devel -chromedebugport 9000",
+		"debug" : "vr s start -devel -chromedebugport 9000 -javadebugport 5000",
 
         "test": "echo \"Error: no test specified\" && exit 1"
     },

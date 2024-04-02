@@ -15,7 +15,8 @@ module.exports = {
 				template : 'relation',
 				related : 'web2print.category_content'
 			},
-		}
+		},
+		forms : require.resolve("./abstract_content.forms")
 	},
 	'varchar_content' : {
 		inherits : 'web2print.abstract_content',
@@ -113,7 +114,7 @@ module.exports = {
 				min : 1,
 				default : 2
 			},
-			'table_data' : 'text.readonly'
+			'table_data' : 'text.i18n.readonly'
 		}
 	},
 	'indexed_color_content' : {

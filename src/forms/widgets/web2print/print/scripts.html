@@ -2,7 +2,7 @@
 
 
 <script #loadTemplateAndUpdate [params]="{tpl:tpl,root:root,templateObject:templateObject,update:update}">
-	root.db.remote("web2print/template").getTemplateDetails(tpl.value).done(function (res) {
+	root.db.remote("w2p.remote").getTemplateDetails(tpl.value).done(function (res) {
 		templateObject.value = res;
 		var overlays = [];
 		for (var cat of res.contents||[]) {
@@ -84,7 +84,7 @@
 			paused.value = false;
 			reupdate.value = false;
 			update.execute();
-		} else root.db.remote("web2print/renderer").renderTemplate(templateObject.value,cv).done(function (res) {
+		} else root.db.remote("w2p.remote").renderTemplate(templateObject.value,cv).done(function (res) {
 			paused.value = false;
 			if (res === undefined) {
 				console.error('#update: failed to receive reasonable response from server');
@@ -107,7 +107,7 @@
 </script>
 
 <script #deleteConfirmed [params]="{templateObject:templateObject,root:root}">
-	root.db.remote("web2print/template").deleteTemplate(templateObject.value).done(function (res) {
+	root.db.remote("w2p.remote").deleteTemplate(templateObject.value).done(function (res) {
 		root.app.reloadRoot();
 	})
 </script>

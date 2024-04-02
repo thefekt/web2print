@@ -1,5 +1,3 @@
-// @allowRemote
-
 const misc = require("server/misc");
 const renderer = require("./renderer");
 const docapi = require("server/documents/document");
@@ -366,3 +364,4 @@ function getContentsData(tpl) {
     }
     return res;
 }
+

@@ -1,5 +1,3 @@
-// @allowRemote
-
 var misc = require("server/misc");
 
 var service = JSCORE.Exec.resolveHostAPI("web2print.ScribusService");

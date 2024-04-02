@@ -4,7 +4,7 @@
 <!-- TODO ERR MSG -->
 <variable #document [value]="documents.value[0]"></variable>
 
-<mat-dialog-content simplebar style="min-width:400px" ngStyle.xs="min-width:initial">
+<mat-dialog-content style="min-width:400px;overflow:hidden" ngStyle.xs="min-width:initial">
 	<div style="padding-bottom: 8px">
 		<mat-icon style="font-size: 26px;display: inline-block;width:26px;height: 26px;color: rgba(0,0,0,0.4);vertical-align: top;padding-right: 8px" mat-list-icon>attach_file</mat-icon>
 		<h4 style="line-height: 26px;font-size: 20px;display: inline-block;font-weight:normal;margin: 0;color: rgba(0,0,0,0.4);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" mat-line>
@@ -15,12 +15,12 @@
         <remote #res1
 				[dependency]="document"
 				[disabled]="force.value"
-			    api="initTemplateContentsUploaded" require="web2print/template"  [args]="[document.value]"
+			    api="initTemplateContentsUploaded" require="w2p.remote"  [args]="[document.value]"
 		>
 			   
             <remote #res2
 				[dependency]="res1"
-				require="web2print/renderer"
+				require="w2p.remote"
 				[api]="!force.value ? 'renderTemplateOnce' : 'renderTemplate'"
 				[args]="[
 
@@ -31,7 +31,7 @@
 
 					, (force.value || {} )
 				]">
-				<div style="width:50vw;height:50vh" ngStyle.xs="width:100%" relative>
+				<div style="min-width:50vw;min-height:50vh" ngStyle.xs="width:100%" relative>
                     <viewer [dependency]="res2"  [object]="res2.value">
                     </viewer>
                 </div>
@@ -57,7 +57,7 @@
 	<script #onSubmit [params]="{root:root,document:document,code:code.value,force:force}">
 		code = code || document.value.code.substring(0,document.value.code.lastIndexOf('.'));
 		if (force.value)
-			return root.remote("web2print/template").updateTemplate(code,document.value).done(function(res) {
+			return root.remote("w2p.remote").updateTemplate(code,document.value).done(function(res) {
 				if (typeof res == "string")
 					return root.openDialog("/dialogs/basic/error",{
 						content : res
@@ -75,7 +75,7 @@
         //--------------------------------------------------------------
         function work()
 		{
-			root.remote("web2print/template").createTemplate(code,document.value).done(function(res) {
+			root.remote("w2p.remote").createTemplate(code,document.value).done(function(res) {
 				if (typeof res == "string")
 					return root.openDialog("/dialogs/basic/error",{
 						content : res

@@ -21,8 +21,15 @@ vr s compile forms
 
 TODO DOCU
 
+TODO :
 
+1) JSON i18n DEFAULT TEMPLATE
+2) REPLACE TEMPLATE 
+3) ADMIN MASK
+4) PRINT_TEMPLATe
+5) SHARE LINK
 
+export ??
 
 
 

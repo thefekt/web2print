@@ -12,7 +12,7 @@ vr.defineModule('web2print',{
 	]
 });
 
-
-
 /* final setup */
 require("./data/access");
+require("./data/languages.active");
+
