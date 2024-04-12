@@ -1,7 +1,7 @@
 <!-- @Abstract -->
 <!-- @Abstract -->
 <ng-container *ngIf="comp.type == 'image'">
-    <div>
+    <div class="print-content-entry input-widget-mousedown-focus-trap">
         <script #updateImage [params]="{root:root,inp:inp,val:val,comp:comp}">
 			if (!args[0]) return val.value=undefined;
             root.db.remote("w2p.remote").getInitialImageRegion(args[0],comp.proportion).done(function(region) {
@@ -47,8 +47,12 @@
 			[detailsEnabled]="false"            
             [clearEnabled]="false"
             [label]="comp.NAME" [placeholder]="'- default -'"
-            (focus)="dynamicViewer && dynamicViewer.gotoPage(comp.dest_page-1)" #inp
-            (dblClick)="openBrowse.execute()"
+            (focus)="
+		    	dynamicViewer.gotoPage(comp.dest_page-1);
+		    	dynamicViewer.fitOverlayIfNeeded(comp.code);
+		    " 
+			#inp
+            (dblClick)="dynamicViewer.fitOverlay(comp.code);openBrowse.execute()"
             >
             <include shared ref="/widgets/web2print/print/content/handle-edit-entry"></include>
             <ng-template #header> 
@@ -131,7 +135,10 @@
                 cropData : {region:root.clone(rv.region,true),proportion:comp.proportion}
             },args[1]||updateRegion.execute,args[2])			
 		</script>
-        <observe [event]="dynamicViewer.overlayClick" (dispatch)="$event.code == comp.code ? overlayClicked.execute(comp,inp,$event) : 0"></observe>
+        <observe 
+		[event]="dynamicViewer.overlayClick" (dispatch)="
+			$event.code == comp.code ? inp.focused ? 0 : root.app.window.document.activeElement.blur() : 0;
+			$event.code == comp.code ? overlayClicked.execute(comp,inp,$event) : 0"></observe>
     </div>
     <div style="
 	    position:relative;

@@ -6,6 +6,7 @@
 		"reset" : "vr s clean data work target log -force && npm run build && npm run import",
 	
 		"build" : "vr mvn package && vr s compile",
+		"update" : "vr mvn package && vr s compile model && vr s compile import && vr s import modules",
 		"import" : "vr s import",
 
 		"start" : "vr s start",

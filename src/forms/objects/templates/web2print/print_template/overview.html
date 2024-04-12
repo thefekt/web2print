@@ -66,15 +66,18 @@
 		
 		<observe (onReady)="galleryCustomClickHandler.value=onClick.execute">
 			<script #onClick [params]="{object:object,root:root}">
-				//var doc = args[0];
-				var obj = object.value;
-				root.db.getObject(obj,"code",function(res){
-					if (res.code)
-						root.openDialog('/pages/main/print',{
-			           		tpl : res.code,
-			           		fullscreen : true
-			           	})
-				})
+				var doc = args[0];
+				var docs = args[1];
+				if (docs[0]?.object === doc) {
+					var obj = object.value;
+					root.db.getObject(obj,"code",function(res){
+						if (res.code)
+							root.openDialog('/pages/print',{
+				           		tpl : res.code,
+				           		fullscreen : true
+				           	})
+					})
+				}
 			</script>
 		</observe>
 	</div>

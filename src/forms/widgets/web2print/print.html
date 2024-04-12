@@ -15,22 +15,57 @@
 <!-- #storageCondition #tpl #templateObject #custom #baseUrl #generatedPreview #generatedPreview
 	 #timer #paused #reupdate -->
 <include shared ref="/widgets/web2print/print/variables"></include>
+<observe (onReady)="loadTemplateAndUpdate.execute()"></observe>
 
 <!-- delay content : hide contetent till delay.done() -->
-<delay-dialog #delay>
-	<div style="position:absolute;top:0;left:0;right:0;bottom:0;overflow:clip" [style.background-color]="dialogRef.value ? 'white' : 'transparent'">
-		<!-- Template part --> 
-		<div style="position:absolute;top:0;left:0;right:0;bottom:0;overflow:clip" fxLayout="column">
-			<observe (onReady)="loadTemplateAndUpdate.execute()"></observe>
-			<div absolute-fill *ngIf="generatedPreview.value" fxLayout="row" fxLayout.xs="column-reverse">
-				<!-- #sidenav & <include shared ref="/widgets/web2print/print/content"></include> content-->
+<delay-dialog #delay><ng-container *ngIf="templateObject.value">
+	<div style="position:absolute;top:0;left:0;right:0;bottom:0;overflow:clip"
+		[style.background-color]="dialogRef.value ? 'white' : 'transparent'" fxLayout="column">
+		<mat-sidenav-container absolute-fill>
+			<!-- Sidenav -->
+			<mat-sidenav #sidenav style="overflow:hidden" [ngStyle.xl]="{'width':'360px'}"
+				[ngStyle.lg]="{'width':'330px'}" [ngStyle.md]="{'width':'300px'}" [ngStyle.sm]="{'width':'270px'}"
+				[ngStyle.xs]="{'width':'50vw'}" [disableClose]="true" mode="side" fxLayout="column" [(opened)]="sidenavOpen.value">
 				<include shared ref="/widgets/web2print/print/sidenav"></include>
-			
+			</mat-sidenav> 
+
+			<!-- Template part -->
+			<div style="position:absolute;top:0;left:0;right:0;bottom:0;overflow:clip" fxLayout="column">
 				<!-- content pane -->
 				<include shared ref="/widgets/web2print/print/content"></include>
-
+				<!-- FOOTER -->
+				<div fxLayout="row"
+					style="position:absolute;left:0;right:0;bottom:0;padding:14px;pointer-events:none"
+					class="mat-buttons-auto-spacing"
+					>
+					<button mat-button (click)="sidenavOpen.value=false" [matTooltip]="LABEL_FULLSCREEN"
+						style="background:white;pointer-events:initial" *ngIf="sidenavOpen.value" tabindex="-1">
+						<mat-icon>fullscreen</mat-icon>						
+					</button>
+					<button mat-button (click)="sidenavOpen.value=true" 
+						style="background:white;pointer-events:initial" *ngIf="!sidenavOpen.value"  tabindex="-1"> 
+						<mat-icon>edit</mat-icon>						
+						<span><i18n>INFO_EDIT</i18n></span>
+					</button>
+					<div fxFlex></div>
+					<button mat-raised-button style="pointer-events:initial" color="primary" *ngIf="!sidenavOpen.value" (click)="onSubmit.execute()">
+						<mat-icon>
+							download
+						</mat-icon>
+						<span>PDF</span>
+					</button>
+					<button mat-raised-button style="pointer-events:initial" dialog-close *ngIf="dialogRef.value">
+						<mat-icon>
+							close
+						</mat-icon>
+						<span>
+							<i18n>BUTTON_WEB_CLOSE</i18n>
+						</span>
+					</button>
+				</div>
 			</div>
-		</div>
-	</div>
-</delay-dialog>
 
+
+		</mat-sidenav-container>
+	</div>
+</ng-container></delay-dialog>

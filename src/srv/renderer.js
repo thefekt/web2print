@@ -3,23 +3,30 @@ var misc = require("server/misc");
 var service = JSCORE.Exec.resolveHostAPI("web2print.ScribusService");
 
 exports.initTemplateContents = service.initTemplateContents;
-exports.renderTemplate = service.renderTemplate;
-exports.getTemplateJSON = service.getTemplateJSON;
 exports.resetTempDir = service.resetTmpDir;
 exports.forceStop = function(tmpl) {
     var key =  "rndr-"+tmpl.document.id;
     service.forceStop(key);
 };
-exports.renderTemplateOnce = function(tmpl,data) {
+
+exports.getTemplateJSON = function(tmpl,lang,data) {
+	return service.getTemplateJSON(tmpl,lang,data);
+}
+	
+exports.renderTemplateOnce = function(tmpl,data,lang) {
     try {
-        return exports.renderTemplate(tmpl,data);
+        return service.renderTemplate(tmpl,data,lang);
     } finally {
         exports.forceStop(tmpl);
     }
 };
 
-exports.checkPreview = function(tmpl) {
-    var data = exports.getTemplateJSON(tmpl,{});
+exports.renderTemplate = function(tmpl,data,lang) {
+	return service.renderTemplate(tmpl,data,lang);
+};
+
+exports.checkPreview = function(tmpl,lang) {
+    var data = exports.getTemplateJSON(tmpl,lang,{});
     var key = JSON.stringify(data);
     if (tmpl.preview_document && !tmpl.preview_document.DELETED && key == tmpl.preview_key)
         return;
@@ -32,7 +39,7 @@ exports.checkPreview = function(tmpl) {
     }
     var everyone = db.core.user_role.byCode("everyone");
 	var admin = db.core.user_role.byCode("customer:admin");
-	var pdoc = tmpl.preview_document = exports.renderTemplate(tmpl,{});
+	var pdoc = tmpl.preview_document = exports.renderTemplate(tmpl,{}).doc;
     if (!pdoc)
         return;
     pdoc.access_read=everyone;

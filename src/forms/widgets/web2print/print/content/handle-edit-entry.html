@@ -26,17 +26,24 @@
 ></observe>
 <observe #resetToDefault (dispatch)="val.value=undefined")></observe>
 <observe [event]="inp.focusedChange">
-	 <script [params]="{inp:inp,comp:comp}" #handleFocusChange>
+	 <script [params]="{inp:inp,comp:comp,cfocused:cfocused,getOverlayElement:getOverlayElement}" #handleFocusChange>
 		 setTimeout(function(){
-			var el = root.element.querySelector(`#${comp.code.replace(/([^\w-])/g, '\\$1')}.w2p-print-entry-overlay`);
-			if (el) {
-				if (args[0])
-					el.classList.add("w2p-print-entry-focused");
-				else
-					el.classList.remove("w2p-print-entry-focused");
+			var el = getOverlayElement.execute(comp.code);
+			if (args[0]) {
+				cfocused.remove(comp.code)
+				cfocused.push(comp.code)
+				for (var e of root.element.querySelectorAll(".w2p-print-entry-changed"))
+					e.classList.remove("w2p-print-entry-changed");
+				el && el.classList.add("w2p-print-entry-focused");
+				//console.log("+++ : "+JSON.stringify(cfocused.elements,null,4));
+			} else {
+				cfocused.remove(comp.code)
+				el && el.classList.remove("w2p-print-entry-focused");
+				//console.log("--- : "+JSON.stringify(cfocused.elements,null,4));
 			}
 			 
 		 },0);
 	 </script>
  </observe>
  <observe [event]="dynamicViewer.overlayClick" (dispatch)="$event.code == comp.code ? handleFocusChange.execute(true):0"></observe>
+ </observe>

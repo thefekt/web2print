@@ -1,52 +1,48 @@
 <!-- @Abstract -->
 <div fxLayout="column" 
-	 	style="z-index:1;background:rgba(0,0,0,0.04);box-shadow:0 0 6px 0px rgba(0,0,0,0.6)" 
-		[ngStyle.xl]="{'width':'360px'}"
-		[ngStyle.lg]="{'width':'330px'}"
-		[ngStyle.md]="{'width':'300px'}"
-		[ngStyle.sm]="{'width':'270px'}"
-		[ngStyle.xs]="{'max-height':'40%'}"
->
-	<div fxLayout="column" fxFlex style="position:relative">
+	class="sidenav-contents" 
+ 	style="position:relative;background:rgba(0,0,0,0.04);height:100%;overflow:clip">
+	<div fxLayout="row" style="margin:8px;margin-bottom:5px">
+		<div>
+			<div style="font-size:22px;color:rgba(0,0,0,0.65);line-height:20px">
+				{{templateObject.value.name}}
+			</div>
+			<div style="font-size:12px;color:rgba(0,0,0,0.45);padding:2px 0;line-height:14px">
+				{{root.formatDoubleDigits(templateObject.value.width,2)}}mm x {{root.formatDoubleDigits(templateObject.value.height,2)}}mm
+			</div>		
+		</div>
+		
+		<div fxFlex></div>
+		<div fxLayout="row">
+			<img mat-icon-button [matMenuTriggerFor]="langMenu" #mbtn="matMenuTrigger" [mobileFixMenu]="mbtn" style="width:28px;height:28px;margin-top:15px;margin:auto;cursor:pointer" src="/images/library/flags/128/{{root.db.lang.substring(root.db.lang.indexOf('-')+1).toLowerCase()}}.png"></img>
+	        <include shared ref="/widgets/app/menu/lang"></include> 
+	    	<!-- PERSON BUTTON SETTINGS ETC 
+	    	<ng-container *ngIf="root.app.layoutMode == 'forms'">
+	      		<i *ngIf="root.loggedIn" class="material-icons icon-button" style="font-size:35px;width:32px;overflow:hidden;min-width:32px" #mbtn="matMenuTrigger" [mobileFixMenu]="mbtn" [matMenuTriggerFor]="settingsMenu">
+	      			person
+		      		<include shared ref="/widgets/app/menu/settings"></include>
+	      		</i>
+	      		<i relative *ngIf='root.app.activeDashboards' class="material-icons icon-button" [style.color]="root.app.locked ? undefined : '#FF4040'" style="margin-top:13px;width:30px;height:30px;min-width:30px;font-size:30px;">
+		            <providers-menu #gridMenu walkChildContexts [providers]="['grid.root.*']"></providers-menu>
+	          	border_all</i>
+	    	</ng-container>
+	      	<i relative class="material-icons icon-button" style="margin-top:12px;font-size:33px;margin-right:3px" *ngIf="root.app.menuProviders.length">
+	      		<providers-menu #appMenu walkChildContexts [providers]="root.app.menuProviders" (menuItemSelected)="root.app.mainMenuItemSelected.emit($event)"></providers-menu>
+	        menu</i>-->
+		</div>
+	</div>
+	<div fxFlex style="position:relative">
 		<div *ngIf="templateObject?.value?.contents?.length" style="position:absolute;left:0;top:0;right:0;bottom:0" simplebar>
-		  	<div style="margin:0 14px;margin-top:10px">
-				<div fxLayout="row">
-					<div>
-						<div style="font-size:18px;color:rgba(0,0,0,0.65)">
-							{{templateObject.value.name}}
-						</div>
-						<div style="font-size:12px;color:rgba(0,0,0,0.45);padding:2px 0">
-							{{root.formatDoubleDigits(templateObject.value.width,2)}}mm x {{root.formatDoubleDigits(templateObject.value.height,2)}}mm
-						</div>		
-					</div>
-					<!-- LANGUAGE MENU ? 
-						<div fxFlex></div>
-					<div fxLayout="column">
-						<img mat-icon-button [matMenuTriggerFor]="langMenu" #mbtn="matMenuTrigger" [mobileFixMenu]="mbtn" style="width:28px;height:28px;margin-top:15px;margin:auto;cursor:pointer" src="/images/library/flags/128/{{root.db.lang.substring(root.db.lang.indexOf('-')+1).toLowerCase()}}.png"></img>
-				    	<ng-container *ngIf="root.app.layoutMode == 'forms'">
-				      		<i *ngIf="root.loggedIn" class="material-icons icon-button" style="font-size:35px;margin-top:10px;width:32px;overflow:hidden;margin-left:-3px;min-width:32px" #mbtn="matMenuTrigger" [mobileFixMenu]="mbtn" [matMenuTriggerFor]="settingsMenu">
-				      			person
-					      		<include shared ref="/widgets/app/menu/settings"></include>
-				      		</i>
-				      		<i relative *ngIf='root.app.activeDashboards' class="material-icons icon-button" [style.color]="root.app.locked ? undefined : '#FF4040'" style="margin-top:13px;width:30px;height:30px;min-width:30px;font-size:30px;">
-					            <providers-menu #gridMenu walkChildContexts [providers]="['grid.root.*']"></providers-menu>
-				          	border_all</i>
-				    	</ng-container>
-				      	<i relative class="material-icons icon-button" style="margin-top:12px;font-size:33px;margin-right:3px" *ngIf="root.app.menuProviders.length">
-				      		<providers-menu #appMenu walkChildContexts [providers]="root.app.menuProviders" (menuItemSelected)="root.app.mainMenuItemSelected.emit($event)"></providers-menu>
-				        menu</i>
-				        <include shared ref="/widgets/app/menu/lang"></include>
-					</div>-->
-				</div>
-				<form-category-panel *ngFor="let cat of templateObject.value.contents;last as last" 
+		  	<div style="margin:0 14px;margin-bottom:2px">
+				<form-category-panel *ngFor="let cat of templateObject.value.contents;last as last;first as first" 
 					[expanded]="true" [caption]="cat.name" [message]="cat.sfx" 
-					style="margin:5px 0px" 
-					[style.margin-bottom]="!last ? '10px' : '0px'"
+					style="margin:5px 0"
+					[style.margin-bottom]="!last ? '14px' : '0px'" 
 				>
 					<!-- iterate over entries in the category -->
-					<div *ngFor="let comp of cat.entries; let i = index;last as last" style="margin:0px 2px;border-bottom:0px solid transparent">
+					<div *ngFor="let comp of cat.entries; let i = index;last as last" style="margin:0px 2px" [style.margin-bottom.px]="last ? -3 : 0">
 						<!-- #val custom value -->
-						<variable #val [(value)]="custom.value[comp.code]" (valueChange)="update.execute()"></variable> 
+						<variable #val [(value)]="custom.value[comp.code]" (valueChange)="update.execute();lastChg.value=comp.code"></variable> 
 						
 						<include shared ref="/widgets/web2print/print/content/varchar"></include>
 						<include shared ref="/widgets/web2print/print/content/text"></include>
@@ -58,26 +54,27 @@
 					</div>
 				</form-category-panel>
 			</div>
-		</div>
+		</div> 		
 	</div>
 	<div style="margin:14px" fxLayout="row">
-		<button mat-button class="icon-button" [matMenuTriggerFor]="menu" style="background:white">
+		<button mat-button class="icon-button" [matMenuTriggerFor]="menu" style="background:white" tabindex="-1">
 			<mat-icon>settings</mat-icon>
 			<span [fxHide.xs]="true" [fxHide.sm]="true"><i18n>LABEL_SETTINGS</i18n></span>
 		</button>
 		<div fxFlex></div>			
 		<!-- [disabled]="!changed.value" -->
-		<button mat-raised-button color="primary" (click)="onSubmit.execute()">
-			<mat-icon>
-				download
-			</mat-icon>
-			<span>PDF</span>
-		</button>
-	</button>
-	</div>
+		<div style="pointer-events:auto">
+			<button mat-raised-button color="primary" (click)="onSubmit.execute()" tabindex="-1" class="disabled-if-input-focused"> 
+				<mat-icon>
+					download
+				</mat-icon>
+				<span>PDF</span>
+			</button>
+		</div>
+	</div>	
 </div>
 
-<!-- action menu -->
+<!-- action menu --> 
 <mat-menu #menu>
 	<button mat-menu-item>
 			<mat-icon>share</mat-icon>

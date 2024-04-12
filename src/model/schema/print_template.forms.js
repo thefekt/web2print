@@ -16,26 +16,46 @@ forms.define({
 	        edit : {
 	            columns : 'code,name,description,contents,uuid,document,width_mm,height_mm'
 	        }
-	    }, 
+	    },
+	    buttons : {
+			new : function(details) { 
+				return {
+					name : "core.embedded_execution_script@documents.document.upload_file:default_value:embedded_execution_script",	// i18n name lookup by code
+					icon : 'attach_file',
+					ref : '/dialogs/default/object/upload',
+					params : {
+						noSignature : true,
+						singleResult : true,
+						hideFolder : true,
+						transaction : 'custom',
+						noImage : true,
+						accept : 'zip',
+						resultForward : {
+							ref:'/dialogs/web2print/print_template/create-from-file',
+							params : {
+								/* #documents will be available after forwarding */
+							}
+						}
+					}					
+				}
+			}	
+		},
 	    properties :
-	    { 
+	    { /*
 	        document : { 
 	            autocomplete : false,
 	            obligatory : false, 
 	            hidden : commonHideIfNew
-	        },
-	        contents : {
-	            hidden : hideIfNoDocument
-	        },  
+	        }, 
 	        contents : {  
 	            hidden : hideIfNoDocument
 	        },
 	        width_mm : {
 	            hidden : hideIfNoDocument
-	        },
+	        }, 
 	        height_mm : { 
 	            hidden : hideIfNoDocument
-	        }  
+	        }*/
 	    },
 	    fileDrop : function(details) {
 	        return {
@@ -61,11 +81,25 @@ forms.define({
 			var pdoc = obj.preview_document;
 			if (pdoc) 
 				return misc.IMG(pdoc,details.width,details.height,details.renderer);
-		}
+		},
+		executions : {
+	        'show-link' : function(details) { 
+				if (details.object) 
+	            return {
+	                icon : 'public',
+	                ref : '/dialogs/web2print/print_template/show-link',
+	                name : misc.MSG("SHOW_PUBLIC_LINK"),
+	                selection : true, 
+	                params : {
+						relp: `print?tpl=${encodeURIComponent(details.object.code)}`
+					}
+	            };
+	        }
+	    }
 	}
 });
 
-/* END OF FORMS DEF */
+/* END OF FORMS DEF 
 
 function commonHideIfNew(details) {
     if (details.transaction != "insert")
@@ -80,4 +114,4 @@ function hideIfNoDocument(details) {
     if (!object) 
     	return true;
     return !object.document;
-}
+} */

@@ -53,8 +53,8 @@ CONNECTION_TIMEOUT = 60
 INACTIVE_TIMEOUT = 120
 DOCUMENT_TIMEOUT = 120
 DEFAULT_PORT = 22022
-#'c:/t/t.txt'
-LOGFILE = None 
+#'c:/t/t.txt' None
+LOGFILE = None
 
 import logging
 import re
@@ -179,7 +179,7 @@ def exportPDF(opath='VR_EXPORT.pdf'):
         pdf.file = opath
         pdf.profilei = True     # embed color profile
         pdf.embedPDF = True     # PDF in PDF
-        # pdf.useLayers = True    # export the layers (if any)
+        # pdf.useLayers = True 	# export the layers (if any)
         pdf.fontEmbedding = 1   # text to curves
 
         # pdf.resolution = 300    # good enough for most prints
@@ -224,63 +224,51 @@ def processColors(xlat):
     except Exception as e:
         logger.error('..standard error: %s', e)
 # ----------------------------------------------------------------------------
+def SelectAllText(textframe):
+	texlen = scribus.getTextLength(textframe)
+	scribus.selectText(0,texlen,textframe)
+	return 
+ 
+# ----------------------------------------------------------------------------
 def processTemplate(xlat):
     if xlat is None:
         return
-    logger.info(r'! process template')
-    page = 1
-    pagenum = scribus.pageCount()
+    
+    page = 1;
+    
+    pagenum = scribus.pageCount();
     while page <= pagenum:
-        logger.info(r'.process page ' + str(page))
-        scribus.gotoPage(page)
-        pitems = scribus.getPageItems()
+    	logger.info(r'.process page ' + str(page));
+    	scribus.gotoPage(page);
+    	pitems = scribus.getPageItems();
+    	
+    	for item in [p for p in pitems if p[1] == 4]:
+    		i0 = str(item[0]);
+    		if (i0.startswith("(")):
+    			code = i0[1:-1];
+    			
+    			phc = None;
+    			
+    			if i0 in Automator3.codes:
+    				phc = Automator3.codes[i0];
+    			else:
+    				phc = scribus.getAllText(i0);
+    				Automator3.codes[i0] = phc;
 
-        # if p[1] == 4 then we have a textbox
-        for item in [p for p in pitems if p[1] == 4]:
-            logger.info(r'..process item: [%s] ', item)
-            buf = scribus.getAllText(item[0])
-            logger.info(r'...cur text: [%s]', buf)
-            phc = None
-
-            # try to figure placeholder
-            mbuf = re.search(r'[{]+((\w|\.)+)[}]+', buf)
-            if mbuf is not None:
-                # placeholder text
-                phc = mbuf.group(1)
-                Automator3.codes[item[0]] = phc   # save
-            else:
-                if item[0] in Automator3.codes:
-                    phc = Automator3.codes[item[0]] # restore
-                else:
-                    logger.warn(r'...code not known for field: [%s]', item[0])
-
-            logger.info(r'phc [%s], buf [%s] | xlat = %s', phc, buf,xlat)
-            # ok. do we have a xlat for this?
-
-            try:
-                if phc is not None and phc in xlat:                                  
-                    nstr = xlat[phc]
-                else:
-                    nstr = buf
-                                                                
-            except Exception as e:
-                logger.error('..standard error: %s', e)
-
-            logger.info(r'DEBUG4.5');
-
-            try:
-                logger.info(r'DEBUG5 %s | %s',nstr,item[0]);
-
-                scribus.replaceText(nstr, item[0])
-                logger.info(r'DEBUG6');
-                logger.info(r'...new text: [%s]', nstr)  
-            except scribus.ScribusException:
-                logger.error('.. scribus setText failed')
-
-        page += 1
-
-    logger.info('! done processing template')
-
+    			val = xlat[code];
+    			if not val:
+    				val = phc;
+    				
+    			if val:
+		    		logger.info(r'..process item: %s : %s ', code,phc);
+		    		scribus.deselectAll();
+		    		scribus.deleteText(i0);
+		    		scribus.insertText(str(val), 0, i0);
+    		
+    	page += 1;
+	
+    logger.info('! done processing template');
+    return
 # ----------------------------------------------------------------------------
 class Automator3:    
     def __init__(self, forward):
@@ -327,11 +315,11 @@ class Automator3:
 
         logger.info('..opath: [%s]', opath)
         jsxlat = xlatenc
-        logger.info('..json: [%s]', jsxlat)
+        #logger.info('..json: [%s]', jsxlat)
 
         try:
             xlat = json.loads(jsxlat)
-            logger.info('..xlat: %s', xlat)
+            #logger.info('..xlat: %s', xlat)
         except Exception as e:
             logger.error('..error decoding json: %s', e)            
             return 'ERR_BAD_JSON: %s' % jsxlat
@@ -391,7 +379,7 @@ class Automator3:
             self.sendLine('ERR_BAD_CMD')
             return
 
-        logger.info('.cmd [%(code)s] && arg [%(arg)s]', {'code': code, 'arg': arg})
+        #logger.info('.cmd [%(code)s] && arg [%(arg)s]', {'code': code, 'arg': arg})
 
         if code == 'CONVERT':
             self.sendLine(Automator3.CONVERT(arg))

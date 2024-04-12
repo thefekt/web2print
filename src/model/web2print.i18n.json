@@ -1,32 +1,282 @@
 {
-	"message:LABEL_CLICK_TO_SELECT_CROP_REGION" : {
-		"en-US" : "Click to select region!"
-	},
-	"message:SUFFIX_CONTENTS" : {
-		"en-US" : "contents"
-	},
-	"message:FILE_DOWNLOAD_STARTED" : {
-		"en-US" : "Download of template configuration started"
-	},
-	"message:QUESTION_YOU_ARE_GOING_TO_OVERRIDE_CURRENT_SURE" : {
-		"en-US" : "You are going to override current settings. Are you sure?"
-	},
-	"message:ERR_FILE_IS_CORRUPTED" : {
-		"en-US" : "Unable to load settings : file format mismatch or file is corrupted"
-	},
-	"message:ERR_CONFIG_DIFFERENT_TEMPLATE" : {
-		"en-US" : "Unable to load settings : file contains settings for different template"
-	},
-	"message:INFO_SAVE_AS_FILE" : {
-		"en-US" : "Save as file"
-	},
-	"message:INFO_LOAD_FROM_FILE" : {
-		"en-US" : "Load from file"
-	},
-	"message:INFO_SHARE_LINK" : {
-		"en-US" : "Share link"
-	},
-	"message:INFO_RESET_TO_DEFAULT" : {
-		"en-US" : "Reset to default"
-	}
+    "message:LABEL_CLICK_TO_SELECT_CROP_REGION": {
+        "en-US": "Click to select region!",
+        "de-DE": "Klicken Sie, um den Bereich auszuwählen!",
+        "bg-BG": "Кликнете, за да изберете регион!",
+        "fr-FR": "Cliquez pour sélectionner la région!"
+    },
+    "message:SUFFIX_CONTENTS": {
+        "en-US": "contents",
+        "de-DE": "Inhalte",
+        "bg-BG": "съдържания",
+        "fr-FR": "contenus"
+    },
+    "message:LABEL_CONTENTS": {
+        "en-US": "Contents",
+        "de-DE": "Inhalte",
+        "bg-BG": "Съдържания",
+        "fr-FR": "Contenus"
+    },
+    "message:FILE_DOWNLOAD_STARTED": {
+        "en-US": "Download of template configuration started",
+        "de-DE": "Download der Vorlagenkonfiguration gestartet",
+        "bg-BG": "Започна изтеглянето на конфигурацията на шаблона",
+        "fr-FR": "Téléchargement de la configuration du modèle commencé"
+    },
+    "message:QUESTION_YOU_ARE_GOING_TO_OVERRIDE_CURRENT_SURE": {
+        "en-US": "You are going to override current settings. Are you sure?",
+        "de-DE": "Sie werden die aktuellen Einstellungen überschreiben. Sind Sie sicher?",
+        "bg-BG": "Предстои да презапишете текущите настройки. Сигурни ли сте?",
+        "fr-FR": "Vous allez remplacer les paramètres actuels. Êtes-vous sûr?"
+    },
+    "message:ERR_FILE_IS_CORRUPTED": {
+        "en-US": "Unable to load settings : file format mismatch or file is corrupted",
+        "de-DE": "Einstellungen können nicht geladen werden: Dateiformat stimmt nicht überein oder Datei ist beschädigt",
+        "bg-BG": "Настройките не могат да бъдат заредени: несъответствие във формата на файла или файлът е повреден",
+        "fr-FR": "Impossible de charger les paramètres : le format du fichier ne correspond pas ou le fichier est corrompu"
+    },
+    "message:ERR_CONFIG_DIFFERENT_TEMPLATE": {
+        "en-US": "Unable to load settings : file contains settings for different template",
+        "de-DE": "Einstellungen können nicht geladen werden: Datei enthält Einstellungen für eine andere Vorlage",
+        "bg-BG": "Настройките не могат да бъдат заредени: файлът съдържа настройки за различен шаблон",
+        "fr-FR": "Impossible de charger les paramètres : le fichier contient des paramètres pour un autre modèle"
+    },
+    "message:INFO_SAVE_AS_FILE": {
+        "en-US": "Save as file",
+        "de-DE": "Als Datei speichern",
+        "bg-BG": "Запази като файл",
+        "fr-FR": "Enregistrer comme fichier"
+    },
+    "message:INFO_LOAD_FROM_FILE": {
+        "en-US": "Load from file",
+        "de-DE": "Aus Datei laden",
+        "bg-BG": "Зареди от файл",
+        "fr-FR": "Charger à partir d'un fichier"
+    },
+    "message:INFO_SHARE_LINK": {
+        "en-US": "Share link",
+        "de-DE": "Link teilen",
+        "bg-BG": "Сподели връзка",
+        "fr-FR": "Partager le lien"
+    },
+    "message:INFO_RESET_TO_DEFAULT": {
+        "en-US": "Reset to default",
+        "de-DE": "Auf Standard zurücksetzen",
+        "bg-BG": "Възстановяване към стандартните",
+        "fr-FR": "Réinitialiser par défaut"
+    },
+    "message:SHOW_PUBLIC_LINK": {
+        "en-US": "Show public link",
+        "de-DE": "Öffentlichen Link anzeigen",
+        "bg-BG": "Покажи публична връзка",
+        "fr-FR": "Afficher le lien public"
+    },
+    "message:PUBLIC_LINK": {
+        "en-US": "Public link",
+        "de-DE": "Öffentlicher Link",
+        "bg-BG": "Публична връзка",
+        "fr-FR": "Lien public"
+    },
+ 	"module:web2print": {
+        "en-US": "Web2Print"
+  	},
+    "objectdef:web2print.print_template": {
+        "en-US": "Template (Print)",
+        "de-DE": "Vorlage (Druck)",
+        "bg-BG": "Шаблон (Печат)",
+        "fr-FR": "Modèle (Impression)"
+    },    
+    "objectdef:web2print.abstract_content": {
+        "en-US": "Content",
+        "de-DE": "Inhalt",
+        "bg-BG": "Съдържание",
+        "fr-FR": "Contenu"
+    },
+    "objectdef:web2print.varchar_content": {
+        "en-US": "Short text",
+        "de-DE": "Kurztext",
+        "bg-BG": "Кратък текст",
+        "fr-FR": "Texte court"
+    },
+    "objectdef:web2print.text_content": {
+        "en-US": "Text",
+        "de-DE": "Text",
+        "bg-BG": "Текст",
+        "fr-FR": "Texte"
+    },
+    "objectdef:web2print.integer_content": {
+        "en-US": "Integer",
+        "de-DE": "Ganzzahl",
+        "bg-BG": "Цяло число",
+        "fr-FR": "Entier"
+    },
+    "objectdef:web2print.double_content": {
+        "en-US": "Floating point number",
+        "de-DE": "Fließkommazahl",
+        "bg-BG": "Число с плаваща запетая",
+        "fr-FR": "Nombre à virgule flottante"
+    },
+    "objectdef:web2print.date_content": {
+        "en-US": "Date",
+        "de-DE": "Datum",
+        "bg-BG": "Дата",
+        "fr-FR": "Date"
+    },
+    "objectdef:web2print.datetime_content": {
+        "en-US": "Date and time",
+        "de-DE": "Datum und Uhrzeit",
+        "bg-BG": "Дата и час",
+        "fr-FR": "Date et heure"
+    },    
+    "objectdef:web2print.time_content": {
+        "en-US": "Time",
+        "de-DE": "Zeit",
+        "bg-BG": "Време",
+        "fr-FR": "Temps"
+    },
+    "objectdef:web2print.image_content": {
+        "en-US": "Image",
+        "de-DE": "Bild",
+        "bg-BG": "Изображение",
+        "fr-FR": "Image"
+    },
+    "objectdef:web2print.qrcode_content": {
+        "en-US": "QR Code",
+        "de-DE": "QR-Code",
+        "bg-BG": "QR код",
+        "fr-FR": "Code QR"
+    },
+    "objectdef:web2print.table_content": {
+        "en-US": "Table",
+        "de-DE": "Tabelle",
+        "bg-BG": "Таблица",
+        "fr-FR": "Tableau"
+    },
+    "objectdef:web2print.indexed_color_content": {
+        "en-US": "Color set",
+        "de-DE": "Farbset",
+        "bg-BG": "Набор от цветове",
+        "fr-FR": "Jeu de couleurs"
+    },
+     
+    "property:print_template": {
+        "en-US": "Template",
+        "de-DE": "Vorlage",
+        "bg-BG": "Шаблон",
+        "fr-FR": "Modèle"
+    },
+    "property:dest_page": {
+        "en-US": "Page",
+        "de-DE": "Seite",
+        "bg-BG": "Страница",
+        "fr-FR": "Page"
+    },
+    "property:region": {
+        "en-US": "Region",
+        "de-DE": "Region",
+        "bg-BG": "Регион",
+        "fr-FR": "Région"
+    },
+    "property:category": {
+        "en-US": "Category",
+        "de-DE": "Kategorie",
+        "bg-BG": "Категория",
+        "fr-FR": "Catégorie"
+    },
+    "property:initial_value": {
+        "en-US": "Initial value",
+        "de-DE": "Anfangswert",
+        "bg-BG": "Начална стойност",
+        "fr-FR": "Valeur initiale"
+    },
+    "property:available_colors": {
+        "en-US": "Colors",
+        "de-DE": "Farben",
+        "bg-BG": "Цветове",
+        "fr-FR": "Couleurs"
+    },
+    "property:content": {
+        "en-US": "Content",
+        "de-DE": "Inhalt",
+        "bg-BG": "Съдържание",
+        "fr-FR": "Contenu"
+    },
+    "property:parent": {
+        "en-US": "Parent",
+        "de-DE": "Gehört zu",
+        "bg-BG": "Родител",
+        "fr-FR": "Parent"
+    },
+    "property:children": {
+        "en-US": "Children",
+        "de-DE": "Enthält",
+        "bg-BG": "Деца",
+        "fr-FR": "Enfants"
+    },
+    "property:templates": {
+        "en-US": "Templates",
+        "de-DE": "Vorlagen",
+        "bg-BG": "Шаблони",
+        "fr-FR": "Modèles"
+    },
+    "property:width_mm": {
+        "en-US": "Width (mm)",
+        "de-DE": "Breite (mm)",
+        "bg-BG": "Ширина (мм)",
+        "fr-FR": "Largeur (mm)"
+    },
+    "property:height_mm": {
+        "en-US": "Height (mm)",
+        "de-DE": "Höhe (mm)",
+        "bg-BG": "Височина (мм)",
+        "fr-FR": "Hauteur (mm)"
+    },
+    "property:document": {
+        "en-US": "Document",
+        "de-DE": "Dokument",
+        "bg-BG": "Документ",
+        "fr-FR": "Document"
+    },
+    "property:contents": {
+        "en-US": "Contents",
+        "de-DE": "Inhalte",
+        "bg-BG": "Съдържание",
+        "fr-FR": "Contenus"
+    },
+    "property:preview_document": {
+        "en-US": "Preview",
+        "de-DE": "Vorschau",
+        "bg-BG": "Преглед",
+        "fr-FR": "Aperçu"
+    },
+    "property:preview_key": {
+        "en-US": "Preview key (hash)",
+        "de-DE": "Vorschau-Schlüssel (Hash)",
+        "bg-BG": "Преглед на ключ (хаш)",
+        "fr-FR": "Clé de prévisualisation (hash)"
+    },
+	 "property:column_count": {
+        "en-US": "Column count",
+        "de-DE": "Spaltenanzahl",
+        "bg-BG": "Брой колони",
+        "fr-FR": "Nombre de colonnes"
+    },
+    "property:proportion": {
+        "en-US": "Aspect ratio",
+        "de-DE": "Seitenverhältnis",
+        "bg-BG": "Съотношение на аспекта",
+        "fr-FR": "Rapport d'aspect"
+    },
+    "property:row_count": {
+        "en-US": "Row count",
+        "de-DE": "Zeilenanzahl",
+        "bg-BG": "Брой редове",
+        "fr-FR": "Nombre de lignes"
+    },
+    "property:table_data": {
+        "en-US": "Table data",
+        "de-DE": "Tabellendaten",
+        "bg-BG": "Данни за таблицата",
+        "fr-FR": "Données du tableau"
+    }
 }

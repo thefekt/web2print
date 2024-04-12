@@ -1,5 +1,6 @@
 <!-- @Abstract -->
-<div *ngIf="comp.type == 'color'" #froot tabindex="-1" (click)="froot.focus()" (focus)="focused.value=true" (blur)="focused.value=false">
+<div *ngIf="comp.type == 'color'" #froot tabindex="-1" (click)="froot.focus()" (focus)="focused.value=true" (blur)="focused.value=false"
+	class="print-content-entry">
     <variable #focused></variable>
     <variable #rgbcolor></variable>
     <variable #rgbcolorSec></variable>

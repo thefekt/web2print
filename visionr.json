@@ -24,7 +24,7 @@
     },
     "files": {
         "formsDir": "src/forms",
-        "loader": "src/srv/loader.js",
+        "srvSrc": "src/srv", 
         "model": "src/model/index.js",
 		"module" : "web2print",
 		"schemaSrc" : ["src/schema"],

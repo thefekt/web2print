@@ -4,6 +4,11 @@ const forms = require("server/forms");
 forms.define({
 	"web2print.abstract_content" :  
 	{      
+		buttons : {
+			new : false,
+			delete : false,
+			copy : false
+		},
 	    viewParams :
 	    { 
 	        edit : {

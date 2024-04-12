@@ -1,0 +1,37 @@
+<!-- @CSSEncapsulationNone -->
+
+<!-- export hide footer & header (default if not mobile) -->
+<variable #footerVisibility export [value]="false"></variable>
+<variable #headerVisibility export [value]="false"></variable>
+
+<!-- select template by code, gets template name -->  
+<variable #tpl export>
+	<query #query 
+		schema="web2print.print_template" 
+		where="code=:CODE" 
+		properties="width_mm,height_mm,NAME" 
+		[params]="{CODE:tpl.value}"
+	>
+		<first #res></first>
+	</query>
+</variable>
+
+<ng-template #header export>
+	<div fxFlex style="margin:3px 1px">
+		<ng-container *ngIf="res.value">
+			<div style="font-size:22px;color:rgba(0,0,0,0.65);line-height:20px">
+				{{res.value.NAME}}
+			</div>
+			<div style="font-size:12px;color:rgba(0,0,0,0.45);padding:2px 0;line-height:14px;margin-top:2px;margin-bottom:-2px">
+				{{root.formatDoubleDigits(res.value.width_mm,2)}}mm. x {{root.formatDoubleDigits(res.value.height_mm,2)}}mm.
+			</div>		
+		</ng-container>
+	</div>
+</ng-template>
+
+
+<ng-container *ngIf="tpl.value">
+    <ng-container *ngIf="res.ready && res.value">
+        <include shared ref="/widgets/web2print/print"></include>
+    </ng-container>
+</ng-container>

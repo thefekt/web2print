@@ -1,12 +1,21 @@
 <!-- @Abstract -->
 <input-varchar *ngIf="comp.type == 'varchar' || comp.type == 'qrcode'"
+	class="print-content-entry input-widget-mousedown-focus-trap" [class.print-content-entry-focused]="inp.focused"
     [hasClear]="false"
 	[barCodeEnabled]="false" 
     style="width:100%"
     floatLabel="always"
     [label]="comp.NAME" [placeholder]="comp.placeholder"
     [(value)]="val.value"
-    (focus)="dynamicViewer && dynamicViewer.gotoPage(comp.dest_page-1)" #inp>
+    (dblclick)="dynamicViewer.fitOverlay(comp.code)"
+    (focus)="
+    	dynamicViewer.gotoPage(comp.dest_page-1);
+    	dynamicViewer.fitOverlayIfNeeded(comp.code);
+    " 
+    #inp>
     <include shared ref="/widgets/web2print/print/content/handle-edit-entry"></include>
-	<observe [event]="dynamicViewer.overlayClick" (dispatch)="$event.code == comp.code ? overlayClicked.execute(comp,inp,$event) : 0"></observe>
+	<observe 
+		[event]="dynamicViewer.overlayClick" (dispatch)="
+			$event.code == comp.code ? inp.focused ? 0 : root.app.window.document.activeElement.blur() : 0;
+			$event.code == comp.code ? overlayClicked.execute(comp,inp,$event) : 0"></observe>
 </input-varchar>

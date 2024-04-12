@@ -9,7 +9,8 @@ vr.defineModule('web2print',{
 		require("./schema/abstract_content"),
 		require("./schema/print_template"),
 		require("./schema/category_content")
-	]
+	],
+	version : '1.0001'
 });
 
 /* final setup */

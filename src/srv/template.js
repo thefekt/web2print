@@ -341,7 +341,6 @@ function getContentsData(tpl) {
         } else if (e instanceof db.web2print.indexed_color_content) {
             var colors = e.available_colors;
             if (colors) {
-                colors=colors.split("\n");
                 var arr=[];
                 for (var i=0;i<colors.length;i++) {
                     var t = colors[i].trim();
@@ -360,7 +359,7 @@ function getContentsData(tpl) {
                 type : 'color',
                 dest_page : e.dest_page,
                 placeholder : e.initial_value,
-                colors: e.available_colors && e.available_colors.split("\n"),
+                colors: e.available_colors,
                 region : e.region ? JSON.parse(e.region).region : undefined
             });
         }

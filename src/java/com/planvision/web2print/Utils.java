@@ -39,6 +39,7 @@ import com.planvision.visionr.core.api.RuntimeConfig;
 import com.planvision.visionr.host.server.ResourceCache;
 import com.planvision.visionr.host.server.office.PDFStorage;
 import com.planvision.visionr.host.core.context.AccessGroupManager;
+import com.planvision.visionr.host.core.scripting.core.JSEngine;
 import com.planvision.visionr.host.impl.schema.ObjectReference;
 import com.planvision.visionr.host.server.FileUtils;
 
@@ -57,7 +58,7 @@ public class Utils {
 			f.delete();
 	}
 	
-	public static ObjectReference getCachedResult(String key) {
+	public static Value getCachedResult(String key) {
 		File f = new File(tmpCachedDir,key);
 		if (!f.exists()) 
 			return null;
@@ -66,6 +67,7 @@ public class Utils {
 			int odid = Integer.parseInt(s[0]);
 			long id = Long.parseLong(s[1]);
 			String filepath = s[2];
+			String regsJSON = s[3];
 			//---------------------------------------------------------------------------
 			File rf = new File(filepath);
 			//---------------------------------------------------------------------------
@@ -74,14 +76,17 @@ public class Utils {
 				return null;
 			}
 			//---------------------------------------------------------------------------
-			return ObjectReference.make(id, odid);
+			Value res = JSEngine.newEmptyObject();
+			res.putMember("doc", ObjectReference.make(id, odid).getJSObj());
+			res.putMember("regs", JSEngine.jsonParse(regsJSON));
+			return res;
 		} catch (Exception e) {
 			f.delete();
 			return null;
 		}
 	}
 	
-	public static void putCachedResult(String key,File file,ObjectReference ref) throws VException {
+	public static void putCachedResult(String key,File file,ObjectReference ref,Value regions) throws VException {
 		Value a = AccessGroupManager.getUserGroupByCode("administrators").getJSObj();
 		ref.setJSValRel(ref.getObjectDef().getPropertyByCodeUnsafe("access_owner"),a);
 		ref.setJSValRel(ref.getObjectDef().getPropertyByCodeUnsafe("access_read"),a);
@@ -97,6 +102,8 @@ public class Utils {
 				rf.delete();
 				return;
 			}
+			sb.append("\n");
+			sb.append(JSEngine.jsonStringify(regions));
 			Files.write(rf.toPath(),sb.toString().getBytes(StandardCharsets.UTF_8));
 		} catch (IOException e) {
 			HostImpl.me.getLogger().error(e);

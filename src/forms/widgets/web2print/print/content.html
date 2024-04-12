@@ -1,25 +1,32 @@
 <!-- @Abstract -->
-<div fxFlex style="position:relative">
-	<div *ngIf="DEBUG.value > 0">
-		<li>DEBUG: {{DEBUG.value}}</li>
-		<li>generated: {{generatedPreview.value|json}} </li>
-		<li>custom: {{custom.value|json}} </li>
-		<li>template: {{templateObject.value.preview_document|json}} </li>
-		<li>[query params: {{ (generatedPreview.value || {})['id'] || 0}} ] </li>
-		<li>viewer object: {{(
-			templateObject.value.preview_document
-			)|json
-			}}</li>
-	</div>
-	<div fxFlex relative>
-		<!--[zoomPerScroll]="!root.app.mobile && root.app.window.parent && root.app.window.parent !== root.app.window ? 1 : 1.2"-->
-		<viewer #dynamicViewer disableClickZoom absolute-fill
-			[keepPageOnChangeObject]="true"
-			[initialPaddingPercents]="10"
-			[initialPaddingPercentsFitOverlay]="60"
-			[dependency]="templateObject" 
-			[overlays]="templateObject.value.overlays" preserveBounds
-			[object]="generatedPreview.value"
-		></viewer>
-	</div>
-</div>
+
+<!--[zoomPerScroll]="!root.app.mobile && root.app.window.parent && root.app.window.parent !== root.app.window ? 1 : 1.2"-->
+<viewer #dynamicViewer disableClickZoom absolute-fill
+	[OSDFocusOnClick]="false"
+	[keepPageOnChangeObject]="true"
+	[initialPaddingPercents]="10"
+	[initialPaddingPercentsFitOverlay]="20" 
+	[dependency]="templateObject" 
+	[overlays]="generatedOverlays.value" preserveBounds 
+	[object]="generatedPreview.value"	
+	(dblClick)="sidenavOpen.value && root.app.mediaSize == 'xs' ? sidenavOpen.value=false : dynamicViewer.OSDZoomPositionEvent($event)"	
+	(refreshed)="onRefresh.execute()"
+></viewer>
+<script #onRefresh [params]="{cfocused:cfocused,lastChg:lastChg,root:root,getOverlayElement:getOverlayElement,dynamicViewer:dynamicViewer}">
+	clearTimeout(dynamicViewer._tm0);
+	dynamicViewer._tm0=setTimeout(function(){
+		if (cfocused.elements.length == 1) {
+			lastChg.value = undefined;
+			dynamicViewer.fitOverlayIfNeeded(cfocused.elements[0]); 
+		} else {
+			var code = lastChg.value;
+			if (!code) 
+				return;
+			var el = getOverlayElement.execute(code);
+			el?.classList.add('w2p-print-entry-changed');
+			dynamicViewer.fitOverlay(code);
+		}
+	},150);
+</script>
+
+	

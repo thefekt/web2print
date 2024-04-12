@@ -4,20 +4,6 @@
 <script #loadTemplateAndUpdate [params]="{tpl:tpl,root:root,templateObject:templateObject,update:update}">
 	root.db.remote("w2p.remote").getTemplateDetails(tpl.value).done(function (res) {
 		templateObject.value = res;
-		var overlays = [];
-		for (var cat of res.contents||[]) {
-			for (var e of cat.entries) {
-				if (e.region && e.dest_page > 0)
-					overlays.push({
-						code: e.code,
-						page: e.dest_page - 1,
-						class: 'w2p-print-entry-overlay force-display-flex',
-						region: e.region,
-						content: ' '//e.NAME
-					});
-			}
-		}
-		res.overlays = overlays.length ? overlays : undefined;
 		update.execute();
 	});
 </script>
@@ -70,6 +56,7 @@
 	reupdate:reupdate,
 	custom:custom,
 	generatedPreview:generatedPreview,
+	generatedOverlays:generatedOverlays,
 	templateObject:templateObject,
 	postConfig:postConfig
 }">
@@ -84,7 +71,23 @@
 			paused.value = false;
 			reupdate.value = false;
 			update.execute();
-		} else root.db.remote("w2p.remote").renderTemplate(templateObject.value,cv).done(function (res) {
+		} else root.db.remote("w2p.remote").renderTemplate(templateObject.value,cv).done(function (sr) {	
+			var regs=sr?.regs;
+			var res=sr?.doc;
+			
+			var oldf = {};
+			for (var e of root.element.querySelectorAll(".w2p-print-entry-overlay.w2p-print-entry-focused")) 
+				oldf[e.id]=1;
+			
+			generatedOverlays.value=regs;
+			for (var e of regs||[]) {
+				e.class='w2p-print-entry-overlay force-display-flex';
+				e.content=' ';
+				if (oldf[e.code])
+				 e.class+=' w2p-print-entry-focused';
+			}
+			//console.warn("REGS REGS REGS",regs);
+			
 			paused.value = false;
 			if (res === undefined) {
 				console.error('#update: failed to receive reasonable response from server');
@@ -121,12 +124,18 @@
 	})
 </script>
 
-<script #overlayClicked [params]="{root:root}">
+<script #overlayClicked [params]="{root:root,sidenavOpen:sidenavOpen}">
 	var comp = args[0];
 	var inp = args[1];
 	var event = args[2];
 	var froot = args[3];
 	if (event.code != comp.code) return;
+	inp.element.style.borderTop="10px solid red";
+	inp.element.style.borderBottom="10px solid red";
+	inp.element.scrollIntoView();
+	inp.element.style.borderTop="";
+	inp.element.style.borderBottom="";
+	sidenavOpen.value=true;
 	setTimeout(function(){
 		if (froot) {
 			froot.focus();
@@ -134,7 +143,6 @@
 		} else {
 			if (!inp.focused)
 				inp.setFocused(true);
-			inp.element.scrollIntoView();
 		}
 	},250);
 </script>
@@ -262,7 +270,16 @@
 		update.execute();	
 	}
 </script>
+
+<!-- args[0] : code -->
+<script #getOverlayElement [params]="{root:root}">	
+	return root.element.querySelector(`#${args[0].replace(/([^\w-])/g, '\\$1')}.w2p-print-entry-overlay`);
+</script>
+
 <!-- SUBMIT -->
-<script #onSubmit [params]="{root:root,custom:custom,templateObject:templateObject}">	
+<script #onSubmit [params]="{root:root,custom:custom,templateObject:templateObject}">
+	document.activeElement.blur();
 	console.log("SUBMIT ",custom.value,templateObject.value);
 </script>
+
+

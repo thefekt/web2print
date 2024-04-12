@@ -1,0 +1,29 @@
+<variable #relp export></variable>
+
+<variable #url [value]="root.serverHostExternalForms+relp.value"></variable>
+<mat-dialog-content simplebar>
+	<h2 mat-dialog-title><i18n>PUBLIC_LINK</i18n></h2>
+	<input-varchar placeholder="URL" readonly [value]="url.value" style="min-width:50vw" [noPopupButton]="true"></input-varchar>		
+</mat-dialog-content>
+<mat-dialog-actions fxLayout="row"> 
+	<button mat-button (click)="popup.execute()">
+		<mat-icon>open_in_new</mat-icon>
+    	<span><i18n>INFO_POPUP</i18n></span>
+    </button>
+	<span fxFlex></span> 
+	<button mat-button style="margin-left:8px" (click)="
+				root.app.clipboard.copyMessage(url.value);
+				root.showSnack(4000,'/dialogs/widgets/form/simple-notify',{ caption : root.i18n('LABEL_COPIED_TO_CLIPBOARD') });
+			">
+		<mat-icon>content_copy</mat-icon>
+    	<span><i18n>INFO_COPY</i18n></span>
+    </button>
+	<button mat-button dialog-close style="margin-left:8px">
+		<mat-icon>close</mat-icon>
+    	<span><i18n>BUTTON_WEB_CLOSE</i18n></span>
+    </button>
+</mat-dialog-actions>
+
+<script #popup [params]="{url:url}">
+	 window.open(url.value,"_blank");
+</script>

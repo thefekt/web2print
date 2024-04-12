@@ -1,5 +1,6 @@
 <!-- @Abstract -->
-<div *ngIf="comp.type == 'table'" #froot tabindex="-1" (click)="froot.focus()" (focus)="focused.value=true" (blur)="focused.value=false" relative style="margin-bottom:14px">
+<div *ngIf="comp.type == 'table'" #froot tabindex="-1" (click)="froot.focus()" (focus)="focused.value=true" (blur)="focused.value=false" 
+	style="position:relative;margin-bottom:14px" class="print-content-entry input-widget-mousedown-focus-trap">
     <variable #focused></variable>
     <observe [event]="dynamicViewer.overlayClick" (dispatch)="$event.code == comp.code ?
         [btn._elementRef.nativeElement.click(),btn._elementRef.nativeElement.scrollIntoView()]

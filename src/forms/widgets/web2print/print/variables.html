@@ -3,7 +3,7 @@
 <variable #tpl export></variable>
 	
 <variable #DEBUG export [value]="0"></variable>
-<variable #sidenavOpen2 [value]="true"></variable>
+<variable #sidenavOpen [value]="true"></variable>
 
 <!-- base url provided by external param or defaulting to localhost  -->
 <variable #baseURL export value="http://localhost"></variable>
@@ -26,7 +26,10 @@
 
 <!-- generated document temp, should be not downloadable by system setting -->	
 <variable #generatedPreview></variable>
+<variable #generatedOverlays></variable>
 
 <!-- refresh helpers -->
 <variable #paused></variable>
 <variable #reupdate></variable>
+<variable #lastChg></variable><!-- last changed entry -->
+<collection #cfocused></collection>

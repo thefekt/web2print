@@ -1,10 +1,14 @@
 package com.planvision.web2print;
 
-import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -14,20 +18,24 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.Vector;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.apache.commons.io.FileUtils;
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFHyperlink;
+import org.apache.poi.xwpf.usermodel.XWPFHyperlinkRun;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.graalvm.polyglot.HostAccess;
 import org.graalvm.polyglot.Value;
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
+import org.w3c.dom.Node;
 import com.carrotsearch.hppcrt.maps.ObjectLongHashMap;
 import com.planvision.visionr.core.CorePrefs;
 import com.planvision.visionr.core.VException;
@@ -35,7 +43,6 @@ import com.planvision.visionr.core.api.FileAndWebPath;
 import com.planvision.visionr.core.api.HostImpl;
 import com.planvision.visionr.core.api.RuntimeConfig;
 import com.planvision.visionr.core.misc.StringUtils;
-import com.planvision.visionr.core.schema.DBConstants;
 import com.planvision.visionr.core.schema.DBLang;
 import com.planvision.visionr.core.schema.DBModule;
 import com.planvision.visionr.core.schema.DBObjectDef;
@@ -48,11 +55,16 @@ import com.planvision.visionr.host.core.scripting.core.JSEngine;
 import com.planvision.visionr.host.core.scripting.core.api.export.Excel;
 import com.planvision.visionr.host.core.scripting.oscript.api.io.TmpFile;
 import com.planvision.visionr.host.core.scripting.oscript.api.reports.BarCode;
-import com.planvision.visionr.host.impl.ImageUtils;
 import com.planvision.visionr.host.impl.schema.DBObjectDefImpl;
 import com.planvision.visionr.host.impl.schema.ObjectReference;
 import com.planvision.visionr.host.master.JSConverter;
+import com.planvision.visionr.host.server.PDFEmbeddedLocations;
+import com.planvision.visionr.host.server.PDFEmbeddedLocations.Location;
 import com.planvision.web2print.Locker.Callback;
+import com.planvision.web2print.SLAXML.ContentHandler;
+import com.planvision.web2print.SLAXML.XMLHandler;
+
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
 
 //Servicing TMS like request for document preview with OpenSeaDragon
 public class ScribusService {
@@ -114,25 +126,30 @@ public class ScribusService {
 	// -----------------------------------------------------------------------------
 	@HostAccess.Export 
 	public void forceStop(String tmpDirKey) {
-		ProcessInfo pi = checkProcess(tmpDirKey, false);
-		if (pi == null)
-			return;
-		if (pi.process != null) {
-			pi.process.destroyForcibly();
-			pi.process = null;
+		for (DBLang l : HostImpl.me.getActiveLanguages()) {
+			ProcessInfo pi = checkProcess(tmpDirKey,l.getCode(), false);
+			if (pi == null)
+				continue;
+			if (pi.process != null) {
+				pi.process.destroyForcibly();
+				pi.process = null;
+			}
+			pi.clientSocket = null;
+			pi.clientSocketWriter = null;
+			pi.clientSocketReader = null;
+			pi.newPort();
 		}
-		pi.clientSocket = null;
-		pi.clientSocketWriter = null;
-		pi.clientSocketReader = null;
-		pi.newPort();
 	}
 
-	private static Value returnFileAsFocument(File file, String name) throws VException {
+	private static Value returnFileAsFocument(File file, String name,Value regions) throws VException {
 		String extension = file.getName().substring(file.getName().lastIndexOf('.')+1);
 		FileAndWebPath uf = JavaHost.me.createTmpFile(extension); 
 		file.renameTo(new File(uf.absolutePath));
 		String documentCode = StringUtils.randomHex16TS()+"."+extension;
-		Value res = Require.root.require("server/runtime/documents").getMember("moveToUpload").execute(uf.webpath,documentCode,name,extension);
+		Value doc = Require.root.require("server/runtime/documents").getMember("moveToUpload").execute(uf.webpath,documentCode,name,extension);
+		Value res = JSEngine.newEmptyObject();
+		res.putMember("doc", doc);
+		res.putMember("regs", regions);
 		return res;
 	}
 
@@ -142,7 +159,7 @@ public class ScribusService {
 		} catch (IOException e) {
 			HostImpl.me.getLogger().error(e);
 		}
-		return returnFileAsFocument(ofile, name);
+		return returnFileAsFocument(ofile, name,JSEngine.NULL);
 	}
 	
 	private static Collection<Map<String,Object>> transformExcel(File f) {
@@ -170,314 +187,320 @@ public class ScribusService {
 	}
 
 	@HostAccess.Export 
-	public Value getAvailableContents(String tmpDirKey) {
-		try {
-			// template file
-		    String path = resolve(tmpDirKey,"template.sla");
-		    // optional i18n data for content (also table txt data)
-		    String i18nPath = resolve(tmpDirKey,"i18n.xlsx");
-		    // optional initial values (initial_values) 
-		    String defaultsPath = resolve(tmpDirKey,"defaults.xlsx");
-
-		    Collection<Map<String,Object>> i18nData = transformExcel(new File(i18nPath));
-		    Collection<Map<String,Object>> defaultsData = transformExcel(new File(defaultsPath));
-
-		    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder builder = factory.newDocumentBuilder();
-			Document document = builder.parse(new File(path));
-			Vector<Map<String, Object>> entries = new Vector();
-			HashSet<String> used = new HashSet();
-
-			HashMap<String, Boolean> tables = new HashMap();
-			HashMap<String, HashMap> tablesData = new HashMap();
-			HashMap<String, Integer> tableMaxRow = new HashMap();
-			HashMap<String, Integer> tableMaxCol = new HashMap();
-
-			extractContents(tmpDirKey, document.getFirstChild(), used, entries, tables, tablesData, tableMaxRow,
-					tableMaxCol,null,i18nData,defaultsData);
-			return JSConverter.VR2JS(entries);
-		} catch (Exception e) {
-			HostImpl.me.getLogger().error(e);
-			return null;
-		}
-	}
-	
-	private static Map<String,Object> getI18nName(String code,Collection<Map<String,Object>> i18nData) {
-		if (i18nData != null)
-		for (Map<String,Object> row : i18nData) {
-			String tc = (String)row.get("CODE"); 
-			if (code.equals(tc)) {
-				HashMap<String,Object> res = new HashMap();
-				for (DBLang l : HostImpl.me.getActiveLanguages()) {
-					Object v = row.get(l.getCode());
-					if (v != null) {
-						res.put(l.getCode(), v.toString());
+	public Value getAvailableContents(String tmpDirKey) throws VException {
+		
+		// contents definition as table
+	    String contentsPath = resolve(tmpDirKey,"contents.xlsx");
+	    Collection<Map<String,Object>> contentsData = transformExcel(new File(contentsPath));
+	    //----------------------------------------------------------------------------------
+	    // calculate code 2 page map, throw error if content (tag) in multiple pages
+	    Map<String,Integer> code2page = new HashMap();
+	    Map<String,Map<String,String>> code2InitialByLang = new HashMap(); // all values by lang !! type still not known (i18n or not) !
+	    for (DBLang l : HostImpl.me.getActiveLanguages()) {
+			// template file (by lang or DEF)
+		    String path = resolve(tmpDirKey,"template."+l.getCode()+".sla");
+		    File f = new File(path);
+		    if (f.exists()) {
+		    	SLAXML.walkContents(f, new ContentHandler() {
+					@Override
+					public void handleContent(String code, String text, int page, Node node) throws VException {
+						Integer op = code2page.get(code);
+						if (op == null) code2page.put(code,page);
+						else if (op != page) throw new VException("Incompatible content with CODE "+code+" : page differs in template versions (language) : "+op+" <> "+page);
+						Map<String,String> m = code2InitialByLang.get(code);
+						if (m == null) {
+							m = new HashMap();
+							code2InitialByLang.put(code,m);
+						}
+						if (text != null && !_isPlaceholderString(text)) {
+							m.put(l.getCode(),text);
+						}
 					}
+				});
+		    }
+	    }
+	    //----------------------------------------------------------------------------------
+	    HashSet<String> imageSet = new HashSet(); // used images
+	    HashSet<String> tableSet = new HashSet(); // used images
+	    Vector<Map<String, Object>> entries = new Vector(); // contents array
+	    Map<String,Map<String,String>> categoryNamesByCode = new HashMap(); // category[code] > i18n name 
+	    HashSet<String> embeddedSet = new HashSet(); // embedded documents
+	    // parse contents table data (excel)
+	    for (Map<String,Object> r : contentsData) {
+	    	String code = (String)r.get("CODE");
+    		String cat = (String)r.get("CATEGORY");
+    		String type = (String)r.get("TYPE");
+	    	if (code != null && !code.isBlank()) {
+				int xc = code.lastIndexOf('/');
+				boolean isEmbdVar = xc > 0;
+				if (isEmbdVar) {
+					String pfx = code.substring(0,xc);
+					if (pfx.endsWith(".docx") || pfx.endsWith(".xlsx")) 
+						if (embeddedSet.add(pfx)) {
+							for (DBLang l : HostImpl.me.getActiveLanguages()) {
+								String path = resolve(tmpDirKey,pfx.substring(0,pfx.length()-4)+l.getCode()+pfx.substring(pfx.length()-5));
+								File f = new File(path);
+								if (f.exists() && f.canRead()) {
+									docxExtractInitialValues(f,l.getCode(),code2InitialByLang,pfx);									
+								}
+							}
+						}
 				}
-				if (!res.isEmpty()) 
-					return res;
-				break;
-			}
-		}
-		return null;
-	}
 
-	private static void extractContents(String tmpDirKey, Node n, HashSet<String> used,
-			Vector<Map<String, Object>> entries, HashMap<String, Boolean> tables, HashMap<String, HashMap> tablesData,
-			HashMap<String, Integer> tableMaxRow, HashMap<String, Integer> tableMaxCol,Integer page,Collection<Map<String,Object>> i18nData,Collection<Map<String,Object>> defaultsData) {
-		if (n.getNodeName().equals("PAGEOBJECT")) {
-			Node ownp = n.getAttributes().getNamedItem("OwnPage");
-			if (ownp != null) {
-				try {					
-					page = Integer.parseInt(ownp.getNodeValue())+1;
-				} catch (NumberFormatException e) {
-					HostImpl.me.getLogger().warn("ScribusService.extractContents : can not parse PAGEOBJECT OwnPage attribute : "+n.toString());
-				}
-			}
-		}
-		NodeList cn = n.getChildNodes();
-		if (cn != null) {
-			int l = cn.getLength();
-			for (int i = 0; i < l; i++)
-				extractContents(tmpDirKey, cn.item(i), used, entries, tables, tablesData, tableMaxRow, tableMaxCol,page,i18nData,defaultsData);
-		}
-		String t = n.getNodeValue();
-		if (t != null) {
-			t = t.trim();
-			if (t.startsWith("{{") && t.endsWith("}}")) {
-				String v = t.substring(2, t.length() - 2);
-				HashMap<String, Object> a = new HashMap();
-				a.put("type", "varchar");
-				if (page != null)
-					a.put("page", page);
-				a.put("code", v);
-				entries.add(a);
-			}
-		}
-		NamedNodeMap at = n.getAttributes();
-		if (at != null) {
-			int l = at.getLength();
-			for (int i = 0; i < l; i++) {
-				Node a = at.item(i);
-				String bt = a.getNodeValue();
-				if (bt != null && bt.startsWith("{{") && bt.endsWith("}}")) {
-					String ov = bt.substring(2, bt.length() - 2);
-					if (!ov.isEmpty() && used.add(ov)) {
-						int k = ov.indexOf(".");
-						if (k < 0) {
-							entries.add(parseInputField(ov,page,i18nData,defaultsData));
-						} else {
-							String tbl = ov.substring(0, k);
-							String v = ov.substring(k + 1);
-							if (v.length() > 0 && v.charAt(0) >= 'A' && v.charAt(0) <= 'Z'
-									&& v.substring(1).matches("-?\\d+") /* Integer */) {
-								int row = (v.charAt(0) - 'A');
-								int col = Integer.parseInt(v.substring(1)) - 1;
-								if (!tables.containsKey(tbl)) {
-									File fe = new File(resolve(tmpDirKey,tbl + ".xlsx"));
-									if (!fe.exists() || !fe.canRead())
-										fe = new File(resolve(tmpDirKey,tbl + ".xls"));
-									boolean x = fe.exists() && fe.canRead();
-									tables.put(tbl, x);
-									if (x) {
-										HashMap<String, Object> va = new HashMap();
-										va.put("type", "table");
-										va.put("code", tbl);
-										if (page != null)
-											va.put("page", page);
-										org.graalvm.polyglot.Value res = JSConverter.VR2JS((new Excel()).readExcelData(fe, true));
-										Object g = getI18nName(tbl,i18nData);
-										if (g != null)
-											va.put("name",g);
-										
-										HashMap<String,Map<String,Object>> i18nLookup = new HashMap(); 
-										for (Map<String,Object> tr : i18nData) {
-											String tc = (String)tr.get("CODE"); 
-											if (tc != null)
-												i18nLookup.put(tc, tr);
-										}
-
-										StringBuilder sb = new StringBuilder("{");
-										boolean clf = true;
-										for (DBLang cl : HostImpl.me.getActiveLanguages()) {
-											if (clf) clf=false;
-											else sb.append(",");
-											sb.append("\"");
-											sb.append(cl.getCode());
-											sb.append("\":{\"columns\":[");
-											
-											org.graalvm.polyglot.Value cols = res.getMember("columns");
-											for (int ci=0;ci<cols.getArraySize();ci++) {
-												if (ci != 0) sb.append(",");
-												org.graalvm.polyglot.Value ccol = cols.getArrayElement(ci);
-												sb.append("{\"name\":");
-												String name = ccol.getMember("name").asString();
-												Map<String,Object> tr = i18nLookup.get(name);
-												String tname;
-												if (tr != null && tr.containsKey(cl.getCode()) && !(tname=tr.get(cl.getCode()).toString()).isBlank()) {
-													name=tname; // TRANSLATION FOUND
-												}
-												StringUtils.stringToJSONToStringBuilder(name, sb);
-												for (String ks : ccol.getMemberKeys()) if (!ks.equals("name")) {
-													sb.append(",");
-													StringUtils.stringToJSONToStringBuilder(ks, sb);
-													sb.append(":");
-													sb.append(JSEngine.jsonStringify(ccol.getMember(ks)));
-												}
-												sb.append("}");
-											}
-											sb.append("],\"data\":[");
-											org.graalvm.polyglot.Value dat = res.getMember("data");
-											for (int ci=0;ci<dat.getArraySize();ci++) {
-												if (ci != 0) sb.append(",");
-												org.graalvm.polyglot.Value crow = dat.getArrayElement(ci);
-												sb.append("[");
-												for (int cj=0;cj<crow.getArraySize();cj++) {
-													if (cj != 0) sb.append(",");
-													org.graalvm.polyglot.Value ce = crow.getArrayElement(cj);
-													if (ce.isString()) {
-														String name = ce.asString();
-														Map<String,Object> tr = i18nLookup.get(name);
-														String tname;
-														if (tr != null && tr.containsKey(cl.getCode()) && !(tname=tr.get(cl.getCode()).toString()).isBlank()) {
-															StringUtils.stringToJSONToStringBuilder(tname,sb); // TRANSLATION FOUND
-														} else 
-															StringUtils.stringToJSONToStringBuilder(name, sb);
-													} else 
-														sb.append(JSEngine.jsonStringify(ce));
-												}
-												sb.append("]");
-											}
-											sb.append("]}");
-										}
-										sb.append("}");
-										// table data BY LANGUAGE!
-										va.put("data", sb.toString());
-										entries.add(va);
-										tablesData.put(tbl, va);
+				HashMap<String, Object> va = new HashMap();
+	    		// CONTENT
+	    		if (type == null || type.isBlank()) type = "STRING";
+	    		boolean isqr = false;
+				Map<String,String> ival = code2InitialByLang.get(code);
+	    		switch (type) {
+	    			case "COLOR" :
+	    				va.put("type", "indexed_color");
+	    				break;
+	    			case "QRCODE" : 
+	    			case "QR" : 	/* ALIAS */
+	    				isqr=true;
+	    			case "DOCUMENT" :
+	    			case "IMAGE" : 
+	    				String _path = resolve(tmpDirKey,code);
+	    				String path = _path+".png";
+	    				File tf = new File (path);
+	    				if (!tf.exists())
+		    				tf = new File(path=(_path+".jpg"));
+	    				if (!tf.exists())
+		    				tf = new File(path=(_path+".jpeg"));
+	    				if (!tf.exists())
+		    				tf = new File(path=(_path+".pdf"));
+	    				
+						String lw = path.toLowerCase();
+						if (lw.endsWith(".jpg") || lw.endsWith(".jpeg") || lw.endsWith(".png")
+								|| lw.endsWith(".pdf")) {
+							if (imageSet.add(path)) {
+								File f = new File(path);
+								if (f.exists() && f.canRead()) {
+									double dims[] =
+											f.getName().endsWith(".pdf")  ? Utils.getPDFDimensions(f) : // do not use visionr host impl, because pdfium will block the file (win32)
+											HostImpl.me.getImageDimensionsSystem(f);
+									if (dims != null && dims[0] > 0 && dims[1] > 0) {
+										double prop = ((double) dims[0]) / ((double) dims[1]);
+										va.put("proportion", prop);
 									}
-								} 
-								boolean isTbl = tables.get(tbl);
-								if (isTbl) {
-									// table cell
-									if (!tableMaxRow.containsKey(tbl) || tableMaxRow.get(tbl) < row)
-										tableMaxRow.put(tbl, row);
-									if (!tableMaxCol.containsKey(tbl) || tableMaxCol.get(tbl) < col)
-										tableMaxCol.put(tbl, col);
-									HashMap<String, Object> vk = tablesData.get(tbl);
-									vk.put("columns", tableMaxCol.get(tbl) + 1);
-									vk.put("rows", tableMaxRow.get(tbl));
+									va.put("type", isqr ? "qrcode" : "image");
 								} else {
-									// not a table cell
-									entries.add(parseInputField(ov,page,i18nData,defaultsData));
+									continue;
 								}
 							} else {
-								// not a table cell
-								entries.add(parseInputField(ov,page,i18nData,defaultsData));
+								continue;
 							}
+						} else {
+							continue;
 						}
-					}
-				}
-				if (a.getNodeName().equalsIgnoreCase("PFILE")) {
-					String v = a.getNodeValue();
-					if (v != null) {
-						v = v.trim();
-						if (!v.isEmpty() && !v.startsWith("@")) {
-							String path = resolve(tmpDirKey,v);
-							String lw = path.toLowerCase();
-							if (lw.endsWith(".jpg") || lw.endsWith(".jpeg") || lw.endsWith(".png")
-									|| lw.endsWith(".pdf")) {
-								if (used.add(path)) {
-									HashMap<String, Object> x = new HashMap();
-									x.put("type", "image");
-									x.put("code", v);
-									Object g = getI18nName(v,i18nData);
-									if (g != null)
-										x.put("name",g);									
-									if (page != null)
-										x.put("page", page);
-									File f = new File(path);
-									if (f.getName().startsWith("QR."))
-										x.put("type", "qrcode");
-									else
-										x.put("file", f.getAbsolutePath());
-									if (f.exists() && f.canRead()) {
-										double dims[] =
-												f.getName().endsWith(".pdf")  ? Utils.getPDFDimensions(f) : // do not use visionr host impl, because pdfium will block the file (win32)
-												HostImpl.me.getImageDimensionsSystem(f);
-										if (dims != null && dims[0] > 0 && dims[1] > 0) {
-											double prop = ((double) dims[0]) / ((double) dims[1]);
-											x.put("proportion", prop);
+	    				break;
+	    			case "DATE" :
+	    				if (ival != null) {
+		    				for (DBLang lng : HostImpl.me.getActiveLanguages()) {
+		    					String vv = ival.get(lng.getCode());
+		    					if (vv == null) 
+		    						continue;
+		    					if (vv.isBlank())
+		    						continue;
+		    					org.graalvm.polyglot.Value jsv = JavaHost.me.VR2JS(Common.convertValueByCoreFormat("default_input_format_date",JSConverter.JS2VR(vv),lng.id));
+		    					if (jsv.isDate()) {
+		    						va.put("initial", jsv.asDate());
+		    						break;
+		    					}
+		    				}
+	    				}
+	    				va.put("type", "date");
+	    				break;
+	    			case "DATETIME" : 
+	    				if (ival != null) {
+		    				for (DBLang lng : HostImpl.me.getActiveLanguages()) {
+		    					String vv = ival.get(lng.getCode());
+		    					if (vv == null) 
+		    						continue;
+		    					if (vv.isBlank())
+		    						continue;
+		    					org.graalvm.polyglot.Value jsv = JavaHost.me.VR2JS(Common.convertValueByCoreFormat("default_output_format_datetime_hour_minutes",JSConverter.JS2VR(vv),lng.id));
+		    					if (jsv.isDate()) {
+		    						va.put("initial", jsv.asDate());
+		    						break;
+		    					}
+		    				}
+	    				}
+	    				va.put("type", "datetime");
+	    				break;
+	    			case "TIME" : 
+	    				if (ival != null) {
+		    				for (DBLang lng : HostImpl.me.getActiveLanguages()) {
+		    					String vv = ival.get(lng.getCode());
+		    					if (vv == null) 
+		    						continue;
+		    					if (vv.isBlank())
+		    						continue;
+		    					org.graalvm.polyglot.Value jsv = JavaHost.me.VR2JS(Common.convertValueByCoreFormat("default_output_format_hours_minutes",JSConverter.JS2VR(vv),lng.id));
+		    					if (jsv.isDate()) {
+		    						va.put("initial", jsv.asDate());
+		    						break;
+		    					}
+		    				}
+	    				}
+	    				va.put("type", "time");
+	    				break;
+	    			case "INTEGER" : 
+	    				if (ival != null) {
+		    				for (DBLang lng : HostImpl.me.getActiveLanguages()) {
+		    					String vv = ival.get(lng.getCode());
+		    					if (vv == null) 
+		    						continue;
+		    					if (vv.isBlank())
+		    						continue;
+		    					org.graalvm.polyglot.Value jsv = JavaHost.me.VR2JS(Common.convertValueByCoreFormat("output_format_integer_separator",JSConverter.JS2VR(vv),lng.id));
+		    					if (jsv.isNumber()) {
+		    						va.put("initial", jsv.as(Long.class));
+		    						break;
+		    					}
+		    				}
+	    				}	    				
+	    				va.put("type", "integer");
+	    				break;
+	    			case "NUMBER":
+	    			case "FLOAT":	/* ALIAS */
+	    			case "DOUBLE":  /* ALIAS */
+	    				if (ival != null) {
+		    				for (DBLang lng : HostImpl.me.getActiveLanguages()) {
+		    					String vv = ival.get(lng.getCode());
+		    					if (vv == null) 
+		    						continue;
+		    					if (vv.isBlank())
+		    						continue;
+		    					org.graalvm.polyglot.Value jsv = JavaHost.me.VR2JS(Common.convertValueByCoreFormat("default_output_format_double",JSConverter.JS2VR(vv),lng.id));
+		    					if (jsv.isNumber()) {
+		    						va.put("initial", jsv.asDouble());
+		    						break;
+		    					}
+		    				}
+	    				}	    		    				
+	    				va.put("type", "double");
+	    				break;
+	    			case "STRING":
+	    			case "VARCHAR": /* ALIAS */
+	    				va.put("type", "varchar");
+	    				if (ival != null)
+	    					va.put("initial",ival);
+	    				break;
+	    			case "TEXT":
+	    				va.put("type", "text");
+	    				if (ival != null)
+	    					va.put("initial",ival);
+	    				break;
+	    			case "TABLE" : 
+	    				if (tableSet.add(code)) {
+							StringBuilder sb = new StringBuilder("{");
+							boolean clf = true;
+							for (DBLang lng : HostImpl.me.getActiveLanguages()) {
+								if (clf) clf=false;
+								else sb.append(",");
+								File fe = new File(resolve(tmpDirKey,code + "."+lng.getCode()+".xlsx"));
+								if (!fe.exists() || !fe.canRead())
+									fe = new File(resolve(tmpDirKey,code + "."+lng.getCode()+ ".xls"));
+								if (fe.exists() && fe.canRead()) {
+									org.graalvm.polyglot.Value res = JSConverter.VR2JS((new Excel()).readExcelData(fe, true));
+									sb.append("\"");
+									sb.append(lng.getCode());
+									sb.append("\":{\"columns\":[");
+									org.graalvm.polyglot.Value cols = res.getMember("columns");
+									for (int ci=0;ci<cols.getArraySize();ci++) {
+										if (ci != 0) sb.append(",");
+										org.graalvm.polyglot.Value ccol = cols.getArrayElement(ci);
+										sb.append("{\"name\":");
+										String name = ccol.getMember("name").asString();											
+										StringUtils.stringToJSONToStringBuilder(name, sb);
+										for (String ks : ccol.getMemberKeys()) if (!ks.equals("name")) {
+											sb.append(",");
+											StringUtils.stringToJSONToStringBuilder(ks, sb);
+											sb.append(":");
+											sb.append(JSEngine.jsonStringify(ccol.getMember(ks)));
 										}
+										sb.append("}");
 									}
-									entries.add(x);
+									sb.append("],\"data\":[");
+									org.graalvm.polyglot.Value dat = res.getMember("data");
+									int nrows = (int)dat.getArraySize();
+									int ncols = 0;
+									for (int ci=0;ci<nrows;ci++) {
+										if (ci != 0) sb.append(",");
+										org.graalvm.polyglot.Value crow = dat.getArrayElement(ci);
+										sb.append("[");
+										int ccols = (int)crow.getArraySize();
+										if (ccols > ncols) ncols=ccols;
+										for (int cj=0;cj<ccols;cj++) {
+											if (cj != 0) sb.append(",");
+											org.graalvm.polyglot.Value ce = crow.getArrayElement(cj);
+											if (ce.isString()) {
+												String name = ce.asString();
+												StringUtils.stringToJSONToStringBuilder(name, sb);
+											} else 
+												sb.append(JSEngine.jsonStringify(ce));
+										}
+										sb.append("]");
+									}
+									sb.append("]}");
+									va.put("columns", ncols); // COUNT
+									va.put("rows", nrows);	  // COUNT
+									va.put("type", "table");
 								}
 							}
-						}
-					}
-				}
-			}
-		}
-	}
-	private static HashMap<String, Object> parseInputField(String code,Integer page,Collection<Map<String,Object>> i18nData,Collection<Map<String,Object>> defaultsData) {
-		HashMap<String, Object> va = new HashMap();
-		boolean isstr=false;
-		if (code.startsWith("COLOR") || code.startsWith("CL."))
-			va.put("type", "indexed_color");
-		else if (code.startsWith("TX."))
-			{va.put("type", "text");isstr=true;}
-		else if (code.startsWith("DT."))
-			va.put("type", "date");
-		else if (code.startsWith("TM."))
-			va.put("type", "time");
-		else if (code.startsWith("TS."))
-			va.put("type", "datetime");
-		else if (code.startsWith("IN."))
-			va.put("type", "integer");
-		else if (code.startsWith("FP."))
-			va.put("type", "double");
-		else 
-			{va.put("type", "varchar");isstr=true;}
-		
-		Object t = getI18nName(code,i18nData);
-		if (t != null)
-			va.put("name",t);
-		
-		if (defaultsData != null) {
-			for (Map<String,Object> c : defaultsData) {
-				String cd = (String)c.get("CODE");
-				if (code.equals(cd)) {
-					if (isstr) // full i18n value
-						va.put("initial",c); 
-					else {
-						// search for any lang value (NOT STR, i18n value calculated based on primitive type)
-						for (String k : c.keySet()) {
-							if ("CODE".equals(k)) continue;
-				    		Object a = c.get(k);
-				    		if (a != null && !(a instanceof String && a.toString().isBlank())) {
-				    			va.put("initial",a); 
-				    			break;
-				    		}
-				    	}
-					}
-					break;
-				}
-			}
-		}
+	    				}
+	    				break;
+	    			default:
+	    				continue;
+	    		}
+	    		HashMap<String,String> name = new HashMap();
+	    		for (DBLang l : HostImpl.me.getActiveLanguages()) {
+	    			String vl = (String)r.get("NAME."+l.getCode());
+	    			if (vl != null && !vl.isBlank()) 
+						name.put(l.getCode(),vl);
+	    		}
+	    		Integer page = code2page.get(code);if (page == null) page=0;
+	    		va.put("code", code);
+	    		va.put("name", name);
+	    		va.put("page", page);
+	    		
+	    		if (cat != null) {
+	    			Map<String,String> c = categoryNamesByCode.get(code);
+	    			if (c == null) {
+	    				c = new HashMap();
+	    				categoryNamesByCode.put(code,c);
+	    			}
+	    			va.put("category", c);
+	    		}
+	    		entries.add(va);
+	    	} else if (cat != null && !cat.isBlank()) {
+	    		// CATEGORY 
+	    		Map<String,String> c = categoryNamesByCode.get(code);
+    			if (c == null) {
+    				c = new HashMap();
+    				categoryNamesByCode.put(code,c);
+    			}
+    			for (DBLang l : HostImpl.me.getActiveLanguages()) {
+	    			String vl = (String)r.get("NAME."+l.getCode());
+	    			if (vl != null && !vl.isBlank()) 
+						c.put(l.getCode(),vl);
+	    		}
+	    	}
+	    }
+		return JSConverter.VR2JS(entries);
 
-		va.put("code", code);
-		if (page != null)
-			va.put("page", page);
-		return va;
 	}
 
-	private static ProcessInfo checkProcess(String key, boolean doStart) {
+	private static ProcessInfo checkProcess(String key, String lang,boolean doStart) {
 		ProcessInfo pi;
+		String keyl = key+"."+lang;
 		synchronized (processes) {
-			pi = processes.get(key);
+			pi = processes.get(keyl);
 			if (pi == null) {
 				pi = new ProcessInfo();
-				processes.put(key, pi);
+				processes.put(keyl, pi);
 			}
 		}
 		if (pi.process != null && !pi.process.isAlive())
@@ -489,15 +512,15 @@ public class ScribusService {
 			// --no-gui -ns -g -py scrbserv2.py -pa 9988 -- good1.sla
 			String pySrc = RuntimeConfig.projectDir+"/src/bin/python/scribserv.py";
 
-			HostImpl.me.getLogger().warn(">>>> \"" + getExecutable() + "\" \"" + resolve(key,"template.sla")+"\" --no-gui -ns -g -py \"" + pySrc + "\" " + pi.port);
+			HostImpl.me.getLogger().warn(">>>> \"" + getExecutable() + "\" \"" + resolve(key,"template."+lang+".sla")+"\" --no-gui -ns -g -py \"" + pySrc + "\" " + pi.port);
 
 			// xvfb-run REQUIRED ON LINUX/UNIX PLATFORMS
 			if (RuntimeConfig.isWin || RuntimeConfig.isMac) {
-				pb.command(getExecutable(), resolve(key,"template.sla"),
+				pb.command(getExecutable(), resolve(key,"template."+lang+".sla"),
 						"--no-gui", "-ns", "-g", "-py", pySrc, "" + pi.port);
 			} else {
 				pb.environment().put("DISPLAY", ":0");
-				pb.command(getExecutable(), resolve(key,"template.sla"),
+				pb.command(getExecutable(), resolve(key,"template."+lang+".sla"),
 						"--no-gui", "-ns", "-g", "-py", pySrc, "" + pi.port);
 			}
 			try {
@@ -520,7 +543,7 @@ public class ScribusService {
 			for (int i = 0; i < 30; i++) {
 				try {
 					if (!pi.process.isAlive())
-						return checkProcess(key, doStart);
+						return checkProcess(key,lang, doStart);
 					if (pi.clientSocket == null || pi.clientSocket.isClosed()) {
 						pi.clientSocket = new Socket("127.0.0.1", pi.port);
 						pi.clientSocketWriter = new OutputStreamWriter(pi.clientSocket.getOutputStream(), StandardCharsets.UTF_8);
@@ -609,16 +632,16 @@ public class ScribusService {
 		                    }
 		                    c.putMember("code", code);
 		                    c.putMember("dest_page", p);
-		                    c.putMember("initial_value", "CMYK(0,30,100,0)");
+		                    c.putMember("initial_value", "CMYK(0,30,100,0)"); // TODO
 		                    Value cc = c.getMember("commit");
 		                    if (cc != null) cc.execute();
 		                    arr.setArrayElement(arr.getArraySize(),c);
-		                    break; }		                
+		                    break; }
 		                case "image" : {
 		                    Value c;
 		                    boolean isi;
 		                    if (isi=JSEngine.isInstance(tmpl)) {
-		                    	c = ((DBObjectDefImpl)DBModule.g("web2print").getSchemaByCode("image_content").impl()).getJSProxy().newInstance();
+		                    	c = ((DBObjectDefImpl)DBModule.g("web2print").getSchemaByCode(type.equals("image") ? "image_content" : "embedded_document_content").impl()).getJSProxy().newInstance();
 		                    	c.putMember("template", tmpl);
 		                    	_genCommonName(c,tmpl,e);
 		                    } else {
@@ -703,19 +726,19 @@ public class ScribusService {
 		                	HostImpl.me.getLogger().warn("!!!TODO!!! initTemplateContents for type "+type);
 		            }
 	            }
-		        if (arr.getArraySize()>0)
-		            tmpl.putMember("contents",arr);
+		        tmpl.putMember("contents",arr);
                 Value cc = tmpl.getMember("commit");
                 if (cc != null) cc.execute();
 		        return tmpl;
 			}
 		 };
-		 return Locker.executeInTempFileLock(key,cb);
+		 return Locker.executeInTempFileLock(key+".INIT",cb);
 	}
 	
 	@HostAccess.Export 
-	public Value getTemplateJSON(Value tmpl,Value data) throws VException {
-		return _getTemplateJSON(tmpl,data,null);
+	public Value getTemplateJSON(Value tmpl,String lang,Value data) throws VException {
+		if (lang == null) lang = DBLang.g(VRSessionContext.getCurrentLang()).getCode();
+		return _getTemplateJSON(tmpl,data,lang,null,null,null);
 	}
 	
 	private void _genCommonName(Value c,Value tmpl,Value data) {
@@ -746,46 +769,38 @@ public class ScribusService {
         	_genCommonName(c,tmpl,data);
         
         Value initial = data.getMember("initial");
-        switch (type) {
-        	case "double": {
-        		Object ij = getInitialNotI18n(initial);
-        		if (!(ij instanceof Number)) ij = 1;
-        		c.putMember("initial_value", ij);
-        		break; }
-        	case "integer": {
-         		Object ij = getInitialNotI18n(initial);
-        		if (!(ij instanceof Number)) ij = 1;        		
-        		c.putMember("initial_value", 1);
-        		break; }
-        	case "time": 
-        	case "date":
-        	case "datetime": {
-         		Object ij = getInitialNotI18n(initial);
-        		if (ij instanceof Date)
-        			c.putMember("initial_value", ij); 
-        		break; }
-        	case "varchar" : /* i18n */
-        	case "text" : 
-        		if (isInst) {
-        	        if (initial != null && !initial.isNull()) {
-        	        	for (DBLang l : HostImpl.me.getActiveLanguages()) {
-        	        		Object v = initial.getMember(l.getCode());
-        	        		if (v != null)
-        	        			c.getMember("setI18n").execute("initial_value",l.getCode(),v);
-        	        	}
-        	        }   
-        		} else {
-        			 if (initial != null && !initial.isNull()) {
-     	        		Value v = initial.getMember(DBLang.g(VRSessionContext.getCurrentLang()).getCode());
-     	        		if (v == null || v.isNull())
-     	        			v = initial.getMember(DBLang.g(RuntimeConfig.defaultLang).getCode());
-     	        		if (v != null && !v.isNull())
-     	        			c.putMember("initial_value", v.asString());
-         	        }   
-        		}
-        		break;
-        	default :
-        		c.putMember("initial_value", code);
+        if (!isInst) {
+        	 if (initial != null && !initial.isNull()) 
+	        		c.putMember("initial_value", initial);
+        } else {
+            switch (type) {
+	        	case "double": {
+	        		Object ij = getInitialNotI18n(initial);
+	        		if (!(ij instanceof Number)) ij = 1;
+	        		c.putMember("initial_value", ij);
+	        		break; }
+	        	case "integer": {
+	         		Object ij = getInitialNotI18n(initial);
+	        		if (!(ij instanceof Number)) ij = 1;        		
+	        		c.putMember("initial_value", 1);
+	        		break; }
+	        	case "time": 
+	        	case "date":
+	        	case "datetime": {
+	         		Object ij = getInitialNotI18n(initial);
+	        		if (ij instanceof Date)
+	        			c.putMember("initial_value", ij); 
+	        		break; }
+	        	case "varchar" : /* i18n */
+	        	case "text" : 
+	    	        if (initial != null && !initial.isNull()) {
+	    	        	for (DBLang l : HostImpl.me.getActiveLanguages()) {
+	    	        		Object v = initial.getMember(l.getCode());
+	    	        		if (v != null)
+	    	        			c.getMember("setI18n").execute("initial_value",l.getCode(),v);
+	    	        	}
+	    	        }   
+        	}
         }
         Value cc = c.getMember("commit");
         if (cc != null) cc.execute();
@@ -805,25 +820,48 @@ public class ScribusService {
     	
 	}
 	
+	private String defaultLangStr = DBLang.g(RuntimeConfig.defaultLang).getCode();
+	
+	private Value getI18nOrDef(Value e,String pro,String lang) {
+		if (JSEngine.isInstance(e))
+    		return e.getMember("getI18nOrDef").execute(pro,lang);
+		else {
+			e = e.getMember(pro);
+			if (e == null || e.isNull()) return e;
+			Value v=e.getMember(lang);
+			if (v == null || v.isNull()) v = e.getMember(defaultLangStr);
+			return v;
+		}
+	}
 
-	private Value _getTemplateJSON(Value tmpl,Value data,File tmpDir) throws VException {
+	private Value _getTemplateJSON(Value tmpl,Value data,String lang,File tmpDir,Value regions,Value emds) throws VException {
 		boolean doNotRender = tmpDir == null;
 		Value toReplace = JSEngine.newEmptyObject();
 		Value contents = tmpl.getMember("contents");
 		int sz = contents.isNull() ? 0 : (int)contents.getArraySize();
+		DBLang lng = DBLang.g(lang);
+	
+		HashSet<String> embeddedSet = new HashSet();
+		HashMap<String,String> code2Embedded = new HashMap();
+		HashMap<String,String> code2EmbeddedVal = new HashMap();
+
 		for (int i=0;i<sz;i++) {
 			Value e = contents.getArrayElement(i);
 			String code = e.getMember("code").asString();
+			
+			int xc = code.lastIndexOf('/');
+			boolean isEmbdVar = xc > 0;
+			
 			String type = e.hasMember("type") ? e.getMember("type").asString() : null;
 	        if ("varchar".equals(type) || inherits(e,"web2print","varchar_content") ) {
 	        	Value vd = data.getMember(code);
 	        	if (vd == null || vd.isNull())
-	        		vd = e.getMember("initial_value");
+	        		vd = getI18nOrDef(e,"initial_value",lang);
 	        	toReplace.putMember(code,vd);
 	        } else if ("text".equals(type) || inherits(e,"web2print","text_content") ) {
 	        	Value vd = data.getMember(code);
 	        	if (vd == null || vd.isNull())
-	        		vd = e.getMember("initial_value");
+	        		vd = getI18nOrDef(e,"initial_value",lang);
 	        	toReplace.putMember(code,vd);
 	        } else if ("date".equals(type) || inherits(e,"web2print","date_content") ) {
 	        	Value vd = data.getMember(code);
@@ -833,7 +871,7 @@ public class ScribusService {
 	        		toReplace.putMember(code,"");
 	        	else
 	        		toReplace.putMember(code,
-	        				Common.convertValueByCoreFormat("default_output_format_date",JSConverter.JS2VR(vd),null));
+	        				Common.convertValueByCoreFormat("default_output_format_date",JSConverter.JS2VR(vd),lng.id));
 	        } else if ("datetime".equals(type) || inherits(e,"web2print","datetime_content") ) {
 	        	Value vd = data.getMember(code);
 	        	if (vd == null || vd.isNull())
@@ -842,7 +880,7 @@ public class ScribusService {
 	        		toReplace.putMember(code,"");
 	        	else
 	        		toReplace.putMember(code,
-	        				Common.convertValueByCoreFormat("default_output_format_datetime_hour_minutes",JSConverter.JS2VR(vd),null));
+	        				Common.convertValueByCoreFormat("default_output_format_datetime_hour_minutes",JSConverter.JS2VR(vd),lng.id));
 	        } else if ("time".equals(type) || inherits(e,"web2print","time_content") ) {
 	        	Value vd = data.getMember(code);
 	        	if (vd == null || vd.isNull())
@@ -851,7 +889,7 @@ public class ScribusService {
 	        		toReplace.putMember(code,"");
 	        	else
 	        		toReplace.putMember(code,
-	        				Common.convertValueByCoreFormat("default_output_format_hours_minutes",JSConverter.JS2VR(vd),null));
+	        				Common.convertValueByCoreFormat("default_output_format_hours_minutes",JSConverter.JS2VR(vd),lng.id));
 	        } else if ("integer".equals(type) || inherits(e,"web2print","integer_content") ) {
 	        	Value vd = data.getMember(code);
 	        	if (vd == null || vd.isNull())
@@ -860,7 +898,7 @@ public class ScribusService {
 	        		toReplace.putMember(code,"");
 	        	else
 	        		toReplace.putMember(code,
-	        				Common.convertValueByCoreFormat("output_format_integer_separator",JSConverter.JS2VR(vd),null));
+	        				Common.convertValueByCoreFormat("output_format_integer_separator",JSConverter.JS2VR(vd),lng.id));
 	        } else if ("double".equals(type) || inherits(e,"web2print","double_content") ) {
 	        	Value vd = data.getMember(code);
 	        	if (vd == null || vd.isNull())
@@ -869,7 +907,7 @@ public class ScribusService {
 	        		toReplace.putMember(code,"");
 	        	else
 	        		toReplace.putMember(code,
-	        				Common.convertValueByCoreFormat("default_output_format_double",JSConverter.JS2VR(vd),null));
+	        				Common.convertValueByCoreFormat("default_output_format_double",JSConverter.JS2VR(vd),lng.id));
 	        } else if ("image".equals(type) || inherits(e,"web2print","image_content")) {
 	        	Value vd = data.getMember(code);
 	        	if (vd == null || vd.isNull())
@@ -949,28 +987,23 @@ public class ScribusService {
 	              console.warn("render.js : document [" + e.code + "] is not a db.documents.file instance!");
 	            }*/
 	        } else if ("qrcode".equals(type) || inherits(e,"web2print","qrcode_content") ) {
-	        	Value vd = data.getMember(code);
-	        	if (vd == null || vd.isNull())
-	        		vd = e.getMember("initial_value");
-	        	if (vd != null && !vd.isNull()) {
-	                if (!doNotRender) { // TODO JPG NOT ONLY PNG | FORMAT CHANGE NOT WORKING | TODO 
-		        		if (code.endsWith(".png")) {
-		        			// common
-			        		byte[] qd = BarCode.encode(vd.asString(),"QR_CODE",256,256,"#000000","#00000000"/* alpha */);
-				        	try {
-								Files.write(/* dest */new File(tmpDir,code).toPath(),qd);
-							} catch (IOException e1) {
-								throw new VException(e1);						}
-		        		} else {
-		        			// fallback
-			        		byte[] qd = BarCode.encode(vd.asString(),"QR_CODE",256,256,"#000000","#FFFFFF"/* no alpha */);
-			        		BufferedImage img = ImageUtils.loadAsBufferedImage(qd,BufferedImage.TYPE_INT_RGB);
-		        			ImageUtils.writeImage(img, new File(tmpDir,code), code.substring(code.lastIndexOf('.')+1));
-		        		}
-	                } else {
-	                	toReplace.putMember(code,vd);
-			        }
-	        	}
+				Value vd = data.getMember(code);
+				if (vd == null || vd.isNull())
+					vd = e.getMember("initial_value");
+				if (vd != null && !vd.isNull()) {
+					if (!doNotRender) {
+						// common
+						byte[] qd = BarCode.encode(vd.asString(), "QR_CODE", 256, 256, "#000000",
+								"#00000000"/* alpha */);
+						try {
+							Files.write(/* dest */new File(tmpDir, code + ".png").toPath(), qd);
+						} catch (IOException e1) {
+							throw new VException(e1);
+						}
+					} else {
+						toReplace.putMember(code,vd);
+					}
+				}
 	        } else if ("indexed_color".equals(type) || inherits(e,"web2print","indexed_color_content")  ) {
 	        	Value vd = data.getMember(code);
 	        	if (vd == null || vd.isNull())
@@ -1054,7 +1087,88 @@ public class ScribusService {
 	                 }
 	             }
 	        }
+	        //--------------------------------------------------
+	        // EMBEDDED 
+	        //--------------------------------------------------
+			if (isEmbdVar && !doNotRender) {
+				String pfx = code.substring(0,xc);
+				Value x = toReplace.getMember(code);
+				toReplace.removeMember(code);
+				if (x.isString() && x.asString().isBlank()) x= null;
+				if (x != null && !x.isNull()) {
+					if (pfx.endsWith(".docx") || pfx.endsWith(".xlsx")) {
+						embeddedSet.add(pfx);
+						String sfx = code.substring(xc+1);
+						code2Embedded.put(sfx,pfx);
+						code2EmbeddedVal.put(sfx,x.asString());
+						//------------------------------
+						//pfx : file1.docx/VARNAME
+						
+					}
+				}
+			}
 	    }
+		//------------------------------------------------------
+		// CONVERT EMBEDDED 
+		//------------------------------------------------------
+		if (!doNotRender) {
+			for (String e : embeddedSet) {
+				int li = e.lastIndexOf('.');
+				String p1 = e.substring(0,li);
+				String pe = e.substring(li);
+				File f = new File(tmpDir,p1+"."+lang+pe);
+				if (!f.exists()) {
+					f = new File(tmpDir,p1+"."+defaultLangStr+pe);
+					if (!f.exists())
+						continue;
+				}
+				String tmpn = p1+"."+lang+".tmp"+pe;
+			    File outfile = new File(tmpDir,tmpn);
+			    outfile.delete();
+			    transformDOC(f, outfile, code2EmbeddedVal);
+			    File tmpf = new File(HostImpl.me.OOConvert(outfile, "pdf", 0).absolutePath);
+			    String fpdf = p1+"."+lang+pe+".pdf";
+			    File outpdf = new File(tmpDir,fpdf);
+			    outpdf.delete();		    
+			    tmpf.renameTo(outpdf);
+			    
+			    Value rect = emds.getMember(fpdf);
+			    if (rect == null)
+			    	continue;
+
+			    double sx = rect.getMember("sx").asDouble();
+			    double sy = rect.getMember("sy").asDouble();
+			    double tx = rect.getMember("tx").asDouble();
+			    double ty = rect.getMember("ty").asDouble();
+			    
+				PDDocument d;
+				try {
+					String fp = f.getPath();
+					int lx = fp.lastIndexOf('.');
+					fp = fp.substring(0,lx)+fp.substring(lx)+".pdf";
+					d = Loader.loadPDF(new File(fp));
+					try {
+						Location[] locs = PDFEmbeddedLocations.getLocations(d,null);						
+						if (locs != null) {
+							for (Location l : locs) {
+								Value a = JSEngine.newEmptyObject();
+								a.putMember("x", l.x*sx + tx );
+								a.putMember("y", l.y*sy + ty);
+								a.putMember("w", l.width * sx);
+								a.putMember("h", l.height * sy);
+								a.putMember("page", l.page);
+								a.putMember("code", e+"/"+l.code);
+								regions.setArrayElement(regions.getArraySize(), a);
+							}
+						}
+					} finally {
+						d.close();
+					}
+				} catch (Exception x) {
+					HostImpl.me.getLogger().warn("PDF FILE : can not get embedded locations : "+x);				
+				}
+			}
+		}
 	    return toReplace;
 	}
 	
@@ -1064,38 +1178,54 @@ public class ScribusService {
 	}
 	
 	@HostAccess.Export 
-	public Value renderTemplate(Value tmpl,Value data) throws VException {
+	public Value renderTemplate(Value tmpl,Value data,String _lang) throws VException {
 		// check for cached document
-		final String ckey = getCachedResultKey(tmpl,data);
-		ObjectReference cref = Utils.getCachedResult(ckey);
-		if (cref != null) {
-			Value jso = cref.getJSObj();
+		if (_lang == null) _lang = DBLang.g(VRSessionContext.getCurrentLang()).getCode();
+		final String lang = _lang;
+		final String ckey = getCachedResultKey(tmpl,data,lang);
+		Value cval = Utils.getCachedResult(ckey);
+		if (cval != null) {
+			Value jso = cval.getMember("doc");
 			String duuid = jso.getMember("uuid").asString();
 			// ADD TEMP READ 
 			HostImpl.me.addDocumentTempReadAccessSession(null/*current session*/, duuid);
-			return jso;
+			return cval;
 		}
 		//------------------------------------------------------------------------------
 		final String key =  "rndr-"+tmpl.getMember("document").getMember("id").asLong();
+		
 		Callback cb = new Callback() {
 			@Override
 			public Value execute() throws VException {
 				String name = tmpl.hasMember("name") ? tmpl.getMember("name").asString() : null;
 				String code = tmpl.getMember("code").asString(); 
 				File tmpdir = syncTemplate(tmpl);
-				Value toReplace = _getTemplateJSON(tmpl,data,tmpdir);
+				//---------------------------------------------
+				String path = resolve(key,"template."+lang+".sla");
+				File f = new File(path);
+				if (!f.exists()) {
+					path = resolve(key,"template."+defaultLangStr+".sla");
+					f = new File(path);
+				}
+				//---------------------------------------------
+				Value slat = getSLATemplateLocations(f);
+				Value regions = slat.getMember("regs"); // only SLA regions, embedded come later
+				Value emds = slat.getMember("emds");	// embedded documents location
+				//---------------------------------------------
+				Value toReplace = _getTemplateJSON(tmpl,data,lang,tmpdir,regions,emds);
 				String json = JSEngine.jsonStringify(toReplace).asString();
-				Value result =  convert(key,(name == null ? code : name),json);
-		        if (result == null || result.isNull()) {
+				Value result =  convert(f,key,(name == null ? code : name),lang,json,regions);
+				Value resdoc = result == null || result.isNull() ? null : result.getMember("doc");
+		        if (resdoc == null || resdoc.isNull()) {
 		            HostImpl.me.getLogger().warn("render.js: Scribus generator returned FIRST EMPTY result : "+code);
-		            result = convert(key,tmpl.getMember("toString").execute().asString(),JSEngine.jsonStringify(toReplace).asString());
+		            result = convert(f,key,tmpl.getMember("toString").execute().asString(),lang,JSEngine.jsonStringify(toReplace).asString(),regions);
 		            if (result == null || result.isNull())
 		                HostImpl.me.getLogger().error("!!!! Scribus generator returned EMPTY result : "+code);
 		        } else { 
-		        	String uuid = result.getMember("uuid").asString();
+		        	String uuid = resdoc.getMember("uuid").asString();
 				    File outf = HostImpl.me.resolveResourceURL("/documents/"+uuid+".uuid",VRSessionContext.accessContextAdmin);
-				    ObjectReference resr = result.getMember("_ref").as(ObjectReference.class);
-			        Utils.putCachedResult(ckey,outf,resr);
+				    ObjectReference resr = resdoc.getMember("_ref").as(ObjectReference.class);
+			        Utils.putCachedResult(ckey,outf,resr,result.getMember("regs"));
 					// ADD TEMP READ 
 			        String duuid = (String) resr.getObject().getSimpleValueByCodeUnsafe("uuid");
 			        HostImpl.me.addDocumentTempReadAccessSession(null/*current session*/, duuid);
@@ -1103,7 +1233,7 @@ public class ScribusService {
 		        return result;
 			}
 		 };
-		 return Locker.executeInTempFileLock(key,cb);
+		 return Locker.executeInTempFileLock(key+"."+lang,cb);
 	}
 	
 	private ObjectLongHashMap<String> lastUpdateTimes = new ObjectLongHashMap();
@@ -1177,23 +1307,23 @@ startxref
 %EOF""".getBytes(StandardCharsets.UTF_8);
 	
 	//-----------------------------------------------------------------------------------------------------------------
-	private String getCachedResultKey(Value tmpl,Value data) throws VException {
+	private String getCachedResultKey(Value tmpl,Value data,String lang) throws VException {
 		 long upd = tmpl.hasMember("update_time") ? tmpl.getMember("update_time").as(Date.class).getTime() : 1;
-		 Value toReplace = _getTemplateJSON(tmpl,data,null);
-		 return HostImpl.me.getSHA256(upd+":"+JSEngine.jsonStringify(toReplace).asString()).replace('/','$')+".txt";
+		 Value toReplace = _getTemplateJSON(tmpl,data,lang,null,null,null);
+		 return HostImpl.me.getSHA256(upd+":"+JSEngine.jsonStringify(toReplace).asString()).replace('/','$')+"."+lang+".txt";
 	}	
 
-	private Value convert(String tmpDirKey, String name, String encodedJSON) throws VException {
-		String path = resolve(tmpDirKey,"template.sla");
-		File f = new File(path);
-		String opath = resolve(tmpDirKey,"result.pdf");
+	// TODO EXTRACT ONLY FOR LANG !!!! TODO TODO TODO TODO
+	private Value convert(File templateFile,String tmpDirKey, String name, String lang,String encodedJSON,Value regions) throws VException {
+		String opath = resolve(tmpDirKey,"result."+lang+".pdf");
 		File of = new File(opath);
-		if (!f.exists())
+		if (!templateFile.exists())
 			return returnErrorAsDocument(of, name);
+
 		int ntry = 0;
 		ProcessInfo pi = null;
 		for (; ntry < 20; ntry++) {
-			pi = checkProcess(tmpDirKey, true);
+			pi = checkProcess(tmpDirKey,lang, true);
 			if (pi == null)
 				return returnErrorAsDocument(of, name);
 			synchronized (pi) {
@@ -1206,8 +1336,8 @@ startxref
 					if (result != null) {
 						if (result.equals("INTERNAL ERROR"))
 							return returnErrorAsDocument(of, name);
-						if (result.equals("DONE"))
-							return returnFileAsFocument(of, name);
+						if (result.equals("DONE")) 
+							return returnFileAsFocument(of, name,regions);
 						continue;
 					}
 					HostImpl.me.getLogger().error("ScribusService.convert returned : " + result);
@@ -1228,6 +1358,259 @@ startxref
 		return returnErrorAsDocument(of, name);
 	}
 
+
+	private static void transformDOC(File inputfile,File outputFile,Map<String,String> toReplace) 
+	{
+		InputStream fs = null;
+		OutputStream os = null;
+	    XWPFDocument doc = null;		
+		try {
+		    try {
+		        fs = new FileInputStream(inputfile);
+		    } catch (FileNotFoundException e) {
+		    	HostImpl.me.getLogger().error("Can not open file for DOC transformation : "+e);
+		        return;
+		    }		 
+		    try {
+		    	doc = new XWPFDocument(fs);
+		    	HashMap<String,Vector<CTText>> ttxt = new HashMap();
+			    for (int i = 0; i < doc.getParagraphs().size(); i++) {
+			        XWPFParagraph paragraph = doc.getParagraphs().get(i);
+			        List<XWPFRun> runs = paragraph.getRuns();
+					for (XWPFRun run : runs) {
+						if (run instanceof XWPFHyperlinkRun) {
+							XWPFHyperlinkRun hyperlinkRun = (XWPFHyperlinkRun) run;
+							String hyperlinkId = hyperlinkRun.getHyperlinkId();
+							if (hyperlinkId != null) {
+								XWPFHyperlink hyperlink = doc.getHyperlinkByID(hyperlinkId);
+								if (hyperlink != null) {
+									String url = hyperlink.getURL(); // code = url
+									String val = toReplace.get(url);
+									if (val != null) {
+										//String v = StringUtils.escapeXML(val);
+										Vector<CTText> ta = ttxt.get(url);
+										if (ta == null) {
+											ta = new Vector();
+											ttxt.put(url, ta);
+										}
+										for (CTText g : hyperlinkRun.getCTR().getTList()) 
+											ta.add(g);
+									}
+								}
+							}
+						}
+					}
+			    }		    	 
+			    for (Entry<String,Vector<CTText>> en : ttxt.entrySet()) {
+					String val = toReplace.get(en.getKey());
+					Vector<CTText> arr = en.getValue();
+					for (int p=0;p<arr.size();p++) {
+						CTText c = arr.get(p);
+						if (val.isEmpty())
+							c.setStringValue("");
+						else if (p == arr.size()-1) {
+							// LAST 
+							c.setStringValue(val);
+						} else {
+							String t = c.getStringValue();
+							if (t.isEmpty()) continue;
+							int l = Math.min(t.length(),val.length());
+							c.setStringValue(val.substring(0,l));
+							if (l == val.length()) val = "";
+							else
+								val=val.substring(l);
+						}
+					}										
+
+			    }
+
+		    	os=new FileOutputStream(outputFile);
+		        doc.write(os);
+		    } catch (FileNotFoundException e) {
+		    	HostImpl.me.getLogger().error("Can not write file for DOC transformation : "+e);
+		    } catch (IOException 	e) {
+		    	HostImpl.me.getLogger().error("IOException in DOC transformation : "+e);
+		    }	
+		} finally {
+			if (doc != null) {
+				try { doc.close(); } catch (IOException e) {}
+			}
+			if (fs != null) {
+				try { fs.close(); } catch (IOException e) {}
+			}
+			if (os != null) {
+				try { os.close(); } catch (IOException e) {}
+			}
+		}
+	}
+
+	public static void docxExtractInitialValues(File f,String lang,Map<String,Map<String,String>> code2InitialByLang,String pfx) {
+		InputStream fs = null;
+	    XWPFDocument doc = null;		
+		try {
+		    try {
+		        fs = new FileInputStream(f);
+		    } catch (FileNotFoundException e) {
+		    	HostImpl.me.getLogger().error("Can not open file for DOC transformation : "+e);
+		        return;
+		    }		 
+		    try {
+		    	doc = new XWPFDocument(fs);
+			    for (int i = 0; i < doc.getParagraphs().size(); i++) {
+			        XWPFParagraph paragraph = doc.getParagraphs().get(i);
+			        List<XWPFRun> runs = paragraph.getRuns();
+					for (XWPFRun run : runs) {
+						if (run instanceof XWPFHyperlinkRun) {
+							XWPFHyperlinkRun hyperlinkRun = (XWPFHyperlinkRun) run;
+							String hyperlinkId = hyperlinkRun.getHyperlinkId();
+							if (hyperlinkId != null) {
+								XWPFHyperlink hyperlink = doc.getHyperlinkByID(hyperlinkId);
+								if (hyperlink != null) {
+									String code = pfx+"/"+hyperlink.getURL(); // code = url
+									
+									Map<String,String> m = code2InitialByLang.get(code);
+									if (m == null) {
+										m = new HashMap();
+										code2InitialByLang.put(code,m);
+									}
+									StringBuilder sb = new StringBuilder();
+									for (CTText g : hyperlinkRun.getCTR().getTList()) 
+										sb.append(g.getStringValue());
+									String text = sb.toString();
+									if (!_isPlaceholderString(text)) {
+										m.put(lang,text);
+									}
+								}
+							}
+						}
+					}
+			    }		    	 
+			 
+		    } catch (FileNotFoundException e) {
+		    	HostImpl.me.getLogger().error(e);
+		    } catch (IOException 	e) {
+		    	HostImpl.me.getLogger().error("IOException in docxExtractInitialValues : "+e);
+		    }	
+		} finally {
+			if (doc != null) {
+				try { doc.close(); } catch (IOException e) {}
+			}
+			if (fs != null) {
+				try { fs.close(); } catch (IOException e) {}
+			}			
+		}
+	}
 	
+
+	public static boolean _isPlaceholderString(String text) {
+		for (int i=0;i<text.length();i++) {
+			char c = text.charAt(i);
+			if (Character.isWhitespace(c)) continue;
+			if (Character.isAlphabetic(c)) return false;
+			if (Character.isDigit(c)) return false;
+			switch (c) {
+			case '…':
+			case '-':
+			case '.':
+			case '_':
+				continue;
+			}
+			return false;
+		}
+		return true;
+	}
+
+	// result : .emds, .regs
+	public static Value getSLATemplateLocations(File templateFile) throws VException {
+		File cached = new File(templateFile.getPath()+".loc.json");
+ 		if (cached.canRead()) {
+ 			try {
+				String s = Files.readString(cached.toPath(),StandardCharsets.UTF_8);
+				return JSEngine.jsonParse(s);
+			} catch (IOException e) {
+				cached.delete();
+			}
+ 		}
+ 		Value regs = JSEngine.newEmptyArray();
+ 		Value emds = JSEngine.newEmptyObject();
+
+    	SLAXML.walkContents(templateFile, new ContentHandler() {
+			@Override
+			public void handleContent(String code, String text, int page, Node node) throws VException {
+				Node nx = node.getAttributes().getNamedItem("XPOS");
+				if (nx == null) return;
+				Node ny = node.getAttributes().getNamedItem("YPOS");
+				if (ny == null) return;
+				Node nw = node.getAttributes().getNamedItem("WIDTH");
+				if (nw == null) return;
+				Node nh = node.getAttributes().getNamedItem("HEIGHT");
+				if (nh == null) return;
+				double x = Double.parseDouble(nx.getTextContent());
+				double y = Double.parseDouble(ny.getTextContent());
+				double w = Double.parseDouble(nw.getTextContent());
+				double h = Double.parseDouble(nh.getTextContent());
+				Value a = JSEngine.newEmptyObject();
+				a.putMember("x", x);
+				a.putMember("y", y);
+				a.putMember("width", w);
+				a.putMember("height", h);
+				regs.setArrayElement(regs.getArraySize(), a);
+			}
+    	});
+    	final HashMap<Integer,double[]> docDimByPage=new HashMap();
+    	// ADD EMBEDDED DOCUMENTS
+    	SLAXML.walkAll(templateFile, new XMLHandler() {
+			@Override
+			public void handleNode(Node node) throws VException {
+				
+				switch (node.getNodeName()) {
+					case "PAGE": 
+						double docDim[] = new double[4];
+						docDim[0] = Double.parseDouble(node.getAttributes().getNamedItem("PAGEWIDTH").getNodeValue());
+						docDim[1] = Double.parseDouble(node.getAttributes().getNamedItem("PAGEHEIGHT").getNodeValue());
+						docDim[2] = Double.parseDouble(node.getAttributes().getNamedItem("PAGEXPOS").getNodeValue());
+						docDim[3] = Double.parseDouble(node.getAttributes().getNamedItem("PAGEYPOS").getNodeValue());
+						docDimByPage.put(docDimByPage.size(), docDim);
+						break;
+					case "PAGEOBJECT":
+						Node pf = node.getAttributes().getNamedItem("PFILE");
+						if (pf == null) return;
+						String filen = pf.getNodeValue();
+						if (!filen.endsWith(".docx.pdf") && !filen.endsWith(".xlsx.pdf")) return;
+						Node nx = node.getAttributes().getNamedItem("XPOS");
+						if (nx == null) return;
+						Node ny = node.getAttributes().getNamedItem("YPOS");
+						if (ny == null) return;
+						Node nw = node.getAttributes().getNamedItem("WIDTH");
+						if (nw == null) return;
+						Node nh = node.getAttributes().getNamedItem("HEIGHT");
+						if (nh == null) return;
+						Node op = node.getAttributes().getNamedItem("OwnPage");
+						if (op == null) return;
+						double []dd = docDimByPage.get(Integer.parseInt(op.getNodeValue()));
+						double x = Double.parseDouble(nx.getTextContent());
+						double y = Double.parseDouble(ny.getTextContent());
+						double w = Double.parseDouble(nw.getTextContent());
+						double h = Double.parseDouble(nh.getTextContent());
+						Value t = JSEngine.newEmptyObject();
+						t.putMember("sx",w/dd[0]);	//1.scalex
+						t.putMember("sy",h/dd[1]);	//1.scaley
+						t.putMember("tx",x-dd[2]);	//2.translateX
+						t.putMember("ty",y-dd[3]);	//2.translateY
+						emds.putMember(filen,t);
+						break;
+				}
+			}
+    	});
+    	Value res = JSEngine.newEmptyObject();
+    	res.putMember("regs", regs);
+    	res.putMember("emds", emds);
+    	try {
+			Files.writeString(cached.toPath(),JSEngine.jsonStringify(res).asString(),StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			throw new VException(e);
+		}
+    	return res;
+	}
 }
 

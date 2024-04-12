@@ -1,7 +1,7 @@
 <!-- @Abstract -->
 
 <style>
-	
+
 	 .w2p-print-entry-overlay
 	 {
 		font-size: 20px;
@@ -14,21 +14,132 @@
 		border-color:transparent;
 		background-color: rgba(255, 255, 255, 0.5);border-color:rgba(0,0,0,0.65);
 		opacity:0;
-		transition:500ms;
+		transition:200ms;
 		transition-property:opacity,outline,box-shadow;
 		
 		box-shadow: 0 0 0 4px rgba(255,255,255,0.65);
   		outline: dashed 4px rgba(0,0,0,0.65);
 	}
 
-	.w2p-print-entry-overlay:hover,
+	body.desktop .w2p-print-entry-overlay:hover,
+	.w2p-print-entry-overlay.w2p-print-entry-changed,
 	.w2p-print-entry-overlay.w2p-print-entry-focused {
 		opacity : 1;
+	}
+	
+	@keyframes backgroundFade {
+		 0% {
+	        opacity:0;
+	    }
+	    50% {
+	        opacity:1;
+	    }
+	    100% {
+	        opacity:0;
+	    }
+	}
+	
+	.w2p-print-entry-overlay.w2p-print-entry-changed {
+		background-color : transparent;
+	    animation: backgroundFade 750ms forwards 4;
+		box-shadow: 0 0 0 4px white;
+	    outline: dashed 4px var(--vr-colors-primary);
 	}
 	
 	.w2p-print-entry-overlay.w2p-print-entry-focused {
 		box-shadow: 0 0 0 4px white;
   		outline: dashed 4px var(--vr-colors-primary);
 	}
+
 	
+	/* CUSTOM FORM FIELDS FOCUSED SIDENAV */
+	/*.sidenav-content-focused .print-content-entry:NOT(:hover):NOT(.print-content-entry-focused) {
+		opacity : 0.25;
+	}*/
+
+	.print-content-entry {
+		position : relative;
+		overflow : visible !important;
+	}
+	
+	.print-content-entry.print-content-entry-focused:before {
+		position : absolute;
+		content : ' ';
+		top : 0px;
+		left : 0;
+		right : 0;
+		bottom : 10px;
+		margin : -8px;
+	}
+
+	.print-content-entry.print-content-entry-focused input,.print-content-entry.print-content-entry-focused textarea {
+		color : white !important;
+		caret-color: white !important;
+		background : var(--vr-colors-primary);
+	}
+	.print-content-entry.print-content-entry-focused input::placeholder,
+	.print-content-entry.print-content-entry-focused textarea::placeholder {
+		color: var(--vr-color-primary) !important;
+		opacity: 0.8 !important;
+	}
+
+	
+	.print-content-entry.print-content-entry-focused label.mdc-floating-label {
+		color : rgba(255,255,255,0.80) !important;
+		pointer-events:none;
+	}
+
+	.print-content-entry {
+		padding-bottom : 10px;	
+	}
+	
+	.print-content-entry .mat-mdc-form-field-subscript-wrapper {
+		display:none;
+	}
+	
+	.print-content-entry.print-content-entry-focused {
+		padding-top:11px;
+		margin-top:-11px;
+		margin-left:-8px;	
+		margin-right:-8px;
+		padding-left:8px;
+		padding-right:8px;	
+		
+		padding-bottom : 7px;
+		margin-bottom:3px;
+		
+		background:var(--vr-colors-primary);
+	}
+	
+	
+	.print-content-entry:NOT(.print-content-entry-focused) .input-field-button {
+		visibility : hidden !important;
+	}
+	.print-content-entry .input-field-button {
+		transform: translate(0px,-7px);
+		border-radius : 3px;
+		margin : 2px;
+	}
+	
+	.print-content-entry.print-content-entry-focused .mdc-line-ripple {
+		display : none;
+	}
+	
+	.print-content-entry .mat-mdc-form-field .mdc-floating-label {
+		transition : initial !important;
+	}
+	
+	.sidenav-contents form-category-panel > mat-expansion-panel mat-expansion-panel-header {
+		box-shadow: 0 0px 4px 0px rgba(0,0,0,0.6);
+  		border-bottom-left-radius: 0;
+    	border-bottom-right-radius: 0;
+	}
+	.sidenav-contents form-category-panel > mat-expansion-panel.form-category-focused mat-expansion-panel-header {
+		box-shadow: 0 0px 2px 1px var(--vr-colors-primary);  		
+	}
+
+	
+	.sidenav-contents form-category-panel .mat-expansion-panel-body {
+		padding-top : 8px !important;
+	}
 </style>
