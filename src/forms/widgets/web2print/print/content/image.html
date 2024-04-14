@@ -114,7 +114,7 @@
                 refreshStorage.execute
 			)							 
 		</script>
-        <script #applyValue [params]="{val:val,inp:inp,comp:comp}">
+        <script #applyValue [params]="{val:val,inp:inp,comp:comp,root:root}">
 	        var doc = args[0];
 	        inp.auto.closePanel();
 	        root.db.remote("w2p.remote").getInitialImageRegion(args[0],comp.proportion).done(function(region) {

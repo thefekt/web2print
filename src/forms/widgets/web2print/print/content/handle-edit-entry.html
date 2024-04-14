@@ -26,10 +26,11 @@
 ></observe>
 <observe #resetToDefault (dispatch)="val.value=undefined")></observe>
 <observe [event]="inp.focusedChange">
-	 <script [params]="{inp:inp,comp:comp,cfocused:cfocused,getOverlayElement:getOverlayElement,root:root}" #handleFocusChange>
+	 <script [params]="{inp:inp,comp:comp,cpanel:cpanel,cfocused:cfocused,getOverlayElement:getOverlayElement,root:root}" #handleFocusChange>
 		 setTimeout(function(){
 			var el = getOverlayElement.execute(comp.code);
 			if (args[0]) {
+				cpanel.expanded=true;
 				cfocused.remove(comp.code)
 				cfocused.push(comp.code)
 				for (var e of root.element.querySelectorAll(".w2p-print-entry-changed"))

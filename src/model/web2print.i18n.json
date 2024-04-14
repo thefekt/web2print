@@ -189,6 +189,18 @@
         "bg-BG": "Съдържание",
         "fr-FR": "Contenu"
     },
+    "property:category": {
+        "en-US": "Category",
+        "de-DE": "Kategorie",
+        "bg-BG": "Категория",
+        "fr-FR": "Catégorie"
+    },
+    "property:categories_content": {
+        "en-US": "Categories (content)",
+        "de-DE": "Kategorien (Inhalt)",
+        "bg-BG": "Категории (съдържание)",
+        "fr-FR": "Catégories (contenu)"
+    },    
     "property:parent": {
         "en-US": "Parent",
         "de-DE": "Gehört zu",

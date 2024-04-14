@@ -4,7 +4,7 @@
  	style="position:relative;background:rgba(0,0,0,0.04);height:100%;overflow:clip">
 	<div fxLayout="row" style="margin:8px;margin-bottom:5px">
 		<div>
-			<div style="font-size:22px;color:rgba(0,0,0,0.65);line-height:20px">
+			<div style="font-size:20px;color:rgba(0,0,0,0.65);line-height:22px">
 				{{templateObject.value.name}}
 			</div>
 			<div style="font-size:12px;color:rgba(0,0,0,0.45);padding:2px 0;line-height:14px">
@@ -14,7 +14,9 @@
 		
 		<div fxFlex></div>
 		<div fxLayout="row">
-			<img mat-icon-button [matMenuTriggerFor]="langMenu" #mbtn="matMenuTrigger" [mobileFixMenu]="mbtn" style="width:28px;height:28px;margin-top:15px;margin:auto;cursor:pointer" src="/images/library/flags/128/{{root.db.lang.substring(root.db.lang.indexOf('-')+1).toLowerCase()}}.png"></img>
+			<img mat-icon-button [matMenuTriggerFor]="langMenu" #mbtn="matMenuTrigger" [mobileFixMenu]="mbtn" 
+				style="width:28px;height:28px;margin:auto;margin-top:0;cursor:pointer" 
+				src="/images/library/flags/128/{{root.db.lang.substring(root.db.lang.indexOf('-')+1).toLowerCase()}}.png"></img>
 	        <include shared ref="/widgets/app/menu/lang"></include> 
 	    	<!-- PERSON BUTTON SETTINGS ETC 
 	    	<ng-container *ngIf="root.app.layoutMode == 'forms'">
@@ -38,11 +40,13 @@
 					[expanded]="true" [caption]="cat.name" [message]="cat.sfx" 
 					style="margin:5px 0"
 					[style.margin-bottom]="!last ? '14px' : '0px'" 
+					#cpanel
 				>
 					<!-- iterate over entries in the category -->
 					<div *ngFor="let comp of cat.entries; let i = index;last as last" style="margin:0px 2px" [style.margin-bottom.px]="last ? -3 : 0">
-						<!-- #val custom value -->
-						<variable #val [(value)]="custom.value[comp.code]" (valueChange)="update.execute();lastChg.value=comp.code"></variable> 
+						<!-- #val custom value, skip update event on reset -->
+						<variable #val [(value)]="custom.value[comp.code]" (valueChange)="
+							generatedPreview.value ? [update.execute(),lastChg.value=comp.code] : 0"></variable> 
 						
 						<include shared ref="/widgets/web2print/print/content/varchar"></include>
 						<include shared ref="/widgets/web2print/print/content/text"></include>

@@ -103,25 +103,11 @@
 	}, generatedPreview.value === undefined ? 0 : 500);
 </script>
  
-<script #resetContent [params]="{root:root,custom:custom,generatedPreview,loadTemplateAndUpdate:loadTemplateAndUpdate}">
+<script #resetContent [params]="{root:root,lastChg:lastChg,custom:custom,generatedPreview,loadTemplateAndUpdate:loadTemplateAndUpdate}">
 	for (var i in custom.value) custom.value[i]=undefined;
 	generatedPreview.value = null;
 	loadTemplateAndUpdate.execute();
-</script>
-
-<script #deleteConfirmed [params]="{templateObject:templateObject,root:root}">
-	root.db.remote("w2p.remote").deleteTemplate(templateObject.value).done(function (res) {
-		root.app.reloadRoot();
-	})
-</script>
-
-<script #downloadTemplate [params]="{root:root, templateObject:templateObject}">
-	root.db.getObject(templateObject.value, "code,document.uuid", function (res) {
-		if (res.document && res.document.uuid) {
-			var url = "/documents/" + res.document.uuid + ".uuid?operation=download&filename=" + encodeURIComponent(res.code + ".zip");
-			root.app.downloadUrl(url);
-		}
-	})
+	lastChg.value=undefined;
 </script>
 
 <script #overlayClicked [params]="{root:root,sidenavOpen:sidenavOpen}">
@@ -284,6 +270,6 @@
 
 <!-- delay (callback custom impl) for all input based fiels -->
 <script #delayedAutoUpdate [params]="{root:root}">
-	cleaerTimeout(root._tdelchg);
+	clearTimeout(root._tdelchg);
 	root._tdelchg=setTimeout(args[0],1500);
 </script>
