@@ -64,10 +64,11 @@ public class Utils {
 			return null;
 		try {
 			String s[] = Files.readString(f.toPath(), StandardCharsets.UTF_8).split("\\n");
-			int odid = Integer.parseInt(s[0]);
-			long id = Long.parseLong(s[1]);
-			String filepath = s[2];
-			String regsJSON = s[3];
+			String docUUID = s[0];
+			int odid = Integer.parseInt(s[1]);
+			long id = Long.parseLong(s[2]);
+			String filepath = s[3];
+			String regsJSON = s[4];
 			//---------------------------------------------------------------------------
 			File rf = new File(filepath);
 			//---------------------------------------------------------------------------
@@ -79,6 +80,7 @@ public class Utils {
 			Value res = JSEngine.newEmptyObject();
 			res.putMember("doc", ObjectReference.make(id, odid).getJSObj());
 			res.putMember("regs", JSEngine.jsonParse(regsJSON));
+			res.putMember("uuid", docUUID);
 			return res;
 		} catch (Exception e) {
 			f.delete();
@@ -93,6 +95,7 @@ public class Utils {
 
 		File rf = new File(tmpCachedDir,key);
 		StringBuilder sb = new StringBuilder();
+		sb.append(ref.getObject().getSimpleValueByCodeUnsafe("uuid"));sb.append("\n");
 		sb.append(ref.od.id);sb.append("\n");
 		sb.append(ref.id);sb.append("\n");
 		try {
@@ -149,8 +152,7 @@ public class Utils {
                 zis.closeEntry();
                 // create a reference to the .ORIG file
                 if (copyFile != null)  {
-                	if (copyFile.exists())
-                		copyFile.delete();
+                	copyFile.delete();
                     Files.createLink(copyFile.toPath(), newFile.toPath());
                 }
                 ze = zis.getNextEntry();
@@ -217,13 +219,13 @@ public class Utils {
 			sb.append(height);sb.append("\n");
 			sb.append(r.getCanonicalPath());sb.append("\n");
 			sb.append(r.lastModified());
-			String key = "OP@"+HostImpl.me.getSHA256(sb.toString())+".pdf";
+			String key = "OP@"+HostImpl.me.getSHA256(sb.toString()).replace('/','_')+".pdf";
 			File cf = new File(tmpDirImgOp,key);
 			// CHECK FOR CACHED VERSION (PDF IMAGE OP CACHE)
 			if (cf.exists()) {
-				outImage.delete();
 				try {
-		            Files.createLink(cf.toPath(), outImage.toPath());
+					outImage.delete();
+		            Files.createLink(outImage.toPath(),cf.toPath());
 		            return;
 				} catch (IOException e) {
 					// reset, delete cached value
@@ -244,7 +246,11 @@ public class Utils {
 				// INPUT IS PDF 
 				PDDocument newDoc = Loader.loadPDF(r);
 				double h = newDoc.getPage(0).getMediaBox().getHeight();
-				copyAndFitPDF(newDoc,outImage,rx,h-rh-ry,rw,rh); // newDoc closed here
+
+				File of = new File(outImage.getParentFile(),outImage.getName()+".ORIG");
+				PDRectangle[] origdims = getCachedDimensions(of);
+
+				copyAndFitPDF(newDoc,origdims,outImage,rx,h-rh-ry,rw,rh); // newDoc closed here
 			} else {
 				// INPUT IS IMAGE
 				PDDocument doc = new PDDocument();
@@ -274,17 +280,15 @@ public class Utils {
 			            pdImage = LosslessFactory.createFromImage(doc, bim);
 				}
 				if (pdImage != null) {
-					if (pdImage != null) {
-						PDRectangle box=new PDRectangle((float)0,(float)0,pdImage.getWidth(),pdImage.getHeight());
-		    			page.setMediaBox(box);
-		    			page.setCropBox(box);
-		    			page.setTrimBox(box);
-		    			page.setArtBox(box);
-		    			page.setBleedBox(box);
-						PDPageContentStream contents = new PDPageContentStream(doc, page);						
-						contents.drawImage(pdImage, 0, 0);	
-						contents.close();
-					}
+					PDRectangle box=new PDRectangle((float)0,(float)0,pdImage.getWidth(),pdImage.getHeight());
+	    			page.setMediaBox(box);
+	    			page.setCropBox(box);
+	    			page.setTrimBox(box);
+	    			page.setArtBox(box);
+	    			page.setBleedBox(box);
+					PDPageContentStream contents = new PDPageContentStream(doc, page);						
+					contents.drawImage(pdImage, 0, 0);	
+					contents.close();
 					File of = new File(outImage.getParentFile(),outImage.getName()+".ORIG");
 					PDRectangle[] origdims = getCachedDimensions(of);
 					double coef = origdims[0].getHeight()/rh;
@@ -292,10 +296,11 @@ public class Utils {
 					
 					//h-rh-ry
 					//rh - 
-					copyAndFitPDF(doc,cf,rx,pdImage.getHeight()-rh-ry,rw,rh); // newDoc closed here
+					copyAndFitPDF(doc,origdims,cf,rx,pdImage.getHeight()-rh-ry,rw,rh); // newDoc closed here
 					
 					// link the cached result as outImage
-					Files.createLink(cf.toPath(), outImage.toPath());
+					outImage.delete();
+					Files.createLink( outImage.toPath(),cf.toPath());
 		
 				}
 			}				
@@ -313,9 +318,7 @@ public class Utils {
 			FileUtils.copyFile(rf, outImage);
 		}
 	}
-	private static void copyAndFitPDF(PDDocument newDoc, File outImage,double rx,double ry,double rw,double rh) throws IOException {
-		File of = new File(outImage.getParentFile(),outImage.getName()+".ORIG");
-		PDRectangle[] origdims = getCachedDimensions(of);
+	private static void copyAndFitPDF(PDDocument newDoc, PDRectangle[] origdims,File outImage,double rx,double ry,double rw,double rh) throws IOException {
 		PDPage newPage = newDoc.getPage(0);
 		for (int i=newDoc.getNumberOfPages()-1;i>=1;i--)
 			newDoc.removePage(i);

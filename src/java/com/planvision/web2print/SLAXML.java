@@ -64,7 +64,7 @@ public final class SLAXML {
 	
 	
 	// TODO PDF ATTRIBUTE CUSTOM CHECK FIRST ? 
-	private static void walkContents(Node node,ContentHandler hndlr) throws VException {
+	public static void walkContents(Node node,ContentHandler hndlr) throws VException {
 		if (node.getNodeName().equals("PAGEOBJECT")) {
 			Node anode = node.getAttributes().getNamedItem("ANNAME");
 			if (anode != null) {

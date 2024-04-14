@@ -7,6 +7,7 @@
     floatLabel="always"
     [label]="comp.NAME" [placeholder]="comp.placeholder"
     [(value)]="val.value"
+    (textChange)="delayValueChange.execute()"
     (dblclick)="dynamicViewer.fitOverlay(comp.code)"
     (focus)="
     	dynamicViewer.gotoPage(comp.dest_page-1);
@@ -18,4 +19,9 @@
 		[event]="dynamicViewer.overlayClick" (dispatch)="
 			$event.code == comp.code ? inp.focused ? 0 : root.app.window.document.activeElement.blur() : 0;
 			$event.code == comp.code ? overlayClicked.execute(comp,inp,$event) : 0"></observe>
+	<script #delayValueChange [params]="{inp:inp,delayedAutoUpdate:delayedAutoUpdate}">
+		delayedAutoUpdate.execute(function(){
+			inp.value=!inp.text ? undefined : inp.text;
+		});
+	</script>			
 </input-varchar>

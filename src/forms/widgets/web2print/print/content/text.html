@@ -15,11 +15,15 @@
     	dynamicViewer.fitOverlayIfNeeded(comp.code);
     " 
     #inp
-    (keydown.enter)="val.value=inp.text"
     >
     <include shared ref="/widgets/web2print/print/content/handle-edit-entry"></include>
     <observe 
 		[event]="dynamicViewer.overlayClick" (dispatch)="
 			$event.code == comp.code ? inp.focused ? 0 : root.app.window.document.activeElement.blur() : 0;
 			$event.code == comp.code ? overlayClicked.execute(comp,inp,$event) : 0"></observe>
+	<script #delayValueChange [params]="{inp:inp,delayedAutoUpdate:delayedAutoUpdate}">
+		delayedAutoUpdate.execute(function(){
+			inp.value=!inp.text ? undefined : inp.text;
+		});
+	</script>			
 </input-text>

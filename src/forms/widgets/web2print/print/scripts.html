@@ -282,4 +282,8 @@
 	console.log("SUBMIT ",custom.value,templateObject.value);
 </script>
 
-
+<!-- delay (callback custom impl) for all input based fiels -->
+<script #delayedAutoUpdate [params]="{root:root}">
+	cleaerTimeout(root._tdelchg);
+	root._tdelchg=setTimeout(args[0],1500);
+</script>

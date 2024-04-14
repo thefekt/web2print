@@ -171,18 +171,6 @@
         "bg-BG": "Страница",
         "fr-FR": "Page"
     },
-    "property:region": {
-        "en-US": "Region",
-        "de-DE": "Region",
-        "bg-BG": "Регион",
-        "fr-FR": "Région"
-    },
-    "property:category": {
-        "en-US": "Category",
-        "de-DE": "Kategorie",
-        "bg-BG": "Категория",
-        "fr-FR": "Catégorie"
-    },
     "property:initial_value": {
         "en-US": "Initial value",
         "de-DE": "Anfangswert",

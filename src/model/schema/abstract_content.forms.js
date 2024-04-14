@@ -15,7 +15,7 @@ forms.define({
 	            columns : 'code,name,initial_value,dest_page,objectdef,available_colors,proportion,region,table_data,documents'
 	        }
 	    },
-	    executions : {
+	    /*executions : {
 	        'select-view-box' : function(details) {
 	            return {
 	                icon : 'border_outer',
@@ -27,7 +27,7 @@ forms.define({
 	                //,params : {}
 	            };
 	        }
-	    }, 
+	    },*/ 
 		uploadFolders : function(details) {
 			var pt = details?.object?.print_template;
 			if (!pt) return;

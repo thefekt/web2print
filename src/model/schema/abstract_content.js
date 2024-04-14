@@ -10,7 +10,6 @@ module.exports = {
 				related : 'web2print.print_template'
 			},
 			'dest_page' : 'integer.obligatory.default.0',
-			'region' : 'varchar.readonly',
 			'category' : {
 				template : 'relation',
 				related : 'web2print.category_content'
@@ -22,14 +21,14 @@ module.exports = {
 	'varchar_content' : {
 		inherits : 'web2print.abstract_content',
 		properties : {
-			'initial_value' : 'varchar.i18n.obligatory'
+			'initial_value' : 'varchar.i18n'
 		},
 		icon : 'text_fields'
 	},
 	'text_content' : {
 		inherits : 'web2print.abstract_content',
 		properties : {
-			'initial_value' : 'text.i18n.obligatory'
+			'initial_value' : 'text.i18n'
 		},
 		icon : 'subject'
 	},
@@ -37,7 +36,7 @@ module.exports = {
 		inherits : 'web2print.abstract_content',
 		properties : {
 			'initial_value' : {
-				template : 'integer.obligatory',
+				template : 'integer',
 				col : 'ival_int'
 			}
 		},
@@ -47,7 +46,7 @@ module.exports = {
 		inherits : 'web2print.abstract_content',
 		properties : {
 			'initial_value' : {
-				template : 'double.obligatory',
+				template : 'double',
 				col : 'ival_dbl'
 			}
 		},
@@ -57,7 +56,7 @@ module.exports = {
 		inherits : 'web2print.abstract_content',
 		properties : {
 			'initial_value' : {
-				template : 'date.obligatory',
+				template : 'date',
 				col : 'ival_dat',
 				format : 'date'
 			}
@@ -68,7 +67,7 @@ module.exports = {
 		inherits : 'web2print.abstract_content',
 		properties : {
 			'initial_value' : {
-				template : 'date.obligatory',
+				template : 'date',
 				col : 'ival_dat',
 				format : 'datetime'
 			}
@@ -79,7 +78,7 @@ module.exports = {
 		inherits : 'web2print.abstract_content',
 		properties : {
 			'initial_value' : {
-				template : 'time.obligatory',
+				template : 'time',
 				col : 'ival_dat',
 				format : 'time'
 			}
@@ -105,7 +104,7 @@ module.exports = {
 		inherits : 'web2print.abstract_content',
 		properties : {
 			'initial_value' : {
-				template : 'varchar.obligatory',
+				template : 'varchar',
 				col : 'ival_var'
 			} 
 		},
@@ -115,12 +114,12 @@ module.exports = {
 		inherits : 'web2print.abstract_content',
 		properties : {
 			'column_count' : {
-				template : 'integer.obligatory',
+				template : 'integer',
 				min : 1,
 				default : 2
 			},
 			'row_count' : {
-				template : 'integer.obligatory',
+				template : 'integer',
 				min : 1,
 				default : 2
 			},
@@ -132,7 +131,7 @@ module.exports = {
 		inherits : 'web2print.abstract_content',
 		properties : {
 			'initial_value' : {
-				template : 'varchar.obligatory',
+				template : 'varchar',
 				col : 'ival_var'
 			},
 			/* TODO NOT WORKING SPECIFY CUSTOM TODO */

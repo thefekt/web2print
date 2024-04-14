@@ -60,13 +60,7 @@ exports.updateTemplate = function(code,document) {
     document.commit();
     return tmpl;
 };
-exports.setContentRegion = function(content,val) {
-	if (!session.isAdmin && !session.isUserGroup("customer:admin")) return;
-    if (!content || !content.print_template) return;
-    if (!content.ACCESS.updatable) return;
-    if (!content.print_template.ACCESS.updatable) return;
-    content.region = val ? JSON.stringify(val) : undefined;
-};
+
 exports.applyDefaultAccess = function(tmpl) {
 	if (!session.isAdmin && !session.isUserGroup("customer:admin")) return;
 	var everyone = db.core.user_role.byCode("everyone");
@@ -216,8 +210,10 @@ exports.getTemplateDetails = function (code) {
 }
 //------------------------------------------------------------------------------
 function getContentsData(tpl) {
+	var dbw2p = db.web2print;
+	
     if (typeof tpl == "number")
-        tpl=db.web2print.print_template.byId(tpl);
+        tpl=dbw2p.print_template.byId(tpl);
     if (!tpl || !tpl.contents)
         return [];
     function fixName(name) {
@@ -225,9 +221,26 @@ function getContentsData(tpl) {
         if (i > 0) return name.substring(0,i);
         return name;
     }
+    var codes = [];
+    var lang = session.lang.code;
+    for (var e of tpl.contents) if (e instanceof dbw2p.qrcode_content || e instanceof dbw2p.image_content) {
+		var c = e.code;
+		codes.push(`${c}.${lang}.png`);
+		codes.push(`${c}.${lang}.pdf`);
+		codes.push(`${c}.${lang}.jpg`);
+		codes.push(`${c}.${lang}.jpeg`);
+	}
+	var c2d = {}
+	for (var d of db.documents.document.SELECT({where:"code = ANY (:CODES) AND parent.path = :PATH",PATH:"/web2print/"+tpl.uuid+"/defaults",CODES:codes})) {
+		var c = d.code;
+		if (c.endsWith(".jpeg")) c = c.substring(0,c.length-6-lang.length);
+		else c=c.substring(0,c.length-5-lang.length);
+		c2d[c]=d;		
+	}
+    
     var res=[];
     for (var e of tpl.contents) {
-        if (e instanceof db.web2print.varchar_content) {
+        if (e instanceof dbw2p.varchar_content) {
             res.push({
                 object : e,
                 code : e.code,
@@ -235,10 +248,9 @@ function getContentsData(tpl) {
                 NAME : misc.OBJSTR(e),
                 type : 'varchar',
                 dest_page : e.dest_page,
-                placeholder : e.initial_value,
-                region : e.region ? JSON.parse(e.region).region : undefined
+                placeholder : e.initial_value
             });
-        } else if (e instanceof db.web2print.text_content) {
+        } else if (e instanceof dbw2p.text_content) {
             res.push({
                 object : e,
                 code : e.code,
@@ -246,10 +258,9 @@ function getContentsData(tpl) {
                 NAME : misc.OBJSTR(e),
                 type : 'text',
                 dest_page : e.dest_page,
-                placeholder : e.initial_value,
-                region : e.region ? JSON.parse(e.region).region : undefined
+                placeholder : e.initial_value
             });
-        } else if (e instanceof db.web2print.date_content) {
+        } else if (e instanceof dbw2p.date_content) {
             res.push({
                 object : e,
                 code : e.code,
@@ -257,10 +268,9 @@ function getContentsData(tpl) {
                 NAME : misc.OBJSTR(e),
                 type : 'date',
                 dest_page : e.dest_page,
-                placeholder : e.initial_value,
-                region : e.region ? JSON.parse(e.region).region : undefined
+                placeholder : e.initial_value
             });
-        } else if (e instanceof db.web2print.time_content) {
+        } else if (e instanceof dbw2p.time_content) {
             res.push({
                 object : e,
                 code : e.code,
@@ -268,10 +278,9 @@ function getContentsData(tpl) {
                 NAME : misc.OBJSTR(e),
                 type : 'time',
                 dest_page : e.dest_page,
-                placeholder : e.initial_value,
-                region : e.region ? JSON.parse(e.region).region : undefined
+                placeholder : e.initial_value
             });
-        } else if (e instanceof db.web2print.datetime_content) {
+        } else if (e instanceof dbw2p.datetime_content) {
             res.push({
                 object : e,
 				category : e.category,
@@ -279,10 +288,9 @@ function getContentsData(tpl) {
                 NAME : misc.OBJSTR(e),
                 type : 'datetime',
                 dest_page : e.dest_page,
-                placeholder : e.initial_value,
-                region : e.region ? JSON.parse(e.region).region : undefined
+                placeholder : e.initial_value
             });
-        } else if (e instanceof db.web2print.integer_content) {
+        } else if (e instanceof dbw2p.integer_content) {
             res.push({
                 object : e,
 				category : e.category,
@@ -290,10 +298,9 @@ function getContentsData(tpl) {
                 NAME : misc.OBJSTR(e),
                 type : 'integer',
                 dest_page : e.dest_page,
-                placeholder : e.initial_value,
-                region : e.region ? JSON.parse(e.region).region : undefined
+                placeholder : e.initial_value
             });
-        } else if (e instanceof db.web2print.double_content) {
+        } else if (e instanceof dbw2p.double_content) {
             res.push({
                 object : e,
 				category : e.category,
@@ -301,10 +308,10 @@ function getContentsData(tpl) {
                 NAME : misc.OBJSTR(e),
                 type : 'double',
                 dest_page : e.dest_page,
-                placeholder : e.initial_value,
-                region : e.region ? JSON.parse(e.region).region : undefined
+                placeholder : e.initial_value
             });
-        } else if (e instanceof db.web2print.image_content) {
+        } else if (e instanceof dbw2p.image_content) {
+			var dd = c2d[e.code];
             res.push({
                 object : e,
 				category : e.category,
@@ -313,10 +320,9 @@ function getContentsData(tpl) {
                 type : 'image',
                 dest_page : e.dest_page,
                 proportion : e.proportion,
-                placeholder : { document : e.initial_value , region : exports.getInitialImageRegion(e.initial_value,e.proportion) },
-                region : e.region ? JSON.parse(e.region).region : undefined
+                placeholder : { document : dd , region : exports.getInitialImageRegion(dd,e.proportion) }
             });
-        } else if (e instanceof db.web2print.table_content && e.table_data) {
+        } else if (e instanceof dbw2p.table_content && e.table_data) {
             res.push({
                 object : e,
 				category : e.category,
@@ -324,10 +330,9 @@ function getContentsData(tpl) {
                 NAME : fixName(misc.OBJSTR(e)),
                 type : 'table',
                 dest_page : e.dest_page,
-                placeholder : JSON.parse(e.table_data),
-                region : e.region ? JSON.parse(e.region).region : undefined
+                placeholder : JSON.parse(e.table_data)
             });
-        } else if (e instanceof db.web2print.qrcode_content) {
+        } else if (e instanceof dbw2p.qrcode_content) {
             res.push({
                 object : e,
                 NAME : fixName(misc.OBJSTR(e)),
@@ -335,10 +340,9 @@ function getContentsData(tpl) {
                 code : e.code,
                 type : 'qrcode',
                 dest_page : e.dest_page,
-                placeholder : e.initial_value,
-                region : e.region ? JSON.parse(e.region).region : undefined
+                placeholder : e.initial_value
             });
-        } else if (e instanceof db.web2print.indexed_color_content) {
+        } else if (e instanceof dbw2p.indexed_color_content) {
             var colors = e.available_colors;
             if (colors) {
                 var arr=[];

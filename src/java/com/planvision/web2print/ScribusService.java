@@ -21,8 +21,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.Vector;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.pdfbox.Loader;
@@ -34,18 +37,24 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.graalvm.polyglot.HostAccess;
 import org.graalvm.polyglot.Value;
-
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
+
 import com.carrotsearch.hppcrt.maps.ObjectLongHashMap;
 import com.planvision.visionr.core.CorePrefs;
+import com.planvision.visionr.core.ParamsHash;
 import com.planvision.visionr.core.VException;
 import com.planvision.visionr.core.api.FileAndWebPath;
 import com.planvision.visionr.core.api.HostImpl;
 import com.planvision.visionr.core.api.RuntimeConfig;
+import com.planvision.visionr.core.api.VResultSet;
 import com.planvision.visionr.core.misc.StringUtils;
 import com.planvision.visionr.core.schema.DBLang;
 import com.planvision.visionr.core.schema.DBModule;
 import com.planvision.visionr.core.schema.DBObjectDef;
+import com.planvision.visionr.core.vsql.VSQLCompiledCode;
 import com.planvision.visionr.host.JavaHost;
 import com.planvision.visionr.host.core.context.VRSessionContext;
 import com.planvision.visionr.host.core.scripting.api.Common;
@@ -63,8 +72,6 @@ import com.planvision.visionr.host.server.PDFEmbeddedLocations.Location;
 import com.planvision.web2print.Locker.Callback;
 import com.planvision.web2print.SLAXML.ContentHandler;
 import com.planvision.web2print.SLAXML.XMLHandler;
-
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
 
 //Servicing TMS like request for document preview with OpenSeaDragon
 public class ScribusService {
@@ -196,6 +203,7 @@ public class ScribusService {
 	    // calculate code 2 page map, throw error if content (tag) in multiple pages
 	    Map<String,Integer> code2page = new HashMap();
 	    Map<String,Map<String,String>> code2InitialByLang = new HashMap(); // all values by lang !! type still not known (i18n or not) !
+	    Map<String,Double> code2ImageProportion = new HashMap();
 	    for (DBLang l : HostImpl.me.getActiveLanguages()) {
 			// template file (by lang or DEF)
 		    String path = resolve(tmpDirKey,"template."+l.getCode()+".sla");
@@ -215,12 +223,18 @@ public class ScribusService {
 						if (text != null && !_isPlaceholderString(text)) {
 							m.put(l.getCode(),text);
 						}
+						
+						Node nw = node.getAttributes().getNamedItem("WIDTH");
+						if (nw == null) return;
+						Node nh = node.getAttributes().getNamedItem("HEIGHT");
+						if (nh == null) return;
+						double prop = (Double.parseDouble(nw.getNodeValue())) / (Double.parseDouble(nh.getNodeValue()));
+						code2ImageProportion.put(code, prop);
 					}
-				});
+				}); 
 		    }
 	    }
 	    //----------------------------------------------------------------------------------
-	    HashSet<String> imageSet = new HashSet(); // used images
 	    HashSet<String> tableSet = new HashSet(); // used images
 	    Vector<Map<String, Object>> entries = new Vector(); // contents array
 	    Map<String,Map<String,String>> categoryNamesByCode = new HashMap(); // category[code] > i18n name 
@@ -261,39 +275,28 @@ public class ScribusService {
 	    				isqr=true;
 	    			case "DOCUMENT" :
 	    			case "IMAGE" : 
-	    				String _path = resolve(tmpDirKey,code);
-	    				String path = _path+".png";
-	    				File tf = new File (path);
-	    				if (!tf.exists())
-		    				tf = new File(path=(_path+".jpg"));
-	    				if (!tf.exists())
-		    				tf = new File(path=(_path+".jpeg"));
-	    				if (!tf.exists())
-		    				tf = new File(path=(_path+".pdf"));
-	    				
-						String lw = path.toLowerCase();
-						if (lw.endsWith(".jpg") || lw.endsWith(".jpeg") || lw.endsWith(".png")
-								|| lw.endsWith(".pdf")) {
-							if (imageSet.add(path)) {
-								File f = new File(path);
-								if (f.exists() && f.canRead()) {
-									double dims[] =
-											f.getName().endsWith(".pdf")  ? Utils.getPDFDimensions(f) : // do not use visionr host impl, because pdfium will block the file (win32)
-											HostImpl.me.getImageDimensionsSystem(f);
-									if (dims != null && dims[0] > 0 && dims[1] > 0) {
-										double prop = ((double) dims[0]) / ((double) dims[1]);
-										va.put("proportion", prop);
-									}
-									va.put("type", isqr ? "qrcode" : "image");
-								} else {
-									continue;
-								}
-							} else {
-								continue;
-							}
-						} else {
+	    				for (DBLang lng : HostImpl.me.getActiveLanguages()) {
+		    				String _path = resolve(tmpDirKey,code+"."+lng.getCode());
+		    				String path = _path+".png";
+		    				File tf = new File(path);
+		    				if (!tf.exists())
+			    				tf = new File(path=(_path+".jpg"));
+		    				if (!tf.exists())
+			    				tf = new File(path=(_path+".jpeg"));
+		    				if (!tf.exists())
+			    				tf = new File(path=(_path+".pdf"));
+		    				if (tf.exists()) {
+		    					Collection<String> files = (Collection<String>) va.get("files");
+		    					if (files == null) va.put("files",files=new Vector());
+		    					files.add(path);
+		    				}
+	    				}
+						Double prop = code2ImageProportion.get(code);
+						if (prop != null && prop > 0) {
+							va.put("proportion", prop);
+							va.put("type", isqr ? "qrcode" : "image");
+						} else
 							continue;
-						}
 	    				break;
 	    			case "DATE" :
 	    				if (ival != null) {
@@ -569,25 +572,30 @@ public class ScribusService {
 	// ---------------------------------------------------------------------
 	@HostAccess.Export 
 	public Value initTemplateContents(Value tmpl) throws VException {
-		/*VSQLCompiledCode nparent = HostImpl.me.compileCachedVSQL(DBModule.g("documents").getSchemaByCode("folder"), "SELECT id,objectdef WHERE path = :PATH");
-		ParamsHash params = new ParamsHash();
-		String dirp = "/web2print/"+tmpl.getMember("uuid").asString()+"/defaults";
-		params.put("PATH", dirp);
-		Value dirr;
-		VResultSet rs = HostImpl.me.getConnection().executeQuery(nparent,params);
-		try {
-			if (!rs.next()) throw new VException("Unable to find defaults directory : "+dirp);
-			dirr=ObjectReference.make(rs.getLong(1), rs.getInt(2)).getJSObj();
-		} finally {
-			rs.close();
-		}*/
+		Value dirr=null;
+		boolean isi=JSEngine.isInstance(tmpl);
+		if (isi) {
+			VSQLCompiledCode nparent = HostImpl.me.compileCachedVSQL(DBModule.g("documents").getSchemaByCode("folder"), "SELECT id,objectdef WHERE path = :PATH");
+			ParamsHash params = new ParamsHash();
+			String dirp = "/web2print/"+tmpl.getMember("uuid").asString()+"/defaults";
+			params.put("PATH", dirp);
+			VResultSet rs = HostImpl.me.getConnection().executeQuery(nparent,params,VRSessionContext.accessContextAdmin);
+			try {
+				if (!rs.next()) throw new VException("Unable to find defaults directory : "+dirp);
+				dirr=ObjectReference.make(rs.getLong(1), rs.getInt(2)).getJSObj();
+			} finally {
+				rs.close();
+			}
+		}
+		final Value dirrf=dirr;
+				
 		final String key =  "rndr-"+tmpl.getMember("document").getMember("id").asLong();
 		 Callback cb = new Callback() {
 			@Override
 			public Value execute() throws VException {
 				/*File outdir = */syncTemplate(tmpl);
 				Value contents = getAvailableContents(key);
-				if (JSEngine.isInstance(tmpl)) {
+				if (isi) {
 					Value x = tmpl.getMember("contents");
 					if (!x.isNull()) {
 						int sz = (int)x.getArraySize();
@@ -622,7 +630,7 @@ public class ScribusService {
 		                    break; }
 		                case "indexed_color" : {
 		                    Value c;
-		                    if (JSEngine.isInstance(tmpl)) {
+		                    if (isi) {
 		                    	c = ((DBObjectDefImpl)DBModule.g("web2print").getSchemaByCode("indexed_color_content").impl()).getJSProxy().newInstance();
 		                    	c.putMember("template", tmpl);
 		                    	_genCommonName(c,tmpl,e);
@@ -639,9 +647,8 @@ public class ScribusService {
 		                    break; }
 		                case "image" : {
 		                    Value c;
-		                    boolean isi;
-		                    if (isi=JSEngine.isInstance(tmpl)) {
-		                    	c = ((DBObjectDefImpl)DBModule.g("web2print").getSchemaByCode(type.equals("image") ? "image_content" : "embedded_document_content").impl()).getJSProxy().newInstance();
+		                    if (isi) {
+		                    	c = ((DBObjectDefImpl)DBModule.g("web2print").getSchemaByCode("image_content").impl()).getJSProxy().newInstance();
 		                    	c.putMember("template", tmpl);
 		                    	_genCommonName(c,tmpl,e);
 		                    } else {
@@ -652,23 +659,32 @@ public class ScribusService {
 		                    c.putMember("dest_page", p);
 		                    c.putMember("proportion", e.getMember("proportion"));
 		                    
-		                    Value f = e.getMember("file");
+		                    Value f = e.getMember("files");
 		                    if (f != null && !f.isNull() && isi) {
-		                    	String fpath = f.asString();
-		                    	TmpFile a = new TmpFile(fpath.substring(fpath.lastIndexOf('.')+1));
-		                    	try {
+		                    	for (int r=0;r<f.getArraySize();r++) {
+		                    		String fpath = f.getArrayElement(r).asString();
+		                    		int x1 = fpath.lastIndexOf('.');
+		                    		int x2 = fpath.lastIndexOf('.',x1-1);
+		                    		String lang = fpath.substring(x2+1,x1);
+			                    	String ext = fpath.substring(x1+1);
+			                    	TmpFile a = new TmpFile(ext);
 			                    	try {
-										FileUtils.copyFile(new File(fpath),a.getFile());
-				                    	Value doc = VSC.callVSC("doc.misc.uploadTemp",new Value[] { JSConverter.VR2JS(code),JSEngine.UNDEFINED,JSConverter.VR2JS(a.getExtension()),JSEngine.UNDEFINED/*description*/,JSConverter.VR2JS(a)});
-				                    	//doc.putMember("parent",dirr);
-				                    	doc.getMember("commit").execute();
-				                    	c.putMember("initial_value", doc);
-			                    	} catch (VException ex) {
-			                    		HostImpl.me.getLogger().error("Error uploading default image as document "+ex);
-			                    	}
-								} catch (IOException e1) {
-									HostImpl.me.getLogger().error(e1);
-								}
+				                    	try {
+											FileUtils.copyFile(new File(fpath),a.getFile());
+											String docc = code+"."+lang+"."+ext;
+					                    	Value doc = VSC.callVSC("doc.misc.uploadInDir",new Value[] { dirrf, JSConverter.VR2JS(docc),JSEngine.UNDEFINED,JSConverter.VR2JS(ext),JSEngine.UNDEFINED/*description*/,JSConverter.VR2JS(a)});
+					                    	doc.putMember("code",docc); // force code exact (no prefix TEST-.. ) 
+					                    	//doc.putMember("parent",dirrf);
+					                    	doc.getMember("commit").execute();
+					                    	
+					                    	//c.putMember("initial_value", doc); NO i18n value, because images by lang (i18n)
+				                    	} catch (VException ex) {
+				                    		HostImpl.me.getLogger().error("Error uploading default image as document "+ex);
+				                    	}
+									} catch (IOException e1) {
+										HostImpl.me.getLogger().error(e1);
+									}
+		                    	}
 		                    }
 		                    Value cc = c.getMember("commit");
 		                    if (cc != null) cc.execute();
@@ -676,7 +692,7 @@ public class ScribusService {
 		                    break; }
 		                case "table" : {
 		                	Value c;
-		                    if (JSEngine.isInstance(tmpl)) {
+		                    if (isi) {
 		                    	c = ((DBObjectDefImpl)DBModule.g("web2print").getSchemaByCode("table_content").impl()).getJSProxy().newInstance();
 		                    	c.putMember("template", tmpl);
 		                    	_genCommonName(c,tmpl,e);
@@ -707,7 +723,7 @@ public class ScribusService {
 		                    break; }
 		                case "qrcode" : {
 		                	Value c;
-		                    if (JSEngine.isInstance(tmpl)) {
+		                    if (isi) {
 		                    	c = ((DBObjectDefImpl)DBModule.g("web2print").getSchemaByCode("qrcode_content").impl()).getJSProxy().newInstance();
 		                    	c.putMember("template", tmpl);
 		                    	_genCommonName(c,tmpl,e);
@@ -942,10 +958,41 @@ public class ScribusService {
 		                		// DELETED FILE TODO CLEANUP + ERROR LOG
 		                		continue;
 		                	}
+						    //String ext = vd.getMember("extension").getMember("code").asString().toLowerCase();
+						    //-----------------------------------------------------------------------------
+						    //String srcext = file.getName().substring(file.getName().lastIndexOf('.')+1);
+						    String outext = null; 
+						    Value x = e.getMember("initial_value");
+						    if (x != null && !x.isNull()) {
+						    	Value ext = x.getMember("extension");
+						    	if (ext != null && !ext.isNull())
+						    		outext = ext.getMember("code").asString().toLowerCase();
+						    } else { 
+						    	String pfx = code+"."+lang;
+						    	File f1 = new File(tmpDir,pfx+".png");
+						    	if (!f1.exists()) {
+						    		f1 = new File(tmpDir,pfx+".jpg");
+							    	if (!f1.exists()) {
+							    		f1 = new File(tmpDir,pfx+".pdf");
+							    		if (!f1.exists()) {
+								    		outext="jpeg";
+								    		f1 = new File(tmpDir,pfx+".jpeg");
+							    		} else {
+							    			outext="pdf";
+							    		}
+							    	} else
+							    		outext="png";
+						    	} else
+						    		outext="png";
+						    }
+						    //-----------------------------------------------------------------------------
+						    if (outext == null) { //e.getMember("code").asString()
+						    	outext = "png";// TODO AUTODETECT IF INITIAL NULL (NOT VALID ?)
+						    }
+						    //-----------------------------------------------------------------------------
+	                    	File outImage = new File(tmpDir,code+"."+lang+"."+outext);
 		                	if (isDisabled) {
-		                    	File outImage = new File(tmpDir,code);
-		                		String ext = outImage.getName().substring(outImage.getName().lastIndexOf('.')+1);
-		                		if (ext.equalsIgnoreCase("PDF")) {
+		                		if (outext.equalsIgnoreCase("PDF")) {
 		                			 try {
 										Files.write(outImage.toPath(), emptyPDF);
 									} catch (IOException e1) {
@@ -962,16 +1009,15 @@ public class ScribusService {
 		                	} else {
 			                    if (region == null || region.isNull()) {
 			                    	if (!Utils.isImage(file.getName())){
-			                    		HostImpl.me.getLogger().error("Trying to add non image file as image : "+file.getPath()+" >> "+new File(tmpDir,code).getPath());
+			                    		HostImpl.me.getLogger().error("Trying to add non image file as image : "+file.getPath()+" >> "+outImage.getPath());
 			                    	} else {
 				           		     	try {
-											FileUtils.copyFile(file, /* dest */new File(tmpDir,code));
+											FileUtils.copyFile(file, /* dest */outImage);
 										} catch (IOException e1) {
 											HostImpl.me.getLogger().error(e1);;
 										}
 			                    	}
 			                    } else {
-			                    	File outImage = new File(tmpDir,code);
 			           		     	try {
 										Utils.copyImageInTempDirectory(vd.getMember("uuid").asString(),outImage /* dest */,region,VRSessionContext.accessContext);
 									} catch (IOException e1) {
@@ -996,7 +1042,7 @@ public class ScribusService {
 						byte[] qd = BarCode.encode(vd.asString(), "QR_CODE", 256, 256, "#000000",
 								"#00000000"/* alpha */);
 						try {
-							Files.write(/* dest */new File(tmpDir, code + ".png").toPath(), qd);
+							Files.write(/* dest */new File(tmpDir, code + "."+lang+".png").toPath(), qd);
 						} catch (IOException e1) {
 							throw new VException(e1);
 						}
@@ -1185,9 +1231,8 @@ public class ScribusService {
 		final String ckey = getCachedResultKey(tmpl,data,lang);
 		Value cval = Utils.getCachedResult(ckey);
 		if (cval != null) {
-			Value jso = cval.getMember("doc");
-			String duuid = jso.getMember("uuid").asString();
-			// ADD TEMP READ 
+			String duuid = cval.getMember("uuid").asString();
+			// ADD TEMP READ  
 			HostImpl.me.addDocumentTempReadAccessSession(null/*current session*/, duuid);
 			return cval;
 		}
@@ -1534,32 +1579,19 @@ startxref
  		Value regs = JSEngine.newEmptyArray();
  		Value emds = JSEngine.newEmptyObject();
 
-    	SLAXML.walkContents(templateFile, new ContentHandler() {
-			@Override
-			public void handleContent(String code, String text, int page, Node node) throws VException {
-				Node nx = node.getAttributes().getNamedItem("XPOS");
-				if (nx == null) return;
-				Node ny = node.getAttributes().getNamedItem("YPOS");
-				if (ny == null) return;
-				Node nw = node.getAttributes().getNamedItem("WIDTH");
-				if (nw == null) return;
-				Node nh = node.getAttributes().getNamedItem("HEIGHT");
-				if (nh == null) return;
-				double x = Double.parseDouble(nx.getTextContent());
-				double y = Double.parseDouble(ny.getTextContent());
-				double w = Double.parseDouble(nw.getTextContent());
-				double h = Double.parseDouble(nh.getTextContent());
-				Value a = JSEngine.newEmptyObject();
-				a.putMember("x", x);
-				a.putMember("y", y);
-				a.putMember("width", w);
-				a.putMember("height", h);
-				regs.setArrayElement(regs.getArraySize(), a);
-			}
-    	});
-    	final HashMap<Integer,double[]> docDimByPage=new HashMap();
+ 		final HashMap<Integer,double[]> docDimByPage=new HashMap();
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder;
+		Document document;
+		try {
+			builder = factory.newDocumentBuilder();
+			document = builder.parse(templateFile);
+		} catch (ParserConfigurationException | SAXException | IOException e) {
+				throw new VException(e);
+		}
+			
     	// ADD EMBEDDED DOCUMENTS
-    	SLAXML.walkAll(templateFile, new XMLHandler() {
+    	SLAXML.walkAll(document, new XMLHandler() {
 			@Override
 			public void handleNode(Node node) throws VException {
 				
@@ -1602,6 +1634,33 @@ startxref
 				}
 			}
     	});
+    	SLAXML.walkContents(document, new ContentHandler() {
+			@Override
+			public void handleContent(String code, String text, int page, Node node) throws VException {
+				Node nx = node.getAttributes().getNamedItem("XPOS");
+				if (nx == null) return;
+				Node ny = node.getAttributes().getNamedItem("YPOS");
+				if (ny == null) return;
+				Node nw = node.getAttributes().getNamedItem("WIDTH");
+				if (nw == null) return;
+				Node nh = node.getAttributes().getNamedItem("HEIGHT");
+				if (nh == null) return;
+				double x = Double.parseDouble(nx.getTextContent());
+				double y = Double.parseDouble(ny.getTextContent());
+				double w = Double.parseDouble(nw.getTextContent());
+				double h = Double.parseDouble(nh.getTextContent());
+				Value a = JSEngine.newEmptyObject();
+				double []dd = docDimByPage.get(page-1);
+				a.putMember("x", x-dd[2]);
+				a.putMember("y", y-dd[3]);
+				a.putMember("w", w);
+				a.putMember("h", h);
+				a.putMember("page", page-1);
+				a.putMember("code", code);
+				regs.setArrayElement(regs.getArraySize(), a);
+			}
+    	});
+    	
     	Value res = JSEngine.newEmptyObject();
     	res.putMember("regs", regs);
     	res.putMember("emds", emds);

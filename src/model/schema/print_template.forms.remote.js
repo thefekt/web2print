@@ -25,11 +25,7 @@ forms.defineRemoteAPI({
 		},
 		initTemplateContentsUploaded() {
 			require("web2print/template").initTemplateContentsUploaded.apply(null,arguments); // FORWARD 
-		},
-		setContentRegion() {
-			require("web2print/template").setContentRegion.apply(null,arguments); // FORWARD 
-		}
-	
+		}	
 	}*/
 	"w2p.remote" : {	/* forward to backend require */
 		renderTemplate : "web2print/renderer",
@@ -40,6 +36,5 @@ forms.defineRemoteAPI({
 		getInitialImageRegion : "web2print/template",
 		deleteTemplateDocuments : "web2print/template",
 		initTemplateContentsUploaded : "web2print/template",
-		setContentRegion  : "web2print/template",
 	} 
 });
