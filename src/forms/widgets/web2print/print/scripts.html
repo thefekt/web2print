@@ -110,7 +110,7 @@
 	lastChg.value=undefined;
 </script>
 
-<script #overlayClicked [params]="{root:root,sidenavOpen:sidenavOpen}">
+<script #finalizeOverlayClick [params]="{root:root,sidenavOpen:sidenavOpen}">
 	var comp = args[0];
 	var inp = args[1];
 	var event = args[2];
@@ -273,3 +273,4 @@
 	clearTimeout(root._tdelchg);
 	root._tdelchg=setTimeout(args[0],1500);
 </script>
+

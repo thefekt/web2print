@@ -12,19 +12,40 @@
 		align-items: center;
 		background-color: transparent;
 		border-color:transparent;
-		background-color: rgba(255, 255, 255, 0.5);border-color:rgba(0,0,0,0.65);
+		background-color: transparent;
 		opacity:0;
 		transition:200ms;
-		transition-property:opacity,outline,box-shadow;
-		
-		box-shadow: 0 0 0 4px rgba(255,255,255,0.65);
-  		outline: dashed 4px rgba(0,0,0,0.65);
+		transition-property:opacity;
 	}
+	
+	 .w2p-print-entry-overlay:before {
+		content : ' ';
+		position : absolute;
+		inset : 0;
+		transition:200ms;
+		transition-property:opacity,outline;
+		z-index:0;
+		outline: solid 0px var(--vr-colors-background);
+	 }
+	 .w2p-print-entry-overlay:after {
+		content : ' ';
+		position : absolute;
+		z-index:1;
+		inset : 0;
+		transition:200ms;
+		transition-property:opacity,outline;
+		outline: dashed 0px var(--vr-colors-primary);
+	 }
 
 	body.desktop .w2p-print-entry-overlay:hover,
 	.w2p-print-entry-overlay.w2p-print-entry-changed,
 	.w2p-print-entry-overlay.w2p-print-entry-focused {
 		opacity : 1;
+	}
+	
+	body.desktop .w2p-print-entry-overlay:hover {
+		box-shadow : 0px 3px 3px -2px rgba(0, 0, 0, 0.2), 0px 3px 4px 0px rgba(0, 0, 0, 0.14), 0px 1px 8px 0px rgba(0, 0, 0, 0.12); /* mat-elevation-z3 */
+		background-color : rgba(255,255,255,0.3);
 	}
 	
 	@keyframes backgroundFade {
@@ -42,13 +63,22 @@
 	.w2p-print-entry-overlay.w2p-print-entry-changed {
 		background-color : transparent;
 	    animation: backgroundFade 750ms forwards 4;
-		box-shadow: 0 0 0 4px white;
-	    outline: dashed 4px var(--vr-colors-primary);
 	}
 	
-	.w2p-print-entry-overlay.w2p-print-entry-focused {
-		box-shadow: 0 0 0 4px white;
-  		outline: dashed 4px var(--vr-colors-primary);
+	.w2p-print-entry-overlay.w2p-print-entry-changed:before {
+		outline: solid 6px var(--vr-colors-background);
+	}
+
+	.w2p-print-entry-overlay.w2p-print-entry-changed:after {
+	    outline: dashed 6px var(--vr-colors-primary);
+	}
+
+	.w2p-print-entry-overlay.w2p-print-entry-focused:before {
+		outline: solid 6px var(--vr-colors-background);
+	}
+
+	.w2p-print-entry-overlay.w2p-print-entry-focused:after {
+  		outline: dashed 6px var(--vr-colors-primary);
 	}
 
 	

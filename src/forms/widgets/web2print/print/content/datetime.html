@@ -34,14 +34,11 @@
     	root.db.defaultOutputFormatDatetimeHoursMinutes
     "
     (dblclick)="dynamicViewer.fitOverlay(comp.code)"
-    (focus)="
-    	dynamicViewer.gotoPage(comp.dest_page-1);
-    	dynamicViewer.fitOverlayIfNeeded(comp.code);
-    " 
+    (focus)="onEntryFocused.execute(comp)" 
     #inp>
     <include shared ref="/widgets/web2print/print/content/handle-edit-entry"></include>
 	<observe 
 		[event]="dynamicViewer.overlayClick" (dispatch)="
 			$event.code == comp.code ? inp.focused ? 0 : root.app.window.document.activeElement.blur() : 0;
-			$event.code == comp.code ? overlayClicked.execute(comp,inp,$event) : 0"></observe>
+			$event.code == comp.code ? finalizeOverlayClick.execute(comp,inp,$event) : 0"></observe>
 </input-date>

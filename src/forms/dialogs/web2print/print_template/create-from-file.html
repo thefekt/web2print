@@ -17,8 +17,10 @@
 				[disabled]="force.value"
 			    api="initTemplateContentsUploaded" require="w2p.remote"  [args]="[document.value]"
 		>
-			   
-            <remote #res2
+			<div *ngIf="res1?.value?.err" style="font-size:16px;color:red">
+				{{res1.value?.err}}
+			</div>
+            <remote #res2 *ngIf="!res1.value?.err"
 				[dependency]="res1"
 				require="w2p.remote"
 				[api]="!force.value ? 'renderTemplateOnce' : 'renderTemplate'"
@@ -46,7 +48,7 @@
 		<mat-icon>close</mat-icon>
 		<span fxHide.xs><i18n>BUTTON_WEB_CLOSE</i18n></span>
 	</button>
-	<button mat-button (click)="onSubmit.execute()" *ngIf="!force.value">
+	<button mat-button (click)="onSubmit.execute()" *ngIf="!force.value && res1.ready && !res1.value?.err">
 		<mat-icon>add</mat-icon>
 		<span fxHide.xs><i18n>INFO_ADD</i18n></span>
 	</button>

@@ -11,7 +11,13 @@
 	[object]="generatedPreview.value"	
 	(dblClick)="sidenavOpen.value && root.app.mediaSize == 'xs' ? sidenavOpen.value=false : dynamicViewer.OSDZoomPositionEvent($event)"	
 	(refreshed)="onRefresh.execute()"
+	(overlayClick)=" 
+		overlayClicked.emit(root.merge({},$event,{
+			code:($event.code||'').indexOf('(') > 0  ? $event.code.substring(0,$event.code.lastIndexOf('(')) : $event.code
+		}));
+	"
 ></viewer>
+<observe #overlayClicked></observe>
 <script #onRefresh [params]="{cfocused:cfocused,lastChg:lastChg,root:root,getOverlayElement:getOverlayElement,dynamicViewer:dynamicViewer}">
 	clearTimeout(dynamicViewer._tm0);
 	dynamicViewer._tm0=setTimeout(function(){
@@ -28,5 +34,15 @@
 		}
 	},150);
 </script>
-
-	
+<script #onEntryFocused [params]="{root:root,dynamicViewer:dynamicViewer,generatedOverlays:generatedOverlays}">  
+	var comp = args[0];
+	var code = comp.code;
+	for (var e of generatedOverlays.value||[]) if (e.page == dynamicViewer.page) {
+		var c = e.code;
+		var x = c.lastIndexOf('(');
+		if (x > 0) c = c.substring(0,x);
+		if (c == code)
+			return;	
+	}
+	dynamicViewer.gotoPage(comp.dest_page-1);
+</script>	

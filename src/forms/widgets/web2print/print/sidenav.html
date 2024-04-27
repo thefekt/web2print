@@ -35,9 +35,9 @@
 	</div>
 	<div fxFlex style="position:relative">
 		<div *ngIf="templateObject?.value?.contents?.length" style="position:absolute;left:0;top:0;right:0;bottom:0" simplebar>
-		  	<div style="margin:0 14px;margin-bottom:2px">
+		  	<div style="margin:0 14px;margin-bottom:2px"><!-- [message]="cat.sfx"  -->
 				<form-category-panel *ngFor="let cat of templateObject.value.contents;last as last;first as first" 
-					[expanded]="true" [caption]="cat.name" [message]="cat.sfx" 
+					[expanded]="true" [caption]="cat.name" 
 					style="margin:5px 0"
 					[style.margin-bottom]="!last ? '14px' : '0px'" 
 					#cpanel

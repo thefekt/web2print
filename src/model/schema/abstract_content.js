@@ -16,7 +16,7 @@ module.exports = {
 			},
 		},
 		icon : 'data_object',
-		forms : require.resolve("./abstract_content.forms")
+		forms : require.resolve("./abstract_content.forms.def")
 	},
 	'varchar_content' : {
 		inherits : 'web2print.abstract_content',

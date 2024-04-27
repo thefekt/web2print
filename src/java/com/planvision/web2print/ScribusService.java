@@ -57,7 +57,6 @@ import com.planvision.visionr.core.schema.DBModule;
 import com.planvision.visionr.core.schema.DBObjectDef;
 import com.planvision.visionr.core.vsql.VSQLCompiledCode;
 import com.planvision.visionr.host.JavaHost;
-import com.planvision.visionr.host.core.context.AccessGroupManager;
 import com.planvision.visionr.host.core.context.VRSessionContext;
 import com.planvision.visionr.host.core.scripting.api.Common;
 import com.planvision.visionr.host.core.scripting.api.Require;
@@ -77,7 +76,7 @@ import com.planvision.web2print.SLAXML.XMLHandler;
 
 //Servicing TMS like request for document preview with OpenSeaDragon
 public class ScribusService {
-
+	
 	private static String _executable = null;
 
 	private static class ProcessInfo {
@@ -598,39 +597,59 @@ public class ScribusService {
 	}
 
 	// ---------------------------------------------------------------------
-	@HostAccess.Export 
+	@HostAccess.Export
 	public Value initTemplateContents(Value tmpl) throws VException {
-		Value dirr=null;
-		boolean isi=JSEngine.isInstance(tmpl);
+		Value dirr = null;
+		boolean isi = JSEngine.isInstance(tmpl);
 		if (isi) {
-			VSQLCompiledCode nparent = HostImpl.me.compileCachedVSQL(DBModule.g("documents").getSchemaByCode("folder"), "SELECT id,objectdef WHERE path = :PATH");
+			VSQLCompiledCode nparent = HostImpl.me.compileCachedVSQL(DBModule.g("documents").getSchemaByCode("folder"),
+					"SELECT id,objectdef WHERE path = :PATH");
 			ParamsHash params = new ParamsHash();
-			String dirp = "/web2print/"+tmpl.getMember("uuid").asString()+"/defaults";
+			String dirp = "/web2print/" + tmpl.getMember("uuid").asString() + "/defaults";
 			params.put("PATH", dirp);
-			VResultSet rs = HostImpl.me.getConnection().executeQuery(nparent,params,VRSessionContext.accessContextAdmin);
+			VResultSet rs = HostImpl.me.getConnection().executeQuery(nparent, params,
+					VRSessionContext.accessContextAdmin);
 			try {
-				if (!rs.next()) throw new VException("Unable to find defaults directory : "+dirp);
-				dirr=ObjectReference.make(rs.getLong(1), rs.getInt(2)).getJSObj();
+				if (!rs.next())
+					throw new VException("Unable to find defaults directory : " + dirp);
+				dirr = ObjectReference.make(rs.getLong(1), rs.getInt(2)).getJSObj();
 			} finally {
 				rs.close();
 			}
 		}
-		final Value dirrf=dirr;
-				
-		final String key =  "rndr-"+tmpl.getMember("document").getMember("id").asLong();
-		 Callback cb = new Callback() {
+		final Value dirrf = dirr;
+
+		Value ext = tmpl.getMember("document").getMember("extension");
+		if (ext == null || ext.isNull() || !ext.getMember("code").isString()
+				|| !ext.getMember("code").asString().equalsIgnoreCase("ZIP")) {
+			Value te = JSEngine.newEmptyObject();
+			te.putMember("err", "ZIP file expected!");
+			return te;
+		}
+		final String key = "rndr-" + tmpl.getMember("document").getMember("id").asLong();
+		Callback cb = new Callback() {
 			@Override
 			public Value execute() throws VException {
-				/*File outdir = */syncTemplate(tmpl);
+				/* File outdir = */syncTemplate(tmpl);
 				Value cdata = getAvailableContents(key);
 				Value contents = cdata.getMember("entries");
 				Value cats = cdata.getMember("categories");
-				Value userRoleEveryone = ObjectReference.make(DBConstants.USER_ROLE_EVERYONE,DBConstants.CORE_USER_ROLE_OBJECTDEF).getJSObj(); // TODO DO NOT ADD EVERYONE, ADD ACCESS DISABLED PROPERTIES category
+				Value userRoleEveryone = ObjectReference
+						.make(DBConstants.USER_ROLE_EVERYONE, DBConstants.CORE_USER_ROLE_OBJECTDEF).getJSObj(); // TODO
+																												// DO
+																												// NOT
+																												// ADD
+																												// EVERYONE,
+																												// ADD
+																												// ACCESS
+																												// DISABLED
+																												// PROPERTIES
+																												// category
 				if (isi) {
 					Value x = tmpl.getMember("contents");
 					if (!x.isNull()) {
-						int sz = (int)x.getArraySize();
-						for (int i=0;i<sz;i++) {
+						int sz = (int) x.getArraySize();
+						for (int i = 0; i < sz; i++) {
 							Value o = x.getArrayElement(i);
 							o.getMember("delete").execute();
 							o.getMember("commit").execute();
@@ -638,186 +657,207 @@ public class ScribusService {
 					}
 					x = tmpl.getMember("categories_content");
 					if (!x.isNull()) {
-						int sz = (int)x.getArraySize();
-						for (int i=0;i<sz;i++) {
+						int sz = (int) x.getArraySize();
+						for (int i = 0; i < sz; i++) {
 							Value o = x.getArrayElement(i);
 							o.getMember("delete").execute();
 							o.getMember("commit").execute();
 						}
 					}
-					Value odcat  = ((DBObjectDefImpl)DBModule.g("web2print").getSchemaByCode("category_content").impl()).getJSProxy();
+					Value odcat = ((DBObjectDefImpl) DBModule.g("web2print").getSchemaByCode("category_content").impl())
+							.getJSProxy();
 					for (String catcode : cats.getMemberKeys().toArray(new String[cats.getMemberKeys().size()])) {
 						Value nameByLang = cats.getMember(catcode);
-						Value cat  = odcat.newInstance();
-						cat.putMember("code",catcode);
+						Value cat = odcat.newInstance();
+						cat.putMember("code", catcode);
 						cat.putMember("print_template", tmpl);
 						for (String lc : nameByLang.getMemberKeys()) {
 							DBLang l = DBLang.g(lc);
-							if (l == null) continue;
-							cat.getMember("setI18n").execute("name",l.getCode(),nameByLang.getMember(lc).asString());
+							if (l == null)
+								continue;
+							cat.getMember("setI18n").execute("name", l.getCode(), nameByLang.getMember(lc).asString());
 						}
 						cats.putMember(catcode, cat);
-						cat.putMember("access_read",userRoleEveryone);
+						cat.putMember("access_read", userRoleEveryone);
 					}
 				}
 				Value arr = JSEngine.newEmptyArray();
-				int sz = (int)contents.getArraySize();
-		        for (var i=0;i<sz;i++) 
-		        {
-		        	Value e = contents.getArrayElement(i);
-		        	String type = e.getMember("type").asString();
-                    String code = e.getMember("code").asString();
-                    if (isi && code.equals("$TEMPLATE$")) {
-                    	_genCommonName(tmpl,e);
-                    	continue;
-                    }
-                    String cat = e.hasMember("category") ? e.getMember("category").asString() : null;
-                    Value p = e.getMember("page");
-		            switch (type) 
-		            {
-		            	case "integer" : 
-		            	case "double" : 
-		            	case "datetime" : 
-		            	case "time" : 
-		            	case "date" : 
-		            	case "text" : 
-		                case "varchar" : {
-		                	Value c = _genCommonInput(code,type,p,tmpl,e);
-		                	if (cat != null)
-		                		c.putMember("category", cats.getMember(cat));
-		                	Value cc = c.getMember("commit");
-			                if (cc != null) cc.execute();
-		                    arr.setArrayElement(arr.getArraySize(),c);
-		                    break; }
-		                case "indexed_color" : {
-		                    Value c;
-		                    if (isi) {
-		                    	c = ((DBObjectDefImpl)DBModule.g("web2print").getSchemaByCode("indexed_color_content").impl()).getJSProxy().newInstance();
-		                    	c.putMember("template", tmpl);
-		                    	_genCommonName(c,e);
-		                    } else {
-		                    	c = JSEngine.newEmptyObject();
-		                    	c.putMember("type",type);
-		                    }
-		                	if (cat != null)
-		                		c.putMember("category", cats.getMember(cat));
-		                    c.putMember("code", code);
-		                    c.putMember("dest_page", p);
-		                    c.putMember("initial_value", "CMYK(0,30,100,0)"); // TODO
-		                    Value cc = c.getMember("commit");
-		                    if (cc != null) cc.execute();
-		                    arr.setArrayElement(arr.getArraySize(),c);
-		                    break; }
-		                case "image" : {
-		                    Value c;
-		                    if (isi) {
-		                    	c = ((DBObjectDefImpl)DBModule.g("web2print").getSchemaByCode("image_content").impl()).getJSProxy().newInstance();
-		                    	c.putMember("template", tmpl);
-		                    	_genCommonName(c,e);
-		                    } else {
-		                    	c = JSEngine.newEmptyObject();
-		                    	c.putMember("type",type);
-		                    }
-		                	if (cat != null)
-		                		c.putMember("category", cats.getMember(cat));
-		                    c.putMember("code", code);
-		                    c.putMember("dest_page", p);
-		                    c.putMember("proportion", e.getMember("proportion"));
-		                    
-		                    Value f = e.getMember("files");
-		                    if (f != null && !f.isNull() && isi) {
-		                    	for (int r=0;r<f.getArraySize();r++) {
-		                    		String fpath = f.getArrayElement(r).asString();
-		                    		int x1 = fpath.lastIndexOf('.');
-		                    		int x2 = fpath.lastIndexOf('.',x1-1);
-		                    		String lang = fpath.substring(x2+1,x1);
-			                    	String ext = fpath.substring(x1+1);
-			                    	TmpFile a = new TmpFile(ext);
-			                    	try {
-				                    	try {
-											FileUtils.copyFile(new File(fpath),a.getFile());
-											String docc = code+"."+lang+"."+ext;
-					                    	Value doc = VSC.callVSC("doc.misc.uploadInDir",new Value[] { dirrf, JSConverter.VR2JS(docc),JSEngine.UNDEFINED,JSConverter.VR2JS(ext),JSEngine.UNDEFINED/*description*/,JSConverter.VR2JS(a)});
-					                    	doc.putMember("code",docc); // force code exact (no prefix TEST-.. ) 
-					                    	//doc.putMember("parent",dirrf);
-					                    	doc.getMember("commit").execute();
-					                    	
-					                    	//c.putMember("initial_value", doc); NO i18n value, because images by lang (i18n)
-				                    	} catch (VException ex) {
-				                    		HostImpl.me.getLogger().error("Error uploading default image as document "+ex);
-				                    	}
-									} catch (IOException e1) {
-										HostImpl.me.getLogger().error(e1);
-									}
-		                    	}
-		                    }
-		                    Value cc = c.getMember("commit");
-		                    if (cc != null) cc.execute();
-		                    arr.setArrayElement(arr.getArraySize(),c);
-		                    break; }
-		                case "table" : {
-		                	Value c;
-		                    if (isi) {
-		                    	c = ((DBObjectDefImpl)DBModule.g("web2print").getSchemaByCode("table_content").impl()).getJSProxy().newInstance();
-		                    	c.putMember("template", tmpl);
-		                    	_genCommonName(c,e);
-		                    	
-		                    	// TABLE DATA, JSON BY LANGUAGE 
-			                    Value dta = e.getMember("data"); 
-			                    if (dta != null && dta.isString()) {
-			                    	dta = JSEngine.jsonParse(dta.asString());
-				                    for (DBLang l : HostImpl.me.getActiveLanguages()) {
-				                    	Value tda = dta.getMember(l.getCode());
-				                    	if (!tda.isNull())
-					                    c.getMember("setI18n").execute("table_data",l.getCode(),JSEngine.jsonStringify(tda));
-				                    }
-			                    }
-		                    } else {
-		                    	c = JSEngine.newEmptyObject();
-		                    	c.putMember("type",type);
-		                    	c.putMember("table_data", e.getMember("data"));
-		                    }
-		                	if (cat != null)
-		                		c.putMember("category", cats.getMember(cat));
-		                    c.putMember("code", code);
-		                    c.putMember("dest_page", p);
-		                    c.putMember("column_count", e.getMember("columns"));
-		                    c.putMember("row_count", e.getMember("rows"));
+				int sz = (int) contents.getArraySize();
+				for (var i = 0; i < sz; i++) {
+					Value e = contents.getArrayElement(i);
+					String type = e.getMember("type").asString();
+					String code = e.getMember("code").asString();
+					if (isi && code.equals("$TEMPLATE$")) {
+						_genCommonName(tmpl, e);
+						continue;
+					}
+					String cat = e.hasMember("category") ? e.getMember("category").asString() : null;
+					Value p = e.getMember("page");
+					switch (type) {
+					case "integer":
+					case "double":
+					case "datetime":
+					case "time":
+					case "date":
+					case "text":
+					case "varchar": {
+						Value c = _genCommonInput(code, type, p, tmpl, e);
+						if (cat != null)
+							c.putMember("category", cats.getMember(cat));
+						Value cc = c.getMember("commit");
+						if (cc != null)
+							cc.execute();
+						arr.setArrayElement(arr.getArraySize(), c);
+						break;
+					}
+					case "indexed_color": {
+						Value c;
+						if (isi) {
+							c = ((DBObjectDefImpl) DBModule.g("web2print").getSchemaByCode("indexed_color_content")
+									.impl()).getJSProxy().newInstance();
+							c.putMember("template", tmpl);
+							_genCommonName(c, e);
+						} else {
+							c = JSEngine.newEmptyObject();
+							c.putMember("type", type);
+						}
+						if (cat != null)
+							c.putMember("category", cats.getMember(cat));
+						c.putMember("code", code);
+						c.putMember("dest_page", p);
+						c.putMember("initial_value", "CMYK(0,30,100,0)"); // TODO
+						Value cc = c.getMember("commit");
+						if (cc != null)
+							cc.execute();
+						arr.setArrayElement(arr.getArraySize(), c);
+						break;
+					}
+					case "image": {
+						Value c;
+						if (isi) {
+							c = ((DBObjectDefImpl) DBModule.g("web2print").getSchemaByCode("image_content").impl())
+									.getJSProxy().newInstance();
+							c.putMember("template", tmpl);
+							_genCommonName(c, e);
+						} else {
+							c = JSEngine.newEmptyObject();
+							c.putMember("type", type);
+						}
+						if (cat != null)
+							c.putMember("category", cats.getMember(cat));
+						c.putMember("code", code);
+						c.putMember("dest_page", p);
+						c.putMember("proportion", e.getMember("proportion"));
 
-		                    Value cc = c.getMember("commit");
-		                    if (cc != null) cc.execute();
-		                    arr.setArrayElement(arr.getArraySize(),c);
-		                    break; }
-		                case "qrcode" : {
-		                	Value c;
-		                    if (isi) {
-		                    	c = ((DBObjectDefImpl)DBModule.g("web2print").getSchemaByCode("qrcode_content").impl()).getJSProxy().newInstance();
-		                    	c.putMember("template", tmpl);
-		                    	_genCommonName(c,e);
-		                    } else {
-		                    	c = JSEngine.newEmptyObject();
-		                    	c.putMember("type",type);
-		                    }
-		                	if (cat != null)
-		                		c.putMember("category", cats.getMember(cat));
-		                    c.putMember("code", code);
-		                    c.putMember("dest_page", p);
-		                    c.putMember("initial_value", CorePrefs.getServerHostExternal());
-		                    Value cc = c.getMember("commit");
-		                    if (cc != null) cc.execute();
-		                    arr.setArrayElement(arr.getArraySize(),c);
-		                    break; }		                
-		                default : 
-		                	HostImpl.me.getLogger().warn("!!!TODO!!! initTemplateContents for type "+type);
-		            }
-	            }
-		        tmpl.putMember("contents",arr);
-                Value cc = tmpl.getMember("commit");
-                if (cc != null) cc.execute();
-		        return tmpl;
+						Value f = e.getMember("files");
+						if (f != null && !f.isNull() && isi) {
+							for (int r = 0; r < f.getArraySize(); r++) {
+								String fpath = f.getArrayElement(r).asString();
+								int x1 = fpath.lastIndexOf('.');
+								int x2 = fpath.lastIndexOf('.', x1 - 1);
+								String lang = fpath.substring(x2 + 1, x1);
+								String ext = fpath.substring(x1 + 1);
+								TmpFile a = new TmpFile(ext);
+								try {
+									try {
+										FileUtils.copyFile(new File(fpath), a.getFile());
+										String docc = code + "." + lang + "." + ext;
+										Value doc = VSC.callVSC("doc.misc.uploadInDir",
+												new Value[] { dirrf, JSConverter.VR2JS(docc), JSEngine.UNDEFINED,
+														JSConverter.VR2JS(ext), JSEngine.UNDEFINED/* description */,
+														JSConverter.VR2JS(a) });
+										doc.putMember("code", docc); // force code exact (no prefix TEST-.. )
+										// doc.putMember("parent",dirrf);
+										doc.getMember("commit").execute();
+
+										// c.putMember("initial_value", doc); NO i18n value, because images by lang
+										// (i18n)
+									} catch (VException ex) {
+										HostImpl.me.getLogger()
+												.error("Error uploading default image as document " + ex);
+									}
+								} catch (IOException e1) {
+									HostImpl.me.getLogger().error(e1);
+								}
+							}
+						}
+						Value cc = c.getMember("commit");
+						if (cc != null)
+							cc.execute();
+						arr.setArrayElement(arr.getArraySize(), c);
+						break;
+					}
+					case "table": {
+						Value c;
+						if (isi) {
+							c = ((DBObjectDefImpl) DBModule.g("web2print").getSchemaByCode("table_content").impl())
+									.getJSProxy().newInstance();
+							c.putMember("template", tmpl);
+							_genCommonName(c, e);
+
+							// TABLE DATA, JSON BY LANGUAGE
+							Value dta = e.getMember("data");
+							if (dta != null && dta.isString()) {
+								dta = JSEngine.jsonParse(dta.asString());
+								for (DBLang l : HostImpl.me.getActiveLanguages()) {
+									Value tda = dta.getMember(l.getCode());
+									if (!tda.isNull())
+										c.getMember("setI18n").execute("table_data", l.getCode(),
+												JSEngine.jsonStringify(tda));
+								}
+							}
+						} else {
+							c = JSEngine.newEmptyObject();
+							c.putMember("type", type);
+							c.putMember("table_data", e.getMember("data"));
+						}
+						if (cat != null)
+							c.putMember("category", cats.getMember(cat));
+						c.putMember("code", code);
+						c.putMember("dest_page", p);
+						c.putMember("column_count", e.getMember("columns"));
+						c.putMember("row_count", e.getMember("rows"));
+
+						Value cc = c.getMember("commit");
+						if (cc != null)
+							cc.execute();
+						arr.setArrayElement(arr.getArraySize(), c);
+						break;
+					}
+					case "qrcode": {
+						Value c;
+						if (isi) {
+							c = ((DBObjectDefImpl) DBModule.g("web2print").getSchemaByCode("qrcode_content").impl())
+									.getJSProxy().newInstance();
+							c.putMember("template", tmpl);
+							_genCommonName(c, e);
+						} else {
+							c = JSEngine.newEmptyObject();
+							c.putMember("type", type);
+						}
+						if (cat != null)
+							c.putMember("category", cats.getMember(cat));
+						c.putMember("code", code);
+						c.putMember("dest_page", p);
+						c.putMember("initial_value", CorePrefs.getServerHostExternal());
+						Value cc = c.getMember("commit");
+						if (cc != null)
+							cc.execute();
+						arr.setArrayElement(arr.getArraySize(), c);
+						break;
+					}
+					default:
+						HostImpl.me.getLogger().warn("!!!TODO!!! initTemplateContents for type " + type);
+					}
+				}
+				tmpl.putMember("contents", arr);
+				Value cc = tmpl.getMember("commit");
+				if (cc != null)
+					cc.execute();
+				return tmpl;
 			}
-		 };
-		 return Locker.executeInTempFileLock(key+".INIT",cb);
+		};
+		return Locker.executeInTempFileLock(key + ".INIT", cb);
 	}
 
 	@HostAccess.Export
@@ -1369,7 +1409,11 @@ public class ScribusService {
 				}
 				// ---------------------------------------------
 				Value slat = getSLATemplateLocations(f);
+				
 				Value regions = slat.getMember("regs"); // only SLA regions, embedded come later
+				//Value regions = JSEngine.newEmptyArray();
+	
+				
 				Value emds = slat.getMember("emds"); // embedded documents location
 				// ---------------------------------------------
 				Value toReplace = _getTemplateJSON(tmpl, data, lang, tmpdir, regions, emds);
@@ -1503,7 +1547,24 @@ public class ScribusService {
 		File of = new File(opath);
 		if (!templateFile.exists())
 			return returnErrorAsDocument(of, name);
-
+		//-----------------------------------------------------------------------------------
+		/*boolean doneLocs=false; 
+		File templateLocsCached = new File(templateFile.getPath()+".locs.json");
+		if (templateLocsCached.canRead()) {
+			String s;
+			try {
+				s = Files.readString(templateLocsCached.toPath(), StandardCharsets.UTF_8);
+				Value v = JSEngine.jsonParse(s);
+				for (int i=0;i<v.getArraySize();i++) 
+					regions.setArrayElement(regions.getArraySize(), v.getArrayElement(i));
+				doneLocs=true;
+			} catch (IOException e) {
+				templateLocsCached.delete();
+			}
+		}
+		boolean doneLocs=true;*/
+		//-----------------------------------------------------------------------------------
+		
 		int ntry = 0;
 		ProcessInfo pi = null;
 		for (; ntry < 20; ntry++) {
@@ -1520,8 +1581,31 @@ public class ScribusService {
 					if (result != null) {
 						if (result.equals("INTERNAL ERROR"))
 							return returnErrorAsDocument(of, name);
-						if (result.equals("DONE"))
+						if (result.equals("DONE")) {
+							// EXTRACT LOCATIONS
+							/*if (!doneLocs) {
+								PDDocument d = Loader.loadPDF(of);
+								try  {
+									Location[] locs = PDFEmbeddedLocations.getLocations(d, null);
+									Value t = JSEngine.newEmptyArray();
+									for (Location l : locs) {
+										Value a = JSEngine.newEmptyObject();
+										a.putMember("x", l.x);
+										a.putMember("y", l.y);
+										a.putMember("w", l.width);
+										a.putMember("h", l.height);
+										a.putMember("page", l.page);
+										a.putMember("code", l.code);
+										t.setArrayElement(t.getArraySize(), a);
+										regions.setArrayElement(regions.getArraySize(), a);
+									}
+									Files.writeString(templateLocsCached.toPath(), JSEngine.jsonStringify(t).asString(), StandardCharsets.UTF_8);
+								} finally {
+									d.close();
+								}
+							}*/
 							return returnFileAsFocument(of, name, regions);
+						}
 						continue;
 					}
 					HostImpl.me.getLogger().error("ScribusService.convert returned : " + result);
@@ -1733,6 +1817,21 @@ public class ScribusService {
 				cached.delete();
 			}
 		}
+		
+		// TODO UNKNOW REASON ONLY Y AXIS COORDINATES ARE SCALLED PREVIEW PDF !!! TODO TICKET TICKET TICKET 
+		// TODO UNKNOW REASON ONLY Y AXIS COORDINATES ARE SCALLED PREVIEW PDF !!! TODO TICKET TICKET TICKET 
+		// TODO UNKNOW REASON ONLY Y AXIS COORDINATES ARE SCALLED PREVIEW PDF !!! TODO TICKET TICKET TICKET 
+		double MAGIC = 1.0; // NO SCALE Y
+		File tt = new File(templateFile.getParentFile(),"magic.txt");
+		if (tt.canRead()) {
+			String s;
+			try {
+				s = Files.readString(tt.toPath(), StandardCharsets.UTF_8);
+				MAGIC = Double.parseDouble(s);
+			} catch (Exception e) {
+				HostImpl.me.getLogger().error(e);
+			}
+		}
 		Value regs = JSEngine.newEmptyArray();
 		Value emds = JSEngine.newEmptyObject();
 
@@ -1746,13 +1845,18 @@ public class ScribusService {
 		} catch (ParserConfigurationException | SAXException | IOException e) {
 			throw new VException(e);
 		}
-
+		final double bleedTopLeftCxCy[] = new double[2];
+		final double _MAGIC=MAGIC;
 		// ADD EMBEDDED DOCUMENTS
 		SLAXML.walkAll(document, new XMLHandler() {
 			@Override
 			public void handleNode(Node node) throws VException {
 
 				switch (node.getNodeName()) {
+				case "PDF":
+					bleedTopLeftCxCy[0] = Double.parseDouble(node.getAttributes().getNamedItem("BTop").getNodeValue());;
+					bleedTopLeftCxCy[1] = Double.parseDouble(node.getAttributes().getNamedItem("BLeft").getNodeValue());;
+					break;
 				case "PAGE":
 					double docDim[] = new double[4];
 					docDim[0] = Double.parseDouble(node.getAttributes().getNamedItem("PAGEWIDTH").getNodeValue());
@@ -1783,16 +1887,25 @@ public class ScribusService {
 					Node op = node.getAttributes().getNamedItem("OwnPage");
 					if (op == null)
 						return;
+					/* EMBEDDED !!!! */
 					double[] dd = docDimByPage.get(Integer.parseInt(op.getNodeValue()));
 					double x = Double.parseDouble(nx.getTextContent());
 					double y = Double.parseDouble(ny.getTextContent());
 					double w = Double.parseDouble(nw.getTextContent());
 					double h = Double.parseDouble(nh.getTextContent());
+					
+					x-=dd[2];
+					y-=dd[3];
+					x+=bleedTopLeftCxCy[1];
+					y+=bleedTopLeftCxCy[0];
+					y*=_MAGIC;
+
+					
 					Value t = JSEngine.newEmptyObject();
 					t.putMember("sx", w / dd[0]); // 1.scalex
 					t.putMember("sy", h / dd[1]); // 1.scaley
-					t.putMember("tx", x - dd[2]); // 2.translateX
-					t.putMember("ty", y - dd[3]); // 2.translateY
+					t.putMember("tx", x); // 2.translateX
+					t.putMember("ty", y); // 2.translateY
 					emds.putMember(filen, t);
 					break;
 				}
@@ -1817,10 +1930,18 @@ public class ScribusService {
 				double y = Double.parseDouble(ny.getTextContent());
 				double w = Double.parseDouble(nw.getTextContent());
 				double h = Double.parseDouble(nh.getTextContent());
-				Value a = JSEngine.newEmptyObject();
 				double[] dd = docDimByPage.get(page - 1);
-				a.putMember("x", x - dd[2]);
-				a.putMember("y", y - dd[3]);
+				
+				x -= dd[2];
+				y -= dd[3];
+				
+				x+=bleedTopLeftCxCy[1];
+				y+=bleedTopLeftCxCy[0];
+				y*=_MAGIC;
+
+				Value a = JSEngine.newEmptyObject();
+				a.putMember("x", x);
+				a.putMember("y", y);
 				a.putMember("w", w);
 				a.putMember("h", h);
 				a.putMember("page", page - 1);

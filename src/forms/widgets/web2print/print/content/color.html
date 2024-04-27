@@ -57,6 +57,6 @@
             }
             DBG && console.log(`#chval + ${val.value}`);
         </script>
-        <observe [event]="dynamicViewer.overlayClick" (dispatch)="$event.code == comp.code ? overlayClicked.execute(comp,undefined,$event,froot) : 0"></observe>
+        <observe [event]="dynamicViewer.overlayClick" (dispatch)="$event.code == comp.code ? finalizeOverlayClick.execute(comp,undefined,$event,froot) : 0"></observe>
     </div>
 </div>

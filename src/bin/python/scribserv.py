@@ -233,42 +233,42 @@ def SelectAllText(textframe):
 def processTemplate(xlat):
     if xlat is None:
         return
-    
-    page = 1;
-    
-    pagenum = scribus.pageCount();
-    while page <= pagenum:
-    	logger.info(r'.process page ' + str(page));
-    	scribus.gotoPage(page);
-    	pitems = scribus.getPageItems();
-    	
-    	for item in [p for p in pitems if p[1] == 4]:
-    		i0 = str(item[0]);
-    		if (i0.startswith("(")):
-    			code = i0[1:-1];
-    			
-    			phc = None;
-    			
-    			if i0 in Automator3.codes:
-    				phc = Automator3.codes[i0];
-    			else:
-    				phc = scribus.getAllText(i0);
-    				Automator3.codes[i0] = phc;
 
-    			val = xlat[code];
-    			if not val:
-    				val = phc;
-    				
-    			if val:
-		    		logger.info(r'..process item: %s : %s ', code,phc);
-		    		scribus.deselectAll();
-		    		scribus.deleteText(i0);
-		    		scribus.insertText(str(val), 0, i0);
-    		
-    	page += 1;
-	
-    logger.info('! done processing template');
-    return
+    page = 1
+    pagenum = scribus.pageCount()
+    while page <= pagenum:
+        logger.info(r'.process page ' + str(page))
+        scribus.gotoPage(page)
+        pitems = scribus.getPageItems()
+
+        for item in [p for p in pitems if p[1] == 4]:
+            i0 = str(item[0])
+            if i0.startswith("("):
+                code = i0[1:-1]
+
+                if '(' in code:
+                    lp = code.rfind('(')
+                    code = code[:lp]
+
+                if i0 in Automator3.codes:
+                    phc = Automator3.codes[i0]
+                else:
+                    phc = scribus.getAllText(i0)
+                    Automator3.codes[i0] = phc
+                val = xlat.get(code, phc)  # This handles the case if 'code' is not in 'xlat'
+                if val:
+                    nval = str(val)
+                    olen = scribus.getTextLength(i0)
+                    nlen = len(nval)
+                    scribus.insertText(nval, 0, i0)
+                    scribus.selectText(nlen, olen, i0)
+                    scribus.deleteText(i0)
+                    scribus.deselectAll()
+
+        page += 1
+
+    logger.info('! done processing template')
+    return;
 # ----------------------------------------------------------------------------
 class Automator3:    
     def __init__(self, forward):

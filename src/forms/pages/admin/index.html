@@ -1,18 +1,41 @@
-<variable #selectionPaths persist></variable>
-<variable #state persist></variable>
-<variable #openPaths persist></variable>
-<variable #sidenavOpen persist></variable>
-<variable #type persist></variable>
-<variable #hierarchy persist></variable>
+<!-- @ICON photo_prints -->
+<!-- @ACCESS.READ customer:admin -->
 
-<variable #name value="Administration"></variable>
-<include shared ref="/app/layouts/common"></include>
-<ng-template #content>
-	<objectsview embed menu
-		[dependency]="[openPaths,selectionPaths,hierarchy,state]"
-		[(sidenavOpen)]="sidenavOpen.value" [(hierarchy)]="hierarchy.value"
-		[(state)]="state.value" [(openPaths)]="openPaths.value"
-		[(selectionPaths)]="selectionPaths.value"
-		[(type)]="type.value"
-		schema="web2print.print_template" #view></objectsview>
-</ng-template>
+<!-- NAME@en-US Web2Print -->
+
+<variable #name [value]="root.db.web2print"></variable>
+<variable #pagedef [value]="{
+
+	categories : [
+		{
+			code : 'overview',
+			name : root.i18n('LABEL_OVERVIEW'),
+		},	
+		{
+			code : 'settings',
+			name : root.i18n('LABEL_SETTINGS')
+		}
+	],
+	entries : [
+		{
+			code : 'template',
+			type : 'schema',
+			schema : 'web2print.print_template',
+			category : 'overview'
+		},
+		{
+			code : 'document',
+			type : 'schema',
+			schema : 'documents.document',
+			category : 'overview'
+		},
+
+		{
+			type : 'settings',
+			category : 'settings',
+			module : 'web2print',
+			changes : false
+		}	
+	]
+}"></variable>
+<include shared ref="/widgets/model/page/common-main"></include>

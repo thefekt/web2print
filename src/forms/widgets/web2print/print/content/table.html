@@ -2,7 +2,7 @@
 <div *ngIf="comp.type == 'table'" #froot tabindex="-1" (click)="froot.focus()" (focus)="focused.value=true" (blur)="focused.value=false" 
 	style="position:relative;margin-bottom:14px" class="print-content-entry input-widget-mousedown-focus-trap">
     <variable #focused></variable>
-    <observe [event]="dynamicViewer.overlayClick" (dispatch)="$event.code == comp.code ?
+    <observe [event]="overlayClicked.dispatch" (dispatch)="$event.code == comp.code ?
         [btn._elementRef.nativeElement.click(),btn._elementRef.nativeElement.scrollIntoView()]
          : 0"></observe>
     <label style="font-size:13px" [style.color]="focused.value ? 'rgba(236,138,36,1)':'rgba(0,0,0,0.5)'">{{comp.NAME}}</label>

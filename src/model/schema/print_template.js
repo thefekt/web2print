@@ -33,7 +33,7 @@ module.exports = {
 			insert : events.onInsertobject,
 			delete : events.onDeleteObject
 		},
-		forms : require.resolve("./print_template.forms"), /* RESOLVE path */
+		forms : require.resolve("./print_template.forms.def"), /* RESOLVE path */
 		icon : 'photo_prints' /* material symbol font or img src path */
 	}
 }
