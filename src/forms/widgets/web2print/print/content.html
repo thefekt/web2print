@@ -41,8 +41,11 @@
 		var c = e.code;
 		var x = c.lastIndexOf('(');
 		if (x > 0) c = c.substring(0,x);
-		if (c == code)
+		if (c == code) {
+			dynamicViewer.fitOverlayIfNeeded(e.code);
 			return;	
+		}
 	}
 	dynamicViewer.gotoPage(comp.dest_page-1);
+	dynamicViewer.fitOverlayIfNeeded(comp.code);
 </script>	
