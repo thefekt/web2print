@@ -34,6 +34,19 @@
 		}
 	},150);
 </script>
+<!-- args[0] : code -->
+<script #getOverlayElement [params]="{root:root,generatedOverlays:generatedOverlays,dynamicViewer:dynamicViewer}">	
+	var code = args[0];
+	for (var e of generatedOverlays.value||[]) if (e.page == dynamicViewer.page) {
+		var c = e.code;
+		var x = c.lastIndexOf('(');
+		if (x > 0) c = c.substring(0,x);
+		if (c == code) 
+			return root.element.querySelector(`#${e.code.replace(/([^\w-])/g, '\\$1')}.w2p-print-entry-overlay`);
+	}
+	return root.element.querySelector(`#${code.replace(/([^\w-])/g, '\\$1')}.w2p-print-entry-overlay`);
+	
+</script>
 <script #onEntryFocused [params]="{root:root,dynamicViewer:dynamicViewer,generatedOverlays:generatedOverlays}">  
 	var comp = args[0];
 	var code = comp.code;

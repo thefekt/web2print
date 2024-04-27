@@ -257,11 +257,6 @@
 	}
 </script>
 
-<!-- args[0] : code -->
-<script #getOverlayElement [params]="{root:root}">	
-	return root.element.querySelector(`#${args[0].replace(/([^\w-])/g, '\\$1')}.w2p-print-entry-overlay`);
-</script>
-
 <!-- SUBMIT -->
 <script #onSubmit [params]="{root:root,custom:custom,templateObject:templateObject}">
 	document.activeElement.blur();

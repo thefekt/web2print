@@ -1817,21 +1817,6 @@ public class ScribusService {
 				cached.delete();
 			}
 		}
-		
-		// TODO UNKNOW REASON ONLY Y AXIS COORDINATES ARE SCALLED PREVIEW PDF !!! TODO TICKET TICKET TICKET 
-		// TODO UNKNOW REASON ONLY Y AXIS COORDINATES ARE SCALLED PREVIEW PDF !!! TODO TICKET TICKET TICKET 
-		// TODO UNKNOW REASON ONLY Y AXIS COORDINATES ARE SCALLED PREVIEW PDF !!! TODO TICKET TICKET TICKET 
-		double MAGIC = 1.0; // NO SCALE Y
-		File tt = new File(templateFile.getParentFile(),"magic.txt");
-		if (tt.canRead()) {
-			String s;
-			try {
-				s = Files.readString(tt.toPath(), StandardCharsets.UTF_8);
-				MAGIC = Double.parseDouble(s);
-			} catch (Exception e) {
-				HostImpl.me.getLogger().error(e);
-			}
-		}
 		Value regs = JSEngine.newEmptyArray();
 		Value emds = JSEngine.newEmptyObject();
 
@@ -1846,7 +1831,6 @@ public class ScribusService {
 			throw new VException(e);
 		}
 		final double bleedTopLeftCxCy[] = new double[2];
-		final double _MAGIC=MAGIC;
 		// ADD EMBEDDED DOCUMENTS
 		SLAXML.walkAll(document, new XMLHandler() {
 			@Override
@@ -1898,8 +1882,6 @@ public class ScribusService {
 					y-=dd[3];
 					x+=bleedTopLeftCxCy[1];
 					y+=bleedTopLeftCxCy[0];
-					y*=_MAGIC;
-
 					
 					Value t = JSEngine.newEmptyObject();
 					t.putMember("sx", w / dd[0]); // 1.scalex
@@ -1937,7 +1919,6 @@ public class ScribusService {
 				
 				x+=bleedTopLeftCxCy[1];
 				y+=bleedTopLeftCxCy[0];
-				y*=_MAGIC;
 
 				Value a = JSEngine.newEmptyObject();
 				a.putMember("x", x);
