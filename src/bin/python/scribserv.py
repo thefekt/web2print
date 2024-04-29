@@ -53,9 +53,10 @@ CONNECTION_TIMEOUT = 60
 INACTIVE_TIMEOUT = 120
 DOCUMENT_TIMEOUT = 120
 DEFAULT_PORT = 22022
-#'c:/t/t.txt' None
+#LOGFILE = 'c:/t/t.txt'
 LOGFILE = None
 
+import traceback
 import logging
 import re
 import socketserver
@@ -74,7 +75,7 @@ class ScribusDummy(object):
     @staticmethod
     def getColorNames():
         print('scribus.getColorNames()')
-        return ['{{COLOR1}}', '{{COLOR2}}']
+        return ['(COLOR1)', '(COLOR2}}']
 
     @staticmethod
     def changeColor(name, c, m, y, k):
@@ -194,13 +195,14 @@ def processColors(xlat):
         return
     logger.info('! process colors')
 
-    rclean = re.compile(r'[{}]')
-    rcmyk = re.compile(r'[(]*(?:(\d+)[\%\s,]*)[)]*')
+    rclean = re.compile(r'[()]')
+    rcmyk = re.compile(r'[(]*(?:(\d+(?:\.\d+)?)[\%\s,]*)[)]*'
+)
 
     try:
         colcodes = [rclean.sub('', n)
                     for n in scribus.getColorNames()
-                    if '{' in n and '}' in n]
+                    if '(' in n and ')' in n]
 
         logger.info("..colcodes %s", str(colcodes))
 
@@ -208,21 +210,21 @@ def processColors(xlat):
             if i in xlat:
                 logger.info('..%s => %s', i, xlat[i])
 
-        cn = {name: list(map(int, rcmyk.findall(xlat[name])))
+        cn = {name: list(map(float, rcmyk.findall(xlat[name])))
               for name in colcodes
               if name in xlat and ',' in xlat[name]}
 
         logger.info("..colors xlat %s ", str(cn))
 
         for name, val in cn.items():
-            cname = '{{%s}}' % name
-            scribus.changeColor(cname, *val)
-            logger.info('...replaced color %s => (%s)', cname, xlat[name])
+            cname = '(%s)' % name
+            scribus.changeColorCMYKFloat(cname, *val)
+            logger.info('...replaced color %s => %s', cname, xlat[name])
 
     except scribus.ScribusException as e:
         logger.error('..scribus failed: %s', e)
     except Exception as e:
-        logger.error('..standard error: %s', e)
+        logger.error('..standard error: %s', exc_info=True)
 # ----------------------------------------------------------------------------
 def SelectAllText(textframe):
 	texlen = scribus.getTextLength(textframe)

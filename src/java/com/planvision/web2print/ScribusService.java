@@ -209,11 +209,41 @@ public class ScribusService {
 		Map<String, Map<String, String>> code2InitialByLang = new HashMap(); // all values by lang !! type still not
 																				// known (i18n or not) !
 		Map<String, Double> code2ImageProportion = new HashMap();
+		Value dynamicColors = JSEngine.newEmptyObject(); // by code
+		
 		for (DBLang l : HostImpl.me.getActiveLanguages()) {
 			// template file (by lang or DEF)
 			String path = resolve(tmpDirKey, "template." + l.getCode() + ".sla");
 			File f = new File(path);
 			if (f.exists()) {
+				SLAXML.walkAll(f, new XMLHandler() {
+
+					@Override
+					public void handleNode(Node node) throws VException {
+						switch (node.getNodeName()) {
+							case "COLOR":
+								String name = node.getAttributes().getNamedItem("NAME").getNodeValue();
+								if (name.startsWith("(") && name.endsWith(")") && node.getAttributes().getNamedItem("SPACE").getNodeValue().equals("CMYK")) {
+									double C = Double.parseDouble( node.getAttributes().getNamedItem("C").getNodeValue() );
+									double M = Double.parseDouble( node.getAttributes().getNamedItem("M").getNodeValue() );
+									double Y = Double.parseDouble( node.getAttributes().getNamedItem("Y").getNodeValue() );
+									double K = Double.parseDouble( node.getAttributes().getNamedItem("K").getNodeValue() );
+									Value no = JSEngine.newEmptyObject();
+									
+									String cmyk = "("+C+" ,"+M+" ,"+Y+" ,"+K+")";
+									String code = "CMYK"+cmyk;
+									String rgb = cmykToRgb(C,M,Y,K);
+									no.putMember("CMYK", cmyk);
+									no.putMember("RGB", rgb);
+									no.putMember("CODE", code);
+									dynamicColors.putMember(name.substring(1,name.length()-1), no);
+								}
+								//<COLOR NAME="(COLOR)" SPACE="CMYK" C="4.31372549019608" M="2.74509803921569" Y="88.2352941176471" K="0"/>
+						}
+					}
+				
+				});
+				
 				SLAXML.walkContents(f, new ContentHandler() {
 					@Override
 					public void handleContent(String code, String text, int page, Node node) throws VException {
@@ -279,9 +309,29 @@ public class ScribusService {
 				boolean isqr = false;
 				Map<String, String> ival = code2InitialByLang.get(code);
 				switch (type) {
-				case "COLOR":
+				case "COLOR": {
+					String path = resolve(tmpDirKey, code + ".xlsx");
+					File tf = new File(path);
+					Value nd = JSEngine.newEmptyArray();
+					Value dc = dynamicColors.getMember(code);
+					if (dc != null && !dc.isNull()) 
+						nd.setArrayElement(nd.getArraySize(),dc);
+					if (tf.canRead()) {
+						Value ds = JSConverter.VR2JS((new Excel()).readExcelData(tf, true));
+						Value cols = ds.getMember("columns");
+						Value data = ds.getMember("data");
+						for (int j=0;j<data.getArraySize();j++) {
+							Value dj = data.getArrayElement(j);
+							Value nt = JSEngine.newEmptyObject();
+							for (int k=0;k<dj.getArraySize();k++) 
+								nt.putMember(cols.getArrayElement(k).getMember("name").asString(), dj.getArrayElement(k));
+							nd.setArrayElement(nd.getArraySize(),nt);
+						}
+					}
+					va.put("data",nd);
 					va.put("type", "indexed_color");
 					break;
+				}
 				case "QRCODE":
 				case "QR": /* ALIAS */
 					isqr = true;
@@ -712,20 +762,61 @@ public class ScribusService {
 					}
 					case "indexed_color": {
 						Value c;
+						Value data = e.getMember("data");
 						if (isi) {
+							Value cpx = ((DBObjectDefImpl)DBModule.g("web2print").getSchemaByCode("color").impl()).getJSProxy();
 							c = ((DBObjectDefImpl) DBModule.g("web2print").getSchemaByCode("indexed_color_content")
 									.impl()).getJSProxy().newInstance();
 							c.putMember("template", tmpl);
 							_genCommonName(c, e);
+							if (data != null && !data.isNull()) 
+							{
+								for (int j=0;j<data.getArraySize();j++) {
+									Value d = data.getArrayElement(j);
+									Value a = d.getMember("CODE");
+									if (a == null || a.isNull())
+										continue;
+									String ccode = a.asString();
+									a = d.getMember("RGB");
+									if (a == null || a.isNull())
+										continue;
+									String valrgb = "rgb"+a.asString();
+									a = d.getMember("CMYK");
+									if (a == null || a.isNull())
+										continue;
+									String valcmyk= "cmyk"+a.asString();
+									Value col = cpx.getMember("byCode").execute(ccode);
+									if (col == null || col.isNull()) {
+										col = cpx.newInstance();
+										col.putMember("code", ccode);
+									}
+									col.putMember("value_rgb", valrgb);
+									col.putMember("value_cmyk", valcmyk);
+									for (DBLang l : HostImpl.me.getActiveLanguages()) {
+										Value v = d.getMember("NAME."+l.getCode());
+										if (v != null && !v.isNull()) 
+											col.getMember("setI18n").execute("name", l.getCode(),v.asString());
+									}
+									col.putMember("access_read", userRoleEveryone);
+									c.getMember("push").execute("available_colors",col);
+									if (j == 0)
+										c.putMember("initial_value", col); // TODO
+								}
+							}
 						} else {
 							c = JSEngine.newEmptyObject();
 							c.putMember("type", type);
+							c.putMember("data", data);
 						}
 						if (cat != null)
 							c.putMember("category", cats.getMember(cat));
 						c.putMember("code", code);
 						c.putMember("dest_page", p);
-						c.putMember("initial_value", "CMYK(0,30,100,0)"); // TODO
+						
+
+						
+						
+						
 						Value cc = c.getMember("commit");
 						if (cc != null)
 							cc.execute();
@@ -1081,8 +1172,13 @@ public class ScribusService {
 						// ---------------------------
 						if (!doNotRender) {
 							String uuid = vd.getMember("uuid").asString();
-							File file = HostImpl.me.resolveResourceURL("/documents/" + uuid + ".uuid",
-									VRSessionContext.accessContextAdmin);
+							File file = null;
+							try {
+								file = HostImpl.me.resolveResourceURL("/documents/" + uuid + ".uuid",
+										VRSessionContext.accessContextAdmin);
+							} catch (VException x) {
+								HostImpl.me.getLogger().warn("ScribusService : can not document by uuid "+uuid+" | "+x);
+							}
 							if (file == null) {
 								// DELETED FILE TODO CLEANUP + ERROR LOG
 								continue;
@@ -1187,14 +1283,16 @@ public class ScribusService {
 				}
 			} else if ("indexed_color".equals(type) || inherits(e, "web2print", "indexed_color_content")) {
 				Value vd = data.getMember(code);
-				if (vd == null || vd.isNull())
-					toReplace.putMember(code, "");
+				if (vd == null || vd.isNull()) {
+					vd = e.getMember("initial_value");
+					if (vd == null || vd.isNull())
+						toReplace.putMember(code, "");
+					else
+						toReplace.putMember(code, vd.getMember("value_cmyk"));
+				}
 				else {
-					String d = vd.asString();
-					var h = d.toUpperCase().indexOf(" RGB");
-					if (h > 0)
-						d = d.substring(0, h);
-					toReplace.putMember(code, vd);
+					String d = vd.getMember("cmyk").asString();
+					toReplace.putMember(code,d);
 				}
 			} else if ("table".equals(type) || inherits(e, "web2print", "table_content")) {
 				Value atd = e.getMember("table_data");
@@ -1941,4 +2039,15 @@ public class ScribusService {
 		}
 		return res;
 	}
+	 public static String cmykToRgb(double c, double m, double y, double k) {
+        double cD = c / 100.0;
+        double mD = m / 100.0;
+        double yD = y / 100.0;
+        double kD = k / 100.0;
+
+        int r = (int) (255 * (1 - cD) * (1 - kD));
+        int g = (int) (255 * (1 - mD) * (1 - kD));
+        int b = (int) (255 * (1 - yD) * (1 - kD));
+        return "("+r+","+g+","+b+")";
+	 }
 }

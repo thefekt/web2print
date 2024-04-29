@@ -347,14 +347,15 @@ function getContentsData(tpl) {
             if (colors) {
                 var arr=[];
                 for (var i=0;i<colors.length;i++) {
-                    var t = colors[i].trim();
-                    if (t) arr.push(t);
+                    var t = colors[i];
+                    if (t) arr.push({code:t.code,rgb:t.value_rgb,cmyk:t.value_cmyk,name:t+''});
                 }
                 if (arr.length)
                     colors=arr;
                 else
                     colors=undefined;
             }
+            var eiv = e.initial_value;
             res.push({
                 object : e,
                 NAME : misc.OBJSTR(e),
@@ -362,8 +363,8 @@ function getContentsData(tpl) {
                 code : e.code,
                 type : 'color',
                 dest_page : e.dest_page,
-                placeholder : e.initial_value,
-                colors: e.available_colors,
+                placeholder : eiv ? {code:eiv.code,rgb:eiv.value_rgb,cmyk:eiv.value_cmyk,name:eiv+''} : undefined,
+                colors: colors,
                 region : e.region ? JSON.parse(e.region).region : undefined
             });
         }

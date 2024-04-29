@@ -6,6 +6,7 @@ vr.defineModule('web2print',{
 	//sortId : 1000
 	alias : 'w2p',
 	objectdefs : [
+		require("./schema/color"),
 		require("./schema/abstract_content"),
 		require("./schema/print_template"),
 		require("./schema/category_content")

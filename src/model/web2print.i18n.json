@@ -158,13 +158,18 @@
         "bg-BG": "Набор от цветове",
         "fr-FR": "Jeu de couleurs"
     },
-     
+    "objectdef:web2print.color": {
+        "en-US": "Color",
+        "de-DE": "Farbe",
+        "bg-BG": "Цвят",
+        "fr-FR": "Couleur"
+    },     
     "property:print_template": {
         "en-US": "Template",
         "de-DE": "Vorlage",
         "bg-BG": "Шаблон",
         "fr-FR": "Modèle"
-    },
+    },    
     "property:dest_page": {
         "en-US": "Page",
         "de-DE": "Seite",
@@ -278,5 +283,11 @@
         "de-DE": "Tabellendaten",
         "bg-BG": "Данни за таблицата",
         "fr-FR": "Données du tableau"
-    }
+    },
+    "property:value_rgb": {
+        "en-US": "RGB"
+    },    
+    "property:value_cmyk": {
+        "en-US": "CMYK"
+    }    
 }

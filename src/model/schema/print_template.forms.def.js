@@ -38,7 +38,8 @@ forms.define({
 						}
 					}					
 				}
-			}	
+			},
+			copy : false	
 		},
 	    properties :
 	    { /*

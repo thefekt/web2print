@@ -22,5 +22,5 @@
 	<observe 
 		[event]="overlayClicked.dispatch" (dispatch)="
 			$event.code == comp.code ? inp.focused ? 0 : root.app.window.document.activeElement.blur() : 0;
-			$event.code == comp.code ? finalizeOverlayClick(comp,inp,$event) : 0"></observe>
+			$event.code == comp.code ? finalizeOverlayClick.execute(comp,inp,$event) : 0"></observe>
 </input-number>

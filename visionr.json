@@ -46,6 +46,6 @@
     "additional" : {
 		"scribus.dir" : "C:/Program Files/Scribus 1.6.1",
 		"web2print.submit.action" : "download",
-		"core.session.anonymous.expiry.minutes" : 2880
+		"documents.temp.session.persistence.mode" : "client_instance"
 	}
 }

@@ -306,7 +306,12 @@ public class Utils {
 			}				
 		} else {
 			String url = "/tmp/documents/"+uuid+".uuid."+ext+"?operation=resizeImage&width="+width+"&height="+height+"&rx="+rx+"&ry="+ry+"&rw="+rw+"&rh="+rh;
-			File rf = ResourceCache.getResource(url,context);
+			File rf = null;
+			try {
+				rf = ResourceCache.getResource(url,context);
+			} catch (VException e) {
+				HostImpl.me.getLogger().error("Unable to resolve IMAGE by url | "+url+"\nException : "+e);
+			}
 			if (rf == null) {
 				HostImpl.me.getLogger().error("Can not copy image uuid @ "+uuid);
 				return;

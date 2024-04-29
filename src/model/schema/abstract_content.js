@@ -131,15 +131,19 @@ module.exports = {
 		inherits : 'web2print.abstract_content',
 		properties : {
 			'initial_value' : {
-				template : 'varchar',
-				col : 'ival_var'
+				template : 'relation',
+				related : 'web2print.color'
 			},
 			/* TODO NOT WORKING SPECIFY CUSTOM TODO */
 			'dest_page' : {
 				hidden : true,
 				obligatory : false,
 			},
-			'available_colors' : 'varchar.multiple'
+			'available_colors' : {
+				template : 'relation',
+				related : 'web2print.color',
+				multiple : true
+			}
 		},
 		icon : 'colors'
 	}
