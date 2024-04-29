@@ -18,7 +18,7 @@
 <!-- changes made by user
 	 proxy : track nested changes (map, object) -->
 <variable 
-	#custom proxy [value]="{}" path="{{tpl.value}}" 
+	#custom proxy [defaults]="{value:{}}" path="{{tpl.value}}" 
 	(valueChange)="changed.value = root.keys(custom.value).length > 0" 
 	persist
 ></variable>

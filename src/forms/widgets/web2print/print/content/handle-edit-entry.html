@@ -25,26 +25,12 @@
 	"
 ></observe>
 <observe #resetToDefault (dispatch)="val.value=undefined")></observe>
-<observe [event]="inp.focusedChange">
-	 <script [params]="{inp:inp,comp:comp,cpanel:cpanel,cfocused:cfocused,getOverlayElement:getOverlayElement,root:root}" #handleFocusChange>
-		 setTimeout(function(){
-			var el = getOverlayElement.execute(comp.code);
-			if (args[0]) {
-				cpanel.expanded=true;
-				cfocused.remove(comp.code)
-				cfocused.push(comp.code)
-				for (var e of root.element.querySelectorAll(".w2p-print-entry-changed"))
-					e.classList.remove("w2p-print-entry-changed");
-				el && el.classList.add("w2p-print-entry-focused");
-				//console.log("+++ : "+JSON.stringify(cfocused.elements,null,4));
-			} else {
-				cfocused.remove(comp.code)
-				el && el.classList.remove("w2p-print-entry-focused");
-				//console.log("--- : "+JSON.stringify(cfocused.elements,null,4));
-			}
-			 
-		 },0);
-	 </script>
- </observe>
- <observe [event]="dynamicViewer.overlayClick" (dispatch)="$event.code == comp.code ? handleFocusChange.execute(true):0"></observe>
- </observe>
+<observe [event]="inp.focusedChange" (dispatch)="
+	setOverlayFocused.execute(comp.code,$event);
+	$event ? cpanel.expanded=true : 0
+"></observe>
+<observe [event]="dynamicViewer.overlayClick" (dispatch)="
+	$event.code == comp.code ? 
+		setOverlayFocused.execute(comp.code,true) 
+		: 0
+"></observe>

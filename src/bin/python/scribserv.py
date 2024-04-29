@@ -18,7 +18,6 @@
 #
 # ****************************************************************************
 
-
 """
 
 (C) 2017 by Gheorghi Penkov
@@ -50,12 +49,13 @@ VERSION = "v0.7.5 - bugfixing"
 # ptvsd.wait_for_attach()
 
 CONNECTION_TIMEOUT = 60
-INACTIVE_TIMEOUT = 120
-DOCUMENT_TIMEOUT = 120
+INACTIVE_TIMEOUT = 10
 DEFAULT_PORT = 22022
 #LOGFILE = 'c:/t/t.txt'
 LOGFILE = None
 
+import os
+import signal
 import traceback
 import logging
 import re
@@ -63,6 +63,7 @@ import socketserver
 import urllib
 import sys
 import json
+import time
 import socket
 # ----------------------------------------------------------------------------
 
@@ -196,15 +197,12 @@ def processColors(xlat):
     logger.info('! process colors')
 
     rclean = re.compile(r'[()]')
-    rcmyk = re.compile(r'[(]*(?:(\d+(?:\.\d+)?)[\%\s,]*)[)]*'
-)
+    rcmyk = re.compile(r'[(]*(?:(\d+(?:\.\d+)?)[\%\s,]*)[)]*')
 
     try:
         colcodes = [rclean.sub('', n)
                     for n in scribus.getColorNames()
                     if '(' in n and ')' in n]
-
-        logger.info("..colcodes %s", str(colcodes))
 
         for i in colcodes:
             if i in xlat:
@@ -214,12 +212,9 @@ def processColors(xlat):
               for name in colcodes
               if name in xlat and ',' in xlat[name]}
 
-        logger.info("..colors xlat %s ", str(cn))
-
         for name, val in cn.items():
             cname = '(%s)' % name
             scribus.changeColorCMYKFloat(cname, *val)
-            logger.info('...replaced color %s => %s', cname, xlat[name])
 
     except scribus.ScribusException as e:
         logger.error('..scribus failed: %s', e)
@@ -235,42 +230,61 @@ def SelectAllText(textframe):
 def processTemplate(xlat):
     if xlat is None:
         return
-
     page = 1
     pagenum = scribus.pageCount()
     while page <= pagenum:
-        logger.info(r'.process page ' + str(page))
         scribus.gotoPage(page)
         pitems = scribus.getPageItems()
-
-        for item in [p for p in pitems if p[1] == 4]:
-            i0 = str(item[0])
-            if i0.startswith("("):
-                code = i0[1:-1]
-
-                if '(' in code:
-                    lp = code.rfind('(')
-                    code = code[:lp]
-
-                if i0 in Automator3.codes:
-                    phc = Automator3.codes[i0]
-                else:
-                    phc = scribus.getAllText(i0)
-                    Automator3.codes[i0] = phc
-                val = xlat.get(code, phc)  # This handles the case if 'code' is not in 'xlat'
-                if val:
-                    nval = str(val)
-                    olen = scribus.getTextLength(i0)
-                    nlen = len(nval)
-                    scribus.insertText(nval, 0, i0)
-                    scribus.selectText(nlen, olen, i0)
-                    scribus.deleteText(i0)
-                    scribus.deselectAll()
+        for item in pitems:
+            item_id = str(item[0])
+            if item_id.startswith("(") and item_id.endswith(")"):
+                if item[1] == 4:  # It's a text frame
+                    processTextNode(item_id, xlat)
+                elif item[1] == 16:  # It's a table
+                    processTableNode(item_id, xlat)
 
         page += 1
 
-    logger.info('! done processing template')
-    return;
+def processTextNode(item_id, xlat):
+    code = item_id[1:-1]
+    if item_id in Automator3.codes:
+        phc = Automator3.codes[item_id]
+    else:
+        phc = scribus.getAllText(item_id)
+        Automator3.codes[item_id] = phc
+    val = xlat.get(code, phc)  # This handles the case if 'code' is not in 'xlat'
+    if val:
+        nval = str(val)
+        olen = scribus.getTextLength(item_id)
+        nlen = len(nval)
+        scribus.insertText(nval, 0, item_id)
+        scribus.selectText(nlen, olen, item_id)
+        scribus.deleteText(item_id)
+        scribus.deselectAll()
+
+def processTableNode(table_id, xlat):
+    code = table_id[1:-1]
+    rows = scribus.getTableRows(table_id)
+    cols = scribus.getTableColumns(table_id)
+    for row in range(0, rows):
+        for col in range(1, cols + 1):
+            coln = col_number_to_letters(col)
+            cell_key = f"{code}.{coln}{row}"
+            if cell_key in xlat:
+                val = str(xlat[cell_key])
+                try:
+                    scribus.setCellText(row,col-1,val,table_id)
+                except Exception as e:
+                    logger.error(f'..error setting cell value: {e} | {row} {col} {val} {table_id}', e)            
+
+
+def col_number_to_letters(n):
+    result = ""
+    while n > 0:
+        n -= 1
+        result = chr(n % 26 + ord('A')) + result
+        n //= 26
+    return result
 # ----------------------------------------------------------------------------
 class Automator3:    
     def __init__(self, forward):
@@ -338,9 +352,7 @@ class Automator3:
 
     @staticmethod
     def EXPORT(opath):
-        logger.info('! compositing & exporting... ')
         exportPDF(opath)
-        logger.info('! exported PDF to %s', opath)
 
     @staticmethod
     def OPEN(arg):
@@ -351,7 +363,6 @@ class Automator3:
             logger.error('..bad argument: [%s]', arg)
             return 'ERR_BAD_ARG: %s' % arg
 
-        logger.info('! open document %s, code %s', opath, code)
         try:
             # scribus.closeDoc()
             scribus.openDoc(opath)
@@ -381,8 +392,6 @@ class Automator3:
             self.sendLine('ERR_BAD_CMD')
             return
 
-        #logger.info('.cmd [%(code)s] && arg [%(arg)s]', {'code': code, 'arg': arg})
-
         if code == 'CONVERT':
             self.sendLine(Automator3.CONVERT(arg))
         elif code == 'OPEN':
@@ -393,8 +402,6 @@ class Automator3:
             self.sendLine(Automator3.EXIT(arg))
         else: 
             self.sendLine('UNKNOWN_COMMAND')
-
-        logger.info('! done processing command [%s]', code)
 
 Automator3.codes = dict()
 
@@ -407,7 +414,6 @@ if len(sys.argv) > 1:
 else:
     PORT = DEFAULT_PORT
 # --------------------------------------------------------------------
-
 class SocketRequestHandler(socketserver.BaseRequestHandler):
      
     def sendLine(self, line):
@@ -417,27 +423,27 @@ class SocketRequestHandler(socketserver.BaseRequestHandler):
             self.request.sendall((line+'\n').encode('utf-8'))  
     
     def handle(self):
-        logger.info("HANDLE...")
         impl = Automator3(self)
-        logger.info('! handle request. initiate dialogue.')        
-        logger.info('! adapter %s', VERSION)
-
         input_stream = self.request.makefile('r', encoding='utf-8')
-
-        while True:
-            # Reading a line of text from the client
-            line = input_stream.readline().strip()
-            if line is None: 
-                break                 
-            impl.lineReceived(line)      
-        
-
-logger.info("START START START START")
-logger.info("START START START START")
-logger.info("")
+        try:
+            while True:
+                # Reading a line of text from the client
+                line = input_stream.readline().strip()
+                if line is None: 
+                     # no clean termination possible
+                    os.kill(os.getpid(), signal.SIGTERM);
+                    break                 
+                timeLastRun=time.time()
+                impl.lineReceived(line)      
+                timeLastRun=time.time()
+        except:
+            # no clean termination possible
+            # scribus.fileQuit()
+            os.kill(os.getpid(), signal.SIGTERM);
 
 # Create a server, binding to localhost on port PORT
 with socketserver.TCPServer(("localhost", PORT), SocketRequestHandler) as server:
-    # Activate the server; this will keep running until you interrupt the program with Ctrl+C
+    server.allow_reuse_address = True
     server.serve_forever()
+
 

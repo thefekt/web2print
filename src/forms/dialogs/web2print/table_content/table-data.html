@@ -6,6 +6,7 @@
 </script>
 <variable #data export (onReady)="initData.execute()"></variable>
 <script #initColumns [params]="{data:data,columns:columns,root:root}">
+	
 	// remove ID = rownum
 	var cols = [];
 	var cval = columns.value;
@@ -19,7 +20,8 @@
 			suffix : e.suffix,
 			readonly : e.readonly,
 			obligatory : e.obligatory,
-			maxLength : e.maxLength 
+			maxLength : e.maxLength,
+			sortId : i
 		};
 		switch (e.type) {
 			case "datetime" :
@@ -81,7 +83,7 @@
 </mat-dialog-content> 
 <mat-dialog-actions fxLayout="row">
   <button style="background-color:white" class="mat-elevation-z1" mat-button tabindex="-1" (click)="
-  	data.value=initial.value;initData.execute();dt.reloadData()">
+  	data.value=initial.value;initData.execute();state.value=undefined;dt.reloadData()">
 	<mat-icon>restart_alt</mat-icon>
     <span fxHide.xs><i18n>INFO_RESET_TO_DEFAULT</i18n></span> 
   </button>	

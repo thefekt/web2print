@@ -122,7 +122,9 @@
         <script #refreshStorage [params]="{inp:inp}">
             inp.reset();
         </script>
-        <script #openCrop [params]="{val:val,root:root,comp:comp,updateRegion:updateRegion}">
+        <script #openCrop [params]="{onEntryFocused:onEntryFocused,setOverlayFocused:setOverlayFocused,val:val,root:root,comp:comp,update:update,updateRegion:updateRegion}">
+			onEntryFocused.execute(comp);
+        	setOverlayFocused.execute(comp.code,true);
 			var rv = args[0]||val.value||comp.placeholder;
 			var doc = rv?.document;
 			if (doc) root.openDialog('/dialogs/documents/document/crop',{
@@ -130,7 +132,17 @@
                 titleName : 'titleName', 
                 object : doc,
                 cropData : {region:root.clone(rv.region,true),proportion:comp.proportion}
-            },args[1]||updateRegion.execute,args[2])			
+            },function(res){
+				/* on submit */
+				(args[1]||updateRegion.execute)(res);
+				val.value=val.value||root.clone(val.value||comp.placeholder||{},true);
+	            val.value.disabled=false; 
+	            update.execute();
+			},args[2] /* on cancel*/,function(){
+				/* on close */ 
+	        	setOverlayFocused.execute(comp.code,false);
+			})
+			
 		</script>
         <observe 
 		[event]="overlayClicked.dispatch" (dispatch)="

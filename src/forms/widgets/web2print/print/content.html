@@ -61,4 +61,23 @@
 	}
 	dynamicViewer.gotoPage(comp.dest_page-1);
 	dynamicViewer.fitOverlayIfNeeded(comp.code);
+</script>
+<script #setOverlayFocused [params]="{cfocused:cfocused,getOverlayElement:getOverlayElement,root:root}">
+	 setTimeout(function(){
+		var code = args[0];
+		var el = getOverlayElement.execute(code);
+		if (args[1]) {
+			cfocused.remove(code)
+			cfocused.push(code)
+			for (var e of root.element.querySelectorAll(".w2p-print-entry-changed"))
+				e.classList.remove("w2p-print-entry-changed");
+			el && el.classList.add("w2p-print-entry-focused");
+			//console.log("+++ : "+JSON.stringify(cfocused.elements,null,4));
+		} else {
+			cfocused.remove(code)
+			el && el.classList.remove("w2p-print-entry-focused");
+			//console.log("--- : "+JSON.stringify(cfocused.elements,null,4));
+		}
+		 
+	 },0);
 </script>	

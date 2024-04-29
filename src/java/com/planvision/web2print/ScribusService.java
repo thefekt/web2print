@@ -78,14 +78,22 @@ import com.planvision.web2print.SLAXML.XMLHandler;
 public class ScribusService {
 	
 	private static String _executable = null;
-
-	private static class ProcessInfo {
+	private static final int inactiveDurationMS = (int)(CorePrefs.getDoublePref("web2print.scribus.inactive.expire.minutes",2.0)*60000.0);
+	private static final class ProcessInfo {
 		public Process process = null;
 		public OutputStreamWriter clientSocketWriter;
 		public BufferedReader clientSocketReader;
 		public Socket clientSocket;
 		public int port;
-
+		private long lastExecution = System.currentTimeMillis();
+		public void ping() {
+			lastExecution = System.currentTimeMillis();
+		}
+		public boolean expired(long now) {
+			if (now-lastExecution > inactiveDurationMS)
+				return true;
+			return false;
+		}
 		public void newPort() {
 			while (true) {
 				int tp = 14000 + (int) (Math.random() * 10000);
@@ -467,18 +475,15 @@ public class ScribusService {
 				case "TABLE":
 					if (tableSet.add(code)) {
 						StringBuilder sb = new StringBuilder("{");
-						boolean clf = true;
 						for (DBLang lng : HostImpl.me.getActiveLanguages()) {
-							if (clf)
-								clf = false;
-							else
-								sb.append(",");
 							File fe = new File(resolve(tmpDirKey, code + "." + lng.getCode() + ".xlsx"));
 							if (!fe.exists() || !fe.canRead())
 								fe = new File(resolve(tmpDirKey, code + "." + lng.getCode() + ".xls"));
 							if (fe.exists() && fe.canRead()) {
 								org.graalvm.polyglot.Value res = JSConverter
 										.VR2JS((new Excel()).readExcelData(fe, true));
+								if (sb.length() > 1)
+									sb.append(",");
 								sb.append("\"");
 								sb.append(lng.getCode());
 								sb.append("\":{\"columns\":[");
@@ -518,8 +523,13 @@ public class ScribusService {
 										if (ce.isString()) {
 											String name = ce.asString();
 											StringUtils.stringToJSONToStringBuilder(name, sb);
-										} else
+										} else if (ce.isDate()) {
+											sb.append("{\"_TYPE_\":\"Date\",\"ltime\":");
+											sb.append(ce.as(Date.class).getTime());
+											sb.append("}");
+										} else {
 											sb.append(JSEngine.jsonStringify(ce));
+										}
 									}
 									sb.append("]");
 								}
@@ -529,6 +539,8 @@ public class ScribusService {
 								va.put("type", "table");
 							}
 						}
+						sb.append("}");
+						va.put("data",sb.toString());
 					}
 					break;
 				default:
@@ -573,11 +585,14 @@ public class ScribusService {
 		ProcessInfo pi;
 		String keyl = key + "." + lang;
 		synchronized (processes) {
+			if (cleanupThread == null)
+				cleanupThread = Thread.ofVirtual().start(cleanupTask);
 			pi = processes.get(keyl);
 			if (pi == null) {
 				pi = new ProcessInfo();
 				processes.put(keyl, pi);
 			}
+			pi.ping();
 		}
 		if (pi.process != null && !pi.process.isAlive())
 			pi.process = null;
@@ -1309,6 +1324,14 @@ public class ScribusService {
 							bdata = za.getMember("data");
 						}
 					}
+					for (var col = 0; col < (int) columns.getArraySize(); col++) {
+						Value c = columns.getArrayElement(col);
+						Value n = c.getMember("name");
+						if (n != null && n.isString()) { // COLUMN NAME AS A0,B0,C0..
+							String key = code + "." + (char) (65 + col) + "0";
+							toReplace.putMember(key, n.asString());
+						}
+					}
 					for (int row = 0; row < (int) bdata.getArraySize(); row++) {
 						Value r = bdata.getArrayElement(row);
 						for (var col = 0; col < (int) r.getArraySize(); col++) {
@@ -1467,6 +1490,7 @@ public class ScribusService {
 				}
 			}
 		}
+		//HostImpl.me.getLogger().warn(">>> TO REPLACE >>> "+JSEngine.jsonStringify(toReplace).asString());
 		return toReplace;
 	}
 
@@ -2050,4 +2074,39 @@ public class ScribusService {
         int b = (int) (255 * (1 - yD) * (1 - kD));
         return "("+r+","+g+","+b+")";
 	 }
+	 //-----------------------------------------------------------------------------------
+	 private static Thread cleanupThread = null;
+	 private static final Runnable cleanupTask = ()->{
+		 final HashMap<String,ProcessInfo> expired = new HashMap();
+		 while (true) {
+			 try 
+			 {
+				 final long now = System.currentTimeMillis();
+				 synchronized (processes) {
+					 for (Entry<String,ProcessInfo> e : processes.entrySet()) 
+						 if (e.getValue().expired(now)) 
+							 expired.put(e.getKey(),e.getValue());
+					 for (Entry<String,ProcessInfo> e : expired.entrySet()) 
+						 processes.remove(e.getKey());
+				 }
+				 for (ProcessInfo e : expired.values()) {
+					 Process p = e.process;
+					 Socket s = e.clientSocket;
+					 try {
+						if ( s != null)
+							s.close();
+					} catch (IOException e1) {
+						HostImpl.me.getLogger().error(e1);
+					}
+					if (p != null)
+						p.destroyForcibly();
+					//HostImpl.me.getLogger().warn(">> TERMINATED PROCESS "+(p == null ? "null" : p.pid()));
+				 }
+				 expired.clear();
+				 Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				HostImpl.me.getLogger().error(e);			
+			}
+		 }
+	 };
 }

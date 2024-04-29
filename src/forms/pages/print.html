@@ -5,7 +5,7 @@
 <variable #headerVisibility export [value]="false"></variable>
 
 <!-- select template by code, gets template name -->  
-<variable #tpl export>
+<variable #tpl export (valueChange)="root.app.reloadRoot()">
 	<query #query 
 		schema="web2print.print_template" 
 		where="code=:CODE" 
