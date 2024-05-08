@@ -46,7 +46,7 @@
     "additional" : {
 		"scribus.dir" : "C:/Program Files/Scribus 1.6.1",
 		"web2print.submit.action" : "download",
-		"documents.temp.session.persistence.mode" : "client_instance",
+		"documents.temp.session.persist.duration" : "client_instance",
 		"pdfium.service.concurrency" : 4,
 		"pdfium.multitasking.group.document" : false
 	}

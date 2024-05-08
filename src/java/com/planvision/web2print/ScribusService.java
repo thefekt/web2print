@@ -586,7 +586,7 @@ public class ScribusService {
 		String keyl = key + "." + lang;
 		synchronized (processes) {
 			if (cleanupThread == null)
-				cleanupThread = Thread.ofVirtual().start(cleanupTask);
+				cleanupThread = Thread.ofPlatform().start(cleanupTask);
 			pi = processes.get(keyl);
 			if (pi == null) {
 				pi = new ProcessInfo();

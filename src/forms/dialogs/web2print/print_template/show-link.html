@@ -1,29 +1,51 @@
-<variable #relp export></variable>
+<variable #relp value="print?tpl=TODO"></variable>
+<variable #schema export></variable>
+<variable #condition export></variable>
+<variable #queryParams export></variable>
+<variable #focused></variable>
+<query [schema]="schema.value" [where]="condition.value" [params]="queryParams.value" properties="code,NAME">
+	<result #objr></result>
+</variable>
 
-<variable #url [value]="root.serverHostExternalForms+relp.value"></variable>
 <mat-dialog-content simplebar>
 	<h2 mat-dialog-title><i18n>PUBLIC_LINK</i18n></h2>
-	<input-varchar placeholder="URL" readonly [value]="url.value" style="min-width:50vw" [noPopupButton]="true"></input-varchar>		
+	<div *ngFor="let o of objr.objects||[]; let last = last" fxLayout="row" [style.margin-bottom.px]="10">
+		<variable #url value="{{root.serverHostExternalForms}}print?tpl={{root.app.escape.encodeURIComponent(o.code)}}"></variable>
+		<div>
+			<div style="margin-bottom:8px">
+				{{o.NAME}}
+			</div>
+			<input-varchar 
+				placeholder="URL" readonly 
+				[value]="url.value" style="min-width:50vw" 
+				[noPopupButton]="true"
+				(focus)="focused.value=url.value"
+				(blur)="focused.value=undefined"
+			></input-varchar>		
+		</div>
+		<div style="margin:auto 0">
+			<button mat-button style="margin-left:8px" (click)="
+						root.app.clipboard.copyMessage(url.value);
+						root.showSnack(4000,'/dialogs/widgets/form/simple-notify',{ caption : root.i18n('LABEL_COPIED_TO_CLIPBOARD') });
+					">
+				<mat-icon>content_copy</mat-icon>
+		    	<span><i18n>INFO_COPY</i18n></span>
+		    </button>			
+		</div>
+	</div>
 </mat-dialog-content>
 <mat-dialog-actions fxLayout="row"> 
-	<button mat-button (click)="popup.execute()">
-		<mat-icon>open_in_new</mat-icon>
+	<button mat-button 
+		(click)="root.app.window.open(focused.value||objr.objects[0],'_blank')" 
+		[disabled]="!focused.value && !(objr.objects?.length == 1)" 
+		(mousedown)="$event.preventDefault()"
+	>
+		<mat-icon>open_in_new</mat-icon>	
     	<span><i18n>INFO_POPUP</i18n></span>
     </button>
 	<span fxFlex></span> 
-	<button mat-button style="margin-left:8px" (click)="
-				root.app.clipboard.copyMessage(url.value);
-				root.showSnack(4000,'/dialogs/widgets/form/simple-notify',{ caption : root.i18n('LABEL_COPIED_TO_CLIPBOARD') });
-			">
-		<mat-icon>content_copy</mat-icon>
-    	<span><i18n>INFO_COPY</i18n></span>
-    </button>
 	<button mat-button dialog-close style="margin-left:8px">
 		<mat-icon>close</mat-icon>
     	<span><i18n>BUTTON_WEB_CLOSE</i18n></span>
     </button>
 </mat-dialog-actions>
-
-<script #popup [params]="{url:url}">
-	 window.open(url.value,"_blank");
-</script>

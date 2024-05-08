@@ -85,15 +85,18 @@ forms.define({
 		},
 		executions : {
 	        'show-link' : function(details) { 
-				if (details.object) 
+				//if (details.object) 
 	            return {
 	                icon : 'public',
 	                ref : '/dialogs/web2print/print_template/show-link',
 	                name : misc.MSG("SHOW_PUBLIC_LINK"),
-	                selection : true, 
-	                params : {
+	                group : 'access', 
+	                //selection : false,
+	                //resolveObjects : true	// resove selection as param relationObject,relationObjects
+	                //selection : true 
+	                /*,params : {			// using object requires groupEvaluationBy : 'object' (skip caching)
 						relp: `print?tpl=${encodeURIComponent(details.object.code)}`
-					}
+					}*/
 	            };
 	        }
 	    }
