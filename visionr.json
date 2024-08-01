@@ -36,10 +36,14 @@
         "files": [
             ".gitignore",
             "src/srv",
+            "src/bin",
             "share/public",
             "target/client",
             "target/forms",
             "target/import",
+            "target/model/forms.def",
+            "target/model/srv",
+            "target/web2print-*.jar",
             "target/doc.sync"
         ]
     },
