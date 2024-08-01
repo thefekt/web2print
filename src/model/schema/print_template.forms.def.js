@@ -2,8 +2,8 @@
 
 const misc = require("server/misc");
 const forms = require("server/forms");
-
 require("./print_template.forms.remote");
+
 
 /* FORM DEFS */
 forms.define({
@@ -85,6 +85,7 @@ forms.define({
 		},
 		executions : {
 	        'show-link' : function(details) { 
+				//TEST_ME_TEST_ME_TEST_ME
 				//if (details.object) 
 	            return {
 	                icon : 'public',
