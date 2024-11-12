@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Constructor;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
@@ -63,8 +64,6 @@ import com.planvision.visionr.host.core.scripting.api.Require;
 import com.planvision.visionr.host.core.scripting.api.VSC;
 import com.planvision.visionr.host.core.scripting.core.JSEngine;
 import com.planvision.visionr.host.core.scripting.core.api.export.Excel;
-import com.planvision.visionr.host.core.scripting.oscript.api.io.TmpFile;
-import com.planvision.visionr.host.core.scripting.oscript.api.reports.BarCode;
 import com.planvision.visionr.host.impl.schema.DBObjectDefImpl;
 import com.planvision.visionr.host.impl.schema.ObjectReference;
 import com.planvision.visionr.host.master.JSConverter;
@@ -863,15 +862,18 @@ public class ScribusService {
 								int x2 = fpath.lastIndexOf('.', x1 - 1);
 								String lang = fpath.substring(x2 + 1, x1);
 								String ext = fpath.substring(x1 + 1);
-								TmpFile a = new TmpFile(ext);
-								try {
-									try {
-										FileUtils.copyFile(new File(fpath), a.getFile());
-										String docc = code + "." + lang + "." + ext;
-										Value doc = VSC.callVSC("doc.misc.uploadInDir",
-												new Value[] { dirrf, JSConverter.VR2JS(docc), JSEngine.UNDEFINED,
-														JSConverter.VR2JS(ext), JSEngine.UNDEFINED/* description */,
-														JSConverter.VR2JS(a) });
+								
+								
+								FileAndWebPath fwp = ((JavaHost)HostImpl.me).createTmpFile(ext);
+							    File af = new File(fwp.absolutePath);
+                                try {
+                                    try {
+                                        FileUtils.copyFile(new File(fpath), af);
+                                        String docc = code + "." + lang + "." + ext;
+                                        Value doc = VSC.callVSC("doc.misc.uploadInDir",
+                                                new Value[] { dirrf, JSConverter.VR2JS(docc), JSEngine.UNDEFINED,
+                                                        JSConverter.VR2JS(ext), JSEngine.UNDEFINED/* description */,
+                                                        JSConverter.VR2JS(_wrap2VR(fwp)) });
 										doc.putMember("code", docc); // force code exact (no prefix TEST-.. )
 										// doc.putMember("parent",dirrf);
 										doc.getMember("commit").execute();
@@ -962,6 +964,7 @@ public class ScribusService {
 					cc.execute();
 				return tmpl;
 			}
+
 		};
 		return Locker.executeInTempFileLock(key + ".INIT", cb);
 	}
@@ -1117,7 +1120,7 @@ public class ScribusService {
 					toReplace.putMember(code, "");
 				else
 					toReplace.putMember(code, Common.convertValueByCoreFormat("default_output_format_date",
-							JSConverter.JS2VR(vd), lng.id));
+							vd,lng.id));
 			} else if ("datetime".equals(type) || inherits(e, "web2print", "datetime_content")) {
 				Value vd = data.getMember(code);
 				if (vd == null || vd.isNull())
@@ -1126,7 +1129,7 @@ public class ScribusService {
 					toReplace.putMember(code, "");
 				else
 					toReplace.putMember(code, Common.convertValueByCoreFormat(
-							"default_output_format_datetime_hour_minutes", JSConverter.JS2VR(vd), lng.id));
+							"default_output_format_datetime_hour_minutes", vd,lng.id));
 			} else if ("time".equals(type) || inherits(e, "web2print", "time_content")) {
 				Value vd = data.getMember(code);
 				if (vd == null || vd.isNull())
@@ -1135,7 +1138,7 @@ public class ScribusService {
 					toReplace.putMember(code, "");
 				else
 					toReplace.putMember(code, Common.convertValueByCoreFormat("default_output_format_hours_minutes",
-							JSConverter.JS2VR(vd), lng.id));
+							vd,lng.id));
 			} else if ("integer".equals(type) || inherits(e, "web2print", "integer_content")) {
 				Value vd = data.getMember(code);
 				if (vd == null || vd.isNull())
@@ -1144,7 +1147,7 @@ public class ScribusService {
 					toReplace.putMember(code, "");
 				else
 					toReplace.putMember(code, Common.convertValueByCoreFormat("output_format_integer_separator",
-							JSConverter.JS2VR(vd), lng.id));
+							vd,lng.id));
 			} else if ("double".equals(type) || inherits(e, "web2print", "double_content")) {
 				Value vd = data.getMember(code);
 				if (vd == null || vd.isNull())
@@ -1153,7 +1156,7 @@ public class ScribusService {
 					toReplace.putMember(code, "");
 				else
 					toReplace.putMember(code, Common.convertValueByCoreFormat("default_output_format_double",
-							JSConverter.JS2VR(vd), lng.id));
+							vd,lng.id));
 			} else if ("image".equals(type) || inherits(e, "web2print", "image_content")) {
 				Value vd = data.getMember(code);
 				if (vd == null || vd.isNull())
@@ -1285,7 +1288,7 @@ public class ScribusService {
 				if (vd != null && !vd.isNull()) {
 					if (!doNotRender) {
 						// common
-						byte[] qd = BarCode.encode(vd.asString(), "QR_CODE", 256, 256, "#000000",
+						byte[] qd = encodeBarcode(vd.asString(), "QR_CODE", 256, 256, "#000000",
 								"#00000000"/* alpha */);
 						try {
 							Files.write(/* dest */new File(tmpDir, code + "." + lang + ".png").toPath(), qd);
@@ -1356,37 +1359,37 @@ public class ScribusService {
 										case "double":
 											v = val.isNumber()
 													? Common.convertValueByCoreFormat("default_output_format_double",
-															JSConverter.JS2VR(val.asDouble()), null)
+															val.asDouble(),lng.id)
 													: "";
 											break;
 										case "integer":
 											v = val.isNumber()
 													? Common.convertValueByCoreFormat("default_output_format_integer",
-															JSConverter.JS2VR(val.asLong()), null)
+															val.asLong(),lng.id)
 													: "";
 											break;
 										case "time":
 											v = val.isDate()
 													? Common.convertValueByCoreFormat("default_output_format_time",
-															JSConverter.JS2VR(val.as(Date.class)), null)
+															val.as(Date.class),lng.id)
 													: "";
 											break;
 										case "hoursMinutes":
 											v = val.isDate() ? Common.convertValueByCoreFormat(
 													"default_output_format_hours_minutes",
-													JSConverter.JS2VR(val.as(Date.class)), null) : "";
+													val.as(Date.class),lng.id) : "";
 											break;
 										case "date":
 											v = val.isDate()
 													? Common.convertValueByCoreFormat("default_output_format_date",
-															JSConverter.JS2VR(val.as(Date.class)), null)
+															val.as(Date.class),lng.id)
 													: "";
 											break;
 										case "datetime":
 										case "datetimeHoursMinutes":
 											v = val.isNumber() ? Common.convertValueByCoreFormat(
 													"default_output_format_datetime_hour_minutes",
-													JSConverter.JS2VR(val.as(Date.class)), null) : "";
+													val.as(Date.class),lng.id) : "";
 											break;
 										default:
 											v = val.toString();
@@ -1564,7 +1567,8 @@ public class ScribusService {
 		return Locker.executeInTempFileLock(key + "." + lang, cb);
 	}
 
-	private ObjectLongHashMap<String> lastUpdateTimes = new ObjectLongHashMap();
+	@SuppressWarnings("rawtypes")
+    private ObjectLongHashMap<String> lastUpdateTimes = new ObjectLongHashMap();
 
 	private static boolean inherits(Value vd, String module, String objectdef) {
 		if (!JSEngine.isInstance(vd))
@@ -2109,4 +2113,41 @@ public class ScribusService {
 			}
 		 }
 	 };
-}
+	 
+     public static byte[] encodeBarcode(String code, String format, int width, int height, String colorOff,
+             String colorOn) throws VException {
+         int icolorOff = stringColorToARGB(colorOff);
+         int icolorOn = stringColorToARGB(colorOn);
+         return JavaHost.me.encodeBarCode(code, format, width, height, icolorOn, icolorOff);
+     }
+
+     // #RRGGBB
+     private static int stringColorToARGB(String str) {
+         if (str.charAt(0) != '#')
+             return 0; // wrong format
+         str = str.substring(1, str.length()).toUpperCase();
+         if (str.length() == 6)
+             str = "FF" + str;// ADD ALPHA
+         try {
+             return (int) Long.parseLong(str, 16);
+         } catch (NumberFormatException e) {
+             return 0;
+         }
+     }
+     
+     // ADD host api for that 
+     private static Constructor<?> _constructor;
+     private static Object _wrap2VR(FileAndWebPath fwp) throws VException {
+             try {
+                 if (_constructor == null) {
+                     Class<?> tmpFileClass = Class.forName("com.planvision.visionr.host.core.scripting.oscript.api.io.TmpFile");
+                     Class<?> fileAndWebPathClass = Class.forName("com.planvision.visionr.core.api.FileAndWebPath");
+                     _constructor = tmpFileClass.getConstructor(fileAndWebPathClass);
+                 }
+                 return _constructor.newInstance(fwp);
+             } catch (Throwable e) {
+                 throw new VException(e);
+             }
+     }
+
+ }

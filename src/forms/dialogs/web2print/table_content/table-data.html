@@ -1,5 +1,5 @@
 <variable #initial export></variable>
-<script #initData [params]="{data:data}">
+<script #initData [params]="{data:data,root:root}">
 	// add ID = rownum
 	var dv = data.value = root.clone(data.value||[],true/*deep*/);
 	for (var i=0;i<dv.length;i++) (dv[i]=dv[i].slice()).unshift(i);
