@@ -2,29 +2,28 @@
     "name": "web2print",
     "version": "1.0.0",
     "scripts": {
-		"reset:all": "vr s clean data work target log upload -force && npm run build && npm run import",
-		"reset": "vr s clean data work target log -force && npm run build && npm run import",
-
-		"build":"npm run build:java && vr s compile",
-		"build:java": "vr mvn package",
-
-		"update": "vr mvn package && vr s compile model && vr s compile import && vr s import modules",
-		"import": "vr s import",
-		"start": "vr s start -devel -chromedebugport 9000",
-		"devel": "vr s start -devel",
-		"prod": "vr s start"
+        "reset:all": "vr s clean data work target log upload -force && npm run build && npm run import",
+        "reset": "vr s clean data work target log -force && npm run build && npm run import",
+        "build": "npm run build:java && vr s compile",
+        "build:java": "vr mvn package && vr s compile vsc",
+        "update": "vr mvn package && vr s compile model && vr s compile import && vr s import modules",
+        "import": "vr s import",
+        "start": "vr s start -devel -chromedebugport 9000",
+        "devel": "vr s start -devel",
+        "prod": "vr s start"
     },
     "author": "",
     "license": "ISC",
-    "description": "",
-    "dependencies": {
-    },
-    "files" : [
-		"/*.md",
-		"/*.txt",
-		"/pom.xml",
-		"/visionr.json",
-		"/package.json",
-		"/src"
-	]
+    "dependencies": {},
+    "files": [
+        "/*.md",
+        "/*.txt",
+        "/pom.xml",
+        "/visionr.json",
+        "/package.json",
+        "/src"
+    ],
+    "nameI18n": {
+        "en-US": "web2print"
+    }
 }

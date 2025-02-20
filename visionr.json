@@ -1,37 +1,37 @@
 {
     "code": "11_W2P",
-    "scripting": {
-        "srcDirs": [
-            "src/srv"
-        ]
+    "name": {
+        "de-DE": "Projekt-Standardwerte",
+        "en-US": "Project defaults"
     },
+    "description": null,
     "logging": {
         "level": "info"
     },
-    "db": {
-        "engine": "sqlite"
-    },
     "server": {
-        "chromeDebugPort": 0,
-        "ports": {
-            "http": 8585,
-            "https": 8383
-        },
+        "devel": false,
         "registration": {
             "enabled": false
-        },
-        "devel": false
+        }
     },
+    "additional": {
+        "pdfium_single_worker_per_document": true,
+        "documents_temp_persist_duration": "browser_session",
+        "scribus.dir": "C:/Program Files/Scribus 1.6.2",
+        "web2print.submit.action": "download",
+        "pdfium.service.parallelism": 4
+    },
+    "uuid": "lGrfeAcvSL66zF2wV9-ncQ",
     "files": {
         "formsDir": "src/forms",
-        "srvSrc": "src/srv", 
+        "srvSrc": "src/srv",
         "model": "src/model/index.js",
-		"module" : "web2print",
+        
+        "module" : "web2print",
 		"schemaSrc" : ["src/schema"],
 		"jarDir" : "target",
 		"classLoader" : "com.planvision.web2print.Bootstrap"
     },
-    "modules": [],
     "project": {
         "files": [
             ".gitignore",
@@ -47,11 +47,15 @@
             "target/doc.sync"
         ]
     },
-    "additional" : {
-		"scribus.dir" : "C:/Program Files/Scribus 1.6.2",
-		"web2print.submit.action" : "download",
-		"documents.temp.session.persist.duration" : "browser_session",
-		"pdfium.service.parallelism" : 4,
-		"pdfium.worker.perdocument" : true
-	}
+    "manager": {
+        "disabledMaintenance": false,
+        "activeConfig": "DEFAULT",
+        "configs": [
+            "managed"
+        ]
+    },
+    "db": {
+        "engine": "sqlite"
+    },
+    "modules": null
 }

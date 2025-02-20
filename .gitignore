@@ -1,9 +1,9 @@
-log
+/log/
 /data/
-work
-upload
-target
-node_modules
+/work/
+/upload/
+/target/
+/node_modules/
 managed.json
 *.log
-backup
+/backup/

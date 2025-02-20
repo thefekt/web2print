@@ -17,6 +17,14 @@
 	</build>
 	<dependencies>
 		<dependency>
+			<groupId>com.planvision</groupId>
+			<artifactId>oscript</artifactId>
+			<version>3.0.0</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/oscript-3.0.0.jar</systemPath>
+		</dependency>
+
+		<dependency>
 		    <groupId>org.eclipse.jetty.toolchain</groupId>
 		    <artifactId>jetty-jakarta-servlet-api</artifactId>
 		    <version>5.0.2</version>

@@ -1,0 +1,7 @@
+publish oscript as MVN package 
+
+https://github.com/plan-vision/oscript
+
+TEMPORARY WORKAROUND : 
+copied from visionr-engine/components/host/lib/oscript-3.0.0.jar
+
